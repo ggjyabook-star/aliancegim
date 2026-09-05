@@ -842,7 +842,8 @@ window.AG = window.AG || {};
       var nombresClases = [];
       for (var i = 0; i < datos.clasesLlenas.length && i < TOPE_DETALLE; i++) {
         var c = datos.clasesLlenas[i];
-        nombresClases.push((c.nombre || 'Clase') + ' · ' + U.capitalizar(c.dia || '') + ' ' + (c.hora || ''));
+        var cuando = ((c.dia || '') + ' ' + (c.hora || '')).trim();
+        nombresClases.push((c.nombre || 'Clase') + (cuando ? ' (' + cuando + ')' : ''));
       }
       lista.push({
         tono: 'info',
@@ -850,9 +851,9 @@ window.AG = window.AG || {};
         titulo: datos.clasesLlenas.length === 1
           ? '1 clase al 100 % de cupo'
           : datos.clasesLlenas.length + ' clases al 100 % de cupo',
-        detalle: nombresClases.join(' · ') +
+        detalle: nombresClases.join(', ') +
           (datos.clasesLlenas.length > TOPE_DETALLE ? ' y ' + (datos.clasesLlenas.length - TOPE_DETALLE) + ' más' : '') +
-          '. Considera abrir otro horario.',
+          '. Considera abrir otro horario o subir el cupo.',
         boton: 'Ver clases',
         ruta: 'director/clases'
       });

@@ -364,7 +364,8 @@ window.AG = window.AG || {};
       '.sr-resumen span{display:block;font-size:11px;color:var(--texto-3);margin-top:2px}' +
       '@media (max-width:520px){' +
         '.sr-cab span:nth-child(4),.sr-check span{display:none}' +
-        '.sr-cab,.sr-serie{grid-template-columns:26px minmax(0,1fr) minmax(0,1fr) 28px}' +
+        '.sr-cab{font-size:9px;letter-spacing:0}' +
+        '.sr-cab,.sr-serie{grid-template-columns:32px minmax(0,1fr) minmax(0,1fr) 28px}' +
         '.sr-timer{width:calc(100% - 24px);justify-content:space-between;gap:8px}' +
         '.sr-timer-txt span{max-width:96px}' +
         '.sr-esf{grid-template-columns:repeat(5,minmax(0,1fr))}' +
@@ -720,7 +721,7 @@ window.AG = window.AG || {};
         ' · ' + esc(U.fechaRelativa(ultima.fecha)) + '</span></p>';
     } else {
       html += '<p class="sr-ultima muted">' + icono('info', 13) +
-        '<span>Primera vez con este ejercicio: empieza con un peso que domines.</span></p>';
+        '<span>Primera vez que lo registras: anota lo que hagas para tener referencia la próxima.</span></p>';
     }
 
     if (!total) {
