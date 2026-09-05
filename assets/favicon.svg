@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Alliance Gym">
+  <title>Alliance Gym</title>
+
+  <defs>
+    <!-- Rojo institucional de Alliance Gym -->
+    <linearGradient id="agRojo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3463c"/>
+      <stop offset="1" stop-color="#a4160f"/>
+    </linearGradient>
+    <!-- Interior oscuro del escudo -->
+    <linearGradient id="agNegro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#26282d"/>
+      <stop offset="1" stop-color="#111214"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="64" height="64" rx="14" fill="#111214"/>
+
+  <!-- Escudo exterior en rojo -->
+  <path d="M32 5.4 55 13.2v18.9C55 45.6 45.3 56.7 32 59.8 18.7 56.7 9 45.6 9 32.1V13.2z" fill="url(#agRojo)"/>
+
+  <!-- Escudo interior oscuro -->
+  <path d="M32 11.2 49.6 17.2v14.9C49.6 42.9 42.2 51.6 32 54.2 21.8 51.6 14.4 42.9 14.4 32.1V17.2z" fill="url(#agNegro)"/>
+
+  <!-- Letras AG -->
+  <g fill="none" stroke="#ffffff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17.8 40.4 24.2 24l6.4 16.4"/>
+    <path d="M20.2 35.2h8"/>
+    <path d="M44.6 28.5A7 7 0 1 0 46.2 33h-4.6"/>
+  </g>
+
+  <!-- Barra roja inferior: guiño a la barra olímpica -->
+  <path d="M23.6 45.6h16.8" fill="none" stroke="#f3463c" stroke-width="3.4" stroke-linecap="round"/>
+</svg>
