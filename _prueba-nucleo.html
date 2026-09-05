@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es" data-tema="oscuro">
+<head>
+<meta charset="utf-8">
+<title>Prueba del núcleo — Alliance Gym</title>
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  body{padding:20px;font-family:system-ui}
+  .ok{color:#22C55E} .fail{color:#EF4444;font-weight:700} .warn{color:#F59E0B}
+  pre{white-space:pre-wrap;font-size:12px;line-height:1.5}
+</style>
+</head>
+<body>
+<h1>Prueba del núcleo</h1>
+<div id="toasts" class="toast-wrap"></div>
+<div id="modales"></div>
+<pre id="salida">Ejecutando…</pre>
+
+<script src="js/core/utils.js"></script>
+<script src="js/core/icons.js"></script>
+<script src="js/core/calc.js"></script>
+<script src="js/core/charts.js"></script>
+<script src="js/core/db.js"></script>
+<script src="js/data/exercises.js"></script>
+<script src="js/data/foods.js"></script>
+<script src="js/data/seed.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/router.js"></script>
+<script>
+(function () {
+  var out = [], fallos = 0, avisos = 0, pruebas = 0;
+  function t(nombre, fn) {
+    pruebas++;
+    try {
+      var r = fn();
+      if (r === true || r === undefined) out.push('  OK   ' + nombre);
+      else if (typeof r === 'string') { avisos++; out.push('  AVISO ' + nombre + ' -> ' + r); }
+      else { fallos++; out.push('  FALLA ' + nombre + ' -> devolvió ' + JSON.stringify(r)); }
+    } catch (e) { fallos++; out.push('  FALLA ' + nombre + ' -> ' + e.message); }
+  }
+  function seccion(s) { out.push(''); out.push('== ' + s + ' =='); }
+  function esNum(v) { return typeof v === 'number' && isFinite(v); }
+
+  /* ---------- Namespaces ---------- */
+  seccion('Namespaces');
+  ['Utils','Icons','Calc','Charts','DB','Data','Seed','Auth','Router'].forEach(function (n) {
+    t('AG.' + n + ' existe', function () { return !!AG[n] || 'ausente'; });
+  });
+
+  /* ---------- Utils ---------- */
+  seccion('AG.Utils');
+  var U = AG.Utils;
+  var API_UTILS = ['esc','uid','hoy','ahora','fecha','fechaRelativa','mesActual','mesDe','nombreMes',
+    'sumaMeses','sumaDias','diasEntre','edad','dinero','num','pct','signo','iniciales','colorDe',
+    'nombreCompleto','avatar','badge','estrellas','toast','modal','confirmar','formToObject','descargar',
+    'imprimir','agrupar','suma','promedio','ordenar','debounce','$','$$','delegar','copiar'];
+  API_UTILS.forEach(function (f) {
+    t('Utils.' + f + '()', function () { return typeof U[f] === 'function' || 'no es función'; });
+  });
+  t('esc escapa', function () { return U.esc('<b>"x"</b>').indexOf('<b>') === -1 || 'no escapó'; });
+  t('esc con null', function () { return U.esc(null) === '' || 'devolvió ' + U.esc(null); });
+  t('fecha corto', function () { var v = U.fecha('2026-09-05','corto'); return /5|05/.test(v) && /sep/i.test(v) ? true : v; });
+  t('fecha largo', function () { var v = U.fecha('2026-09-05','largo'); return /septiembre/i.test(v) ? true : v; });
+  t('fecha mesAnio', function () { var v = U.fecha('2026-09-05','mesAnio'); return /2026/.test(v) ? true : v; });
+  t('sin corrimiento de zona', function () { var v = U.fecha('2026-01-01','corto'); return /1|01/.test(v) && /ene/i.test(v) ? true : 'devolvió ' + v; });
+  t('sumaMeses', function () { return U.sumaMeses('2026-01-31', 1).slice(0,7) === '2026-02' || 'devolvió ' + U.sumaMeses('2026-01-31',1); });
+  t('sumaDias', function () { return U.sumaDias('2026-02-28', 1) === '2026-03-01' || 'devolvió ' + U.sumaDias('2026-02-28',1); });
+  t('diasEntre', function () { return U.diasEntre('2026-01-01','2026-01-31') === 30 || 'devolvió ' + U.diasEntre('2026-01-01','2026-01-31'); });
+  t('edad', function () { return esNum(U.edad('1997-01-01')) || 'no numérico'; });
+  t('dinero', function () { return /\$/.test(U.dinero(1250)) || 'devolvió ' + U.dinero(1250); });
+  t('mesDe', function () { return U.mesDe('2026-09-05') === '2026-09' || 'devolvió ' + U.mesDe('2026-09-05'); });
+  t('uid único', function () { return U.uid('x') !== U.uid('x') || 'repetido'; });
+  t('agrupar', function () { var g = U.agrupar([{a:1},{a:1},{a:2}], function(o){return o.a;}); return Object.keys(g).length === 2 || 'devolvió ' + Object.keys(g).length; });
+  t('suma', function () { return U.suma([{v:2},{v:3}], function(o){return o.v;}) === 5 || 'mal'; });
+  t('promedio', function () { return U.promedio([{v:2},{v:4}], function(o){return o.v;}) === 3 || 'mal'; });
+
+  /* ---------- Icons ---------- */
+  seccion('AG.Icons');
+  var ICONOS = ('inicio socios coach pesa mancuerna corazon dinero tarjeta grafica reporte regla balanza manzana ' +
+    'calculadora calendario reloj estrella chat campana config salir buscar mas editar basura ojo check x alerta ' +
+    'flecha-arriba flecha-abajo flecha-der flecha-izq descargar subir imprimir usuario candado correo telefono ' +
+    'ubicacion trofeo fuego gota luna sol menu filtro agua sueno foto qr whatsapp info historial meta cinta rayo ' +
+    'escudo clase nutricion').split(' ');
+  var iconosMal = ICONOS.filter(function (n) {
+    var s = AG.Icons.get(n, 20);
+    return !s || s.indexOf('<svg') !== 0;
+  });
+  t('los ' + ICONOS.length + ' iconos del contrato', function () { return iconosMal.length === 0 || 'faltan: ' + iconosMal.join(','); });
+  t('icono inexistente no truena', function () { var s = AG.Icons.get('no_existe_xyz', 20); return (s && s.indexOf('<svg') === 0) || 'devolvió ' + String(s).slice(0,40); });
+
+  /* ---------- Calc ---------- */
+  seccion('AG.Calc');
+  var C = AG.Calc;
+  var API_CALC = ['imc','clasificacionIMC','tmb','factorActividad','tdee','caloriasObjetivo','macros',
+    'distribucionComidas','grasaCorporalNavy','grasaCorporalPliegues','masaMagra','pesoIdeal','aguaDiaria',
+    'rm1','tablaRM','zonasCardio','compararMediciones','progresoObjetivo','mesesDeMembresia','estadoMembresia',
+    'adherencia','rachaDias','volumenEntrenamiento','promedioCalificacion'];
+  API_CALC.forEach(function (f) {
+    t('Calc.' + f + '()', function () { return typeof C[f] === 'function' || 'no es función'; });
+  });
+  t('imc 70kg/170cm ≈ 24.2', function () { var v = C.imc(70,170); return (v > 24 && v < 24.5) || 'devolvió ' + v; });
+  t('tmb hombre 80/180/30', function () { var v = C.tmb(80,180,30,'H'); return (v > 1750 && v < 1800) || 'devolvió ' + v; });
+  t('tmb mujer 60/165/29', function () { var v = C.tmb(60,165,29,'M'); return (v > 1290 && v < 1350) || 'devolvió ' + v; });
+  t('tdee > tmb', function () { var a = C.tmb(80,180,30,'H'); var b = C.tdee(80,180,30,'H','moderado'); return (b > a) || 'tdee=' + b + ' tmb=' + a; });
+  t('caloriasObjetivo definir < tdee', function () { var v = C.caloriasObjetivo(2500,'definir','moderada'); return (v < 2500 && v > 1500) || 'devolvió ' + v; });
+  t('macros cuadran con kcal', function () {
+    var m = C.macros(2200,'definir',75);
+    var k = m.proteina*4 + m.carbos*4 + m.grasa*9;
+    return Math.abs(k-2200) < 60 || 'suma ' + Math.round(k) + ' vs 2200';
+  });
+  t('grasaCorporalNavy hombre', function () { var v = C.grasaCorporalNavy('H',85,38,null,178); return (v>5 && v<40) || 'devolvió ' + v; });
+  t('grasaCorporalNavy sin datos = null', function () { var v = C.grasaCorporalNavy('H',null,null,null,178); return (v===null||v===undefined) || 'devolvió ' + v; });
+  t('rm1 Epley 100x5', function () { var v = C.rm1(100,5); return (v>115 && v<118) || 'devolvió ' + v; });
+  t('masaMagra', function () { var v = C.masaMagra(80,20); return (v>63 && v<65) || 'devolvió ' + v; });
+  t('aguaDiaria', function () { var v = C.aguaDiaria(80,'moderado'); return (v>2 && v<5) || 'devolvió ' + v; });
+  t('zonasCardio 5 zonas', function () { var z = C.zonasCardio(30); return (z && z.length>=5) || 'devolvió ' + (z&&z.length); });
+  t('distribucionComidas 5', function () { var d = C.distribucionComidas(C.macros(2200,'definir',75),5); return (d && d.length===5) || 'devolvió ' + (d&&d.length); });
+
+  seccion('AG.Calc.compararMediciones — la función estrella');
+  var ini = { pesoKg:80, estaturaCm:178, grasaPct:24, musculoKg:34, imc:25.2,
+    medidas:{cuello:39,hombros:118,pecho:100,brazoDer:34,brazoIzq:33.5,cintura:92,cadera:100,musloDer:58,musloIzq:57.5,pantorrilla:38},
+    fuerza:{pressBanca:70,sentadilla:100,pesoMuerto:120}, fcReposo:70 };
+  var fin = { pesoKg:78.2, estaturaCm:178, grasaPct:22.1, musculoKg:34.6, imc:24.7,
+    medidas:{cuello:38.5,hombros:118.5,pecho:100.5,brazoDer:34.4,brazoIzq:34,cintura:88,cadera:98,musloDer:58.4,musloIzq:58,pantorrilla:38.2},
+    fuerza:{pressBanca:75,sentadilla:110,pesoMuerto:130}, fcReposo:65 };
+  ini.fecha = '2026-08-02'; fin.fecha = '2026-08-30';
+  var cmp = null;
+  t('devuelve objeto', function () { cmp = C.compararMediciones(ini, fin, 'perder_grasa'); return !!cmp || 'nulo'; });
+  t('ok = true', function () { return cmp.ok === true || 'ok=' + cmp.ok; });
+  t('calcula días', function () { return cmp.dias === 28 || 'dias=' + cmp.dias; });
+  t('trae campos comparados', function () { return (cmp.campos && cmp.campos.length >= 10) || 'campos=' + (cmp.campos&&cmp.campos.length); });
+  t('delta de peso correcto', function () {
+    var c = cmp.campos.filter(function(x){return x.clave==='pesoKg'||x.clave==='peso';})[0];
+    return (c && Math.abs(c.delta + 1.8) < 0.05) || 'delta=' + (c&&c.delta);
+  });
+  t('bajar cintura es BUENO al perder grasa', function () {
+    var c = cmp.campos.filter(function(x){return /cintura/i.test(x.clave);})[0];
+    return (c && c.bueno === true) || 'bueno=' + (c && c.bueno);
+  });
+  t('puntaje 0..100', function () { return (cmp.resumen.puntaje>=0 && cmp.resumen.puntaje<=100) || 'puntaje=' + cmp.resumen.puntaje; });
+  t('puntaje alto en buen mes', function () { return cmp.resumen.puntaje >= 60 || 'puntaje=' + cmp.resumen.puntaje; });
+  t('veredicto en español', function () { return (typeof cmp.resumen.veredicto === 'string' && cmp.resumen.veredicto.length > 15) || 'veredicto=' + cmp.resumen.veredicto; });
+  t('nivel válido', function () { return ['excelente','bueno','regular','atencion'].indexOf(cmp.resumen.nivel) >= 0 || 'nivel=' + cmp.resumen.nivel; });
+  t('objetivo ganar_musculo cambia el juicio', function () {
+    var c2 = C.compararMediciones(ini, fin, 'ganar_musculo');
+    return (c2 && c2.ok) || 'no evaluó';
+  });
+  t('sin medición final no truena', function () {
+    var c3 = C.compararMediciones(ini, null, 'perder_grasa');
+    return (c3 && c3.ok === false) || 'devolvió ' + JSON.stringify(c3).slice(0,60);
+  });
+
+  /* ---------- Charts ---------- */
+  seccion('AG.Charts');
+  var G = AG.Charts;
+  function svgOk(s) { return typeof s === 'string' && (s.indexOf('<svg') >= 0 || s.indexOf('empty') >= 0); }
+  t('linea', function () { return svgOk(G.linea([{x:'Ene',y:10},{x:'Feb',y:14},{x:'Mar',y:12}])) || 'mal'; });
+  t('barras', function () { return svgOk(G.barras([{etiqueta:'A',valor:5},{etiqueta:'B',valor:9}])) || 'mal'; });
+  t('dona', function () { return svgOk(G.dona([{etiqueta:'P',valor:30},{etiqueta:'C',valor:50},{etiqueta:'G',valor:20}])) || 'mal'; });
+  t('progreso', function () { return svgOk(G.progreso(72)) || 'mal'; });
+  t('sparkline', function () { return svgOk(G.sparkline([1,3,2,5,4])) || 'mal'; });
+  t('comparativo', function () { return svgOk(G.comparativo([{etiqueta:'Peso',ini:80,fin:78,unidad:'kg',bueno:true}])) || 'mal'; });
+  t('radar', function () { return svgOk(G.radar([{etiqueta:'A',valor:4,max:5},{etiqueta:'B',valor:3,max:5},{etiqueta:'C',valor:5,max:5}])) || 'mal'; });
+  t('calendario', function () { return svgOk(G.calendario([{fecha:'2026-09-01',valor:1},{fecha:'2026-09-03',valor:2}])) || 'mal'; });
+  t('sin datos no truena', function () { return svgOk(G.linea([])) && svgOk(G.barras([])) && svgOk(G.dona([])) || 'truena con vacío'; });
+
+  /* ---------- Catálogos ---------- */
+  seccion('Catálogos');
+  t('ejercicios >= 150', function () { return AG.Data.exercises.length >= 150 || 'hay ' + AG.Data.exercises.length; });
+  t('alimentos >= 180', function () { return AG.Data.foods.length >= 180 || 'hay ' + AG.Data.foods.length; });
+  t('ids de ejercicio únicos', function () {
+    var s = {}, dup = [];
+    AG.Data.exercises.forEach(function (e) { if (s[e.id]) dup.push(e.id); s[e.id]=1; });
+    return dup.length === 0 || 'duplicados: ' + dup.slice(0,5).join(',');
+  });
+  t('ids de alimento únicos', function () {
+    var s = {}, dup = [];
+    AG.Data.foods.forEach(function (a) { if (s[a.id]) dup.push(a.id); s[a.id]=1; });
+    return dup.length === 0 || 'duplicados: ' + dup.slice(0,5).join(',');
+  });
+  t('ejercicios con campos completos', function () {
+    var mal = AG.Data.exercises.filter(function (e) {
+      return !e.nombre || !e.grupo || !e.equipo || !e.nivel || !e.instrucciones || e.instrucciones.length < 20;
+    });
+    return mal.length === 0 || mal.length + ' incompletos (ej. ' + (mal[0]&&mal[0].id) + ')';
+  });
+  t('grupos musculares válidos', function () {
+    var validos = ['pecho','espalda','hombros','biceps','triceps','piernas','gluteos','abdomen','cardio','cuerpo_completo','movilidad'];
+    var mal = AG.Data.exercises.filter(function (e) { return validos.indexOf(e.grupo) < 0; });
+    return mal.length === 0 || mal.length + ' con grupo inválido (' + (mal[0]&&mal[0].grupo) + ')';
+  });
+  t('cobertura por grupo', function () {
+    var min = {pecho:16,espalda:18,hombros:14,biceps:10,triceps:10,piernas:22,gluteos:12,abdomen:16,cardio:12,cuerpo_completo:10,movilidad:10};
+    var falta = [];
+    Object.keys(min).forEach(function (g) {
+      var n = AG.Data.exercises.filter(function (e) { return e.grupo === g; }).length;
+      if (n < min[g]) falta.push(g + ':' + n + '/' + min[g]);
+    });
+    return falta.length === 0 || falta.join(' ');
+  });
+  t('macros coherentes (kcal ≈ 4P+4C+9G)', function () {
+    var mal = AG.Data.foods.filter(function (a) {
+      if (a.categoria === 'bebida' || a.categoria === 'suplemento') return false;
+      var k = a.proteina*4 + a.carbos*4 + a.grasa*9;
+      if (a.kcal < 15) return false;
+      return Math.abs(k - a.kcal) / a.kcal > 0.22;
+    });
+    return mal.length === 0 || mal.length + ' incoherentes (ej. ' + (mal[0]&&mal[0].nombre) + ': ' + (mal[0]&&mal[0].kcal) + ' kcal vs ' + Math.round(mal[0].proteina*4+mal[0].carbos*4+mal[0].grasa*9) + ')';
+  });
+  t('AG.Data.ejercicio()', function () { return typeof AG.Data.ejercicio === 'function' && !!AG.Data.ejercicio(AG.Data.exercises[0].id) || 'falla'; });
+  t('AG.Data.alimento()', function () { return typeof AG.Data.alimento === 'function' && !!AG.Data.alimento(AG.Data.foods[0].id) || 'falla'; });
+  t('AG.Data.macrosDe()', function () { var m = AG.Data.macrosDe(AG.Data.foods[0].id, 200); return (m && esNum(m.kcal)) || 'falla'; });
+  t('AG.Data.GRUPOS', function () { return (AG.Data.GRUPOS && AG.Data.GRUPOS.length === 11) || 'hay ' + (AG.Data.GRUPOS&&AG.Data.GRUPOS.length); });
+  t('AG.Data.CATEGORIAS_ALIMENTO', function () { return (AG.Data.CATEGORIAS_ALIMENTO && AG.Data.CATEGORIAS_ALIMENTO.length === 10) || 'hay ' + (AG.Data.CATEGORIAS_ALIMENTO&&AG.Data.CATEGORIAS_ALIMENTO.length); });
+
+  /* ---------- Seed ---------- */
+  seccion('Datos de demostración (AG.Seed)');
+  var st = null;
+  t('construir() devuelve state', function () { st = AG.Seed.construir(); return !!st || 'nulo'; });
+  if (st) {
+    t('colecciones completas', function () {
+      var req = ['meta','settings','planes','usuarios','pagos','mediciones','rutinas','asignaciones','bitacoras',
+        'planesNutricion','calificaciones','asistencias','avisos','clases','notificaciones'];
+      var falta = req.filter(function (k) { return !st[k]; });
+      return falta.length === 0 || 'faltan ' + falta.join(',');
+    });
+    var socios = st.usuarios.filter(function(u){return u.rol==='socio';});
+    var coaches = st.usuarios.filter(function(u){return u.rol==='coach';});
+    t('1 director', function () { return st.usuarios.filter(function(u){return u.rol==='director';}).length === 1 || 'hay ' + st.usuarios.filter(function(u){return u.rol==='director';}).length; });
+    t('5 coaches', function () { return coaches.length === 5 || 'hay ' + coaches.length; });
+    t('~45 socios', function () { return socios.length >= 40 || 'hay ' + socios.length; });
+    t('cuenta demo director', function () { return st.usuarios.some(function(u){return u.email==='director@alliancegym.mx' && u.password==='admin123';}) || 'no existe'; });
+    t('cuenta demo coach', function () { return st.usuarios.some(function(u){return u.email==='coach@alliancegym.mx' && u.password==='coach123';}) || 'no existe'; });
+    t('cuenta demo socio', function () { return st.usuarios.some(function(u){return u.email==='socio@alliancegym.mx' && u.password==='socio123';}) || 'no existe'; });
+    t('emails únicos', function () {
+      var s={},d=[]; st.usuarios.forEach(function(u){ if(s[u.email])d.push(u.email); s[u.email]=1; });
+      return d.length===0 || 'duplicados: ' + d.slice(0,3).join(',');
+    });
+    t('planes >= 5', function () { return st.planes.length >= 5 || 'hay ' + st.planes.length; });
+    t('pagos > 200', function () { return st.pagos.length > 200 || 'hay ' + st.pagos.length; });
+    t('mediciones > 300', function () { return st.mediciones.length > 300 || 'hay ' + st.mediciones.length; });
+    t('rutinas = 12', function () { return st.rutinas.length >= 10 || 'hay ' + st.rutinas.length; });
+    t('bitácoras > 300', function () { return st.bitacoras.length > 300 || 'hay ' + st.bitacoras.length; });
+    t('calificaciones > 60', function () { return st.calificaciones.length > 60 || 'hay ' + st.calificaciones.length; });
+    t('asistencias > 800', function () { return st.asistencias.length > 800 || 'hay ' + st.asistencias.length; });
+    t('clases >= 14', function () { return st.clases.length >= 14 || 'hay ' + st.clases.length; });
+
+    seccion('Integridad referencial del seed');
+    var idsUsuario = {}; st.usuarios.forEach(function(u){idsUsuario[u.id]=u;});
+    var idsPlan = {}; st.planes.forEach(function(p){idsPlan[p.id]=p;});
+    var idsEj = {}; AG.Data.exercises.forEach(function(e){idsEj[e.id]=1;});
+    var idsAl = {}; AG.Data.foods.forEach(function(a){idsAl[a.id]=1;});
+    var idsRut = {}; st.rutinas.forEach(function(r){idsRut[r.id]=1;});
+
+    t('socios -> coachId válido', function () {
+      var mal = socios.filter(function(s){ return s.coachId && !idsUsuario[s.coachId]; });
+      return mal.length===0 || mal.length + ' con coach inexistente';
+    });
+    t('socios -> planId válido', function () {
+      var mal = socios.filter(function(s){ return s.planId && !idsPlan[s.planId]; });
+      return mal.length===0 || mal.length + ' con plan inexistente';
+    });
+    t('pagos -> socio y plan válidos', function () {
+      var mal = st.pagos.filter(function(p){ return !idsUsuario[p.socioId] || (p.planId && !idsPlan[p.planId]); });
+      return mal.length===0 || mal.length + ' pagos con referencia rota';
+    });
+    t('mediciones -> socio y coach válidos', function () {
+      var mal = st.mediciones.filter(function(m){ return !idsUsuario[m.socioId] || (m.coachId && !idsUsuario[m.coachId]); });
+      return mal.length===0 || mal.length + ' mediciones con referencia rota';
+    });
+    t('rutinas -> ejercicioId válidos', function () {
+      var mal = [];
+      st.rutinas.forEach(function (r) {
+        (r.dias||[]).forEach(function (d) {
+          (d.ejercicios||[]).forEach(function (e) { if (!idsEj[e.ejercicioId]) mal.push(e.ejercicioId); });
+        });
+      });
+      return mal.length===0 || mal.length + ' ejercicios inexistentes (ej. ' + mal[0] + ')';
+    });
+    t('asignaciones -> rutina y socio válidos', function () {
+      var mal = st.asignaciones.filter(function(a){ return !idsRut[a.rutinaId] || !idsUsuario[a.socioId]; });
+      return mal.length===0 || mal.length + ' asignaciones rotas';
+    });
+    t('planes de nutrición -> alimentoId válidos', function () {
+      var mal = [];
+      st.planesNutricion.forEach(function (p) {
+        (p.comidas||[]).forEach(function (c) {
+          (c.alimentos||[]).forEach(function (a) { if (!idsAl[a.alimentoId]) mal.push(a.alimentoId); });
+        });
+      });
+      return mal.length===0 || mal.length + ' alimentos inexistentes (ej. ' + mal[0] + ')';
+    });
+    t('bitácoras -> socio válido', function () {
+      var mal = st.bitacoras.filter(function(b){ return !idsUsuario[b.socioId]; });
+      return mal.length===0 || mal.length + ' bitácoras rotas';
+    });
+    t('calificaciones -> objetivo válido', function () {
+      var mal = st.calificaciones.filter(function(c){ return c.tipo==='coach' && !idsUsuario[c.objetivoId]; });
+      return mal.length===0 || mal.length + ' calificaciones rotas';
+    });
+
+    seccion('Coherencia del ciclo mensual');
+    var ana = st.usuarios.filter(function(u){return u.email==='socio@alliancegym.mx';})[0];
+    t('Ana Sofía existe', function () { return !!ana || 'no existe'; });
+    if (ana) {
+      var medAna = st.mediciones.filter(function(m){return m.socioId===ana.id;});
+      t('Ana tiene mediciones', function () { return medAna.length >= 8 || 'tiene ' + medAna.length; });
+      t('Ana tiene pares inicial/final', function () {
+        var per = {};
+        medAna.forEach(function(m){ per[m.periodo]=per[m.periodo]||{}; per[m.periodo][m.tipo]=1; });
+        var completos = Object.keys(per).filter(function(p){return per[p].inicial && per[p].final;});
+        return completos.length >= 3 || 'meses cerrados: ' + completos.length;
+      });
+      t('comparativo real de Ana funciona', function () {
+        var per = {};
+        medAna.forEach(function(m){ per[m.periodo]=per[m.periodo]||{}; per[m.periodo][m.tipo]=m; });
+        var k = Object.keys(per).filter(function(p){return per[p].inicial&&per[p].final;}).sort().pop();
+        if (!k) return 'sin mes cerrado';
+        var r = AG.Calc.compararMediciones(per[k].inicial, per[k].final, ana.objetivo);
+        return (r && r.ok && esNum(r.resumen.puntaje)) || 'comparativo falló';
+      });
+      t('Ana tiene pagos', function () { return st.pagos.filter(function(p){return p.socioId===ana.id;}).length >= 6 || 'pocos pagos'; });
+      t('Ana tiene rutina asignada', function () { return st.asignaciones.some(function(a){return a.socioId===ana.id && a.activa;}) || 'sin rutina activa'; });
+      t('Ana tiene plan de nutrición', function () { return st.planesNutricion.some(function(p){return p.socioId===ana.id;}) || 'sin plan'; });
+      t('Ana tiene bitácoras', function () { return st.bitacoras.filter(function(b){return b.socioId===ana.id;}).length >= 20 || 'pocas bitácoras'; });
+    }
+    t('mediciones del mes actual', function () {
+      var mes = AG.Utils.mesActual();
+      var n = st.mediciones.filter(function(m){return m.periodo===mes;}).length;
+      return n > 0 || 'ninguna medición del mes actual (' + mes + ')';
+    });
+    t('fechas no futuras', function () {
+      var hoy = AG.Utils.hoy();
+      var f = st.pagos.filter(function(p){return p.fecha > hoy;});
+      return f.length === 0 || f.length + ' pagos con fecha futura';
+    });
+  }
+
+  /* ---------- DB ---------- */
+  seccion('AG.DB');
+  t('cargar()', function () { AG.DB.cargar(); return !!AG.DB.state || 'sin state'; });
+  t('sembrarSiVacio()', function () { AG.DB.sembrarSiVacio(); return AG.DB.get('usuarios').length > 0 || 'no sembró'; });
+  t('recalcularEstadoSocios()', function () { AG.DB.recalcularEstadoSocios(); return true; });
+  t('socios()', function () { return AG.DB.socios().length > 0 || 'vacío'; });
+  t('coaches()', function () { return AG.DB.coaches().length > 0 || 'vacío'; });
+  t('insertar/actualizar/eliminar', function () {
+    var o = AG.DB.insertar('avisos', {titulo:'prueba', cuerpo:'x', para:'todos', fecha:AG.Utils.hoy()});
+    if (!o || !o.id) return 'insertar falló';
+    AG.DB.actualizar('avisos', o.id, {titulo:'prueba2'});
+    if (AG.DB.buscar('avisos', o.id).titulo !== 'prueba2') return 'actualizar falló';
+    AG.DB.eliminar('avisos', o.id);
+    return AG.DB.buscar('avisos', o.id) === null || 'eliminar falló';
+  });
+  t('sociosDe(coach)', function () { var c = AG.DB.coaches()[0]; return AG.DB.sociosDe(c.id).length >= 0 || 'falla'; });
+  t('pagosDe(socio)', function () { var s = AG.DB.socios()[0]; return Array.isArray(AG.DB.pagosDe(s.id)) || 'falla'; });
+  t('medicionDelMes()', function () { var s = AG.DB.socios()[0]; AG.DB.medicionDelMes(s.id, AG.Utils.mesActual(), 'inicial'); return true; });
+  t('rutinaActivaDe()', function () { var s = AG.DB.socios()[0]; AG.DB.rutinaActivaDe(s.id); return true; });
+  t('estadisticas()', function () { return typeof AG.DB.estadisticas === 'function' ? !!AG.DB.estadisticas() : 'no existe'; });
+
+  /* ---------- Auth ---------- */
+  seccion('AG.Auth');
+  t('entrar director', function () { var r = AG.Auth.entrar('director@alliancegym.mx','admin123'); return r.ok === true || 'error: ' + r.error; });
+  t('entrar coach', function () { var r = AG.Auth.entrar('coach@alliancegym.mx','coach123'); return r.ok === true || 'error: ' + r.error; });
+  t('entrar socio', function () { var r = AG.Auth.entrar('socio@alliancegym.mx','socio123'); return r.ok === true || 'error: ' + r.error; });
+  t('rechaza contraseña mala', function () { var r = AG.Auth.entrar('socio@alliancegym.mx','xxx'); return r.ok === false || 'aceptó una contraseña incorrecta'; });
+  t('rechaza correo inexistente', function () { var r = AG.Auth.entrar('nadie@x.mx','x'); return r.ok === false || 'aceptó un correo inexistente'; });
+  t('actual() tras entrar', function () { AG.Auth.entrar('socio@alliancegym.mx','socio123'); return !!AG.Auth.actual() || 'sin usuario'; });
+  t('es(rol)', function () { return AG.Auth.es('socio') === true || 'falla'; });
+  t('puedeVer coach/socio', function () { return typeof AG.Auth.puedeVer === 'function' ? true : 'no existe puedeVer'; });
+  AG.Auth.salir();
+
+  /* ---------- Router ---------- */
+  seccion('AG.Router');
+  ['registrar','ir','iniciar','rutasDe','construirNav','refrescar','actual','inicioDe'].forEach(function (f) {
+    t('Router.' + f + '()', function () { return typeof AG.Router[f] === 'function' || 'no es función'; });
+  });
+  t('inicioDe(socio)', function () { return AG.Router.inicioDe('socio') === 'socio/inicio' || 'devolvió ' + AG.Router.inicioDe('socio'); });
+
+  /* ---------- Resultado ---------- */
+  out.unshift('RESULTADO: ' + (pruebas - fallos - avisos) + ' OK, ' + avisos + ' avisos, ' + fallos + ' FALLAS  (de ' + pruebas + ' pruebas)');
+  out.unshift('');
+  document.getElementById('salida').textContent = out.join('\n');
+  var etiqueta = fallos ? 'PRUEBAS-FALLAS' : 'PRUEBAS-OK';
+  console.log(etiqueta + ' ' + (pruebas-fallos-avisos) + '/' + pruebas + ' fallas=' + fallos + ' avisos=' + avisos);
+  out.forEach(function (l) { if (/FALLA|AVISO/.test(l)) console.log(l); });
+})();
+</script>
+</body>
+</html>

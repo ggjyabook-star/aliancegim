@@ -12,7 +12,7 @@ window.AG = window.AG || {};
   var ID_TITULO = 'topbar-titulo';
 
   /* Orden de los grupos del menú fijado por el contrato de arquitectura. */
-  var ORDEN_GRUPOS = ['Principal', 'Mi entrenamiento', 'Operación', 'Entrenamiento', 'Negocio', 'Sistema'];
+  var ORDEN_GRUPOS = ['Principal', 'Mi entrenamiento', 'Mi cuenta', 'Operación', 'Entrenamiento', 'Negocio', 'Sistema'];
 
   /* Ruta inicial de cada rol. */
   var INICIOS = {

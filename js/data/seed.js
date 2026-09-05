@@ -1639,7 +1639,7 @@ window.AG = window.AG || {};
       if (esAna) nivel = 'intermedio';
       else if (meses <= 2) nivel = probable(0.85) ? 'principiante' : 'intermedio';
       else if (meses <= 5) nivel = probable(0.6) ? 'intermedio' : 'principiante';
-      else nivel = probable(0.35) ? 'avanzado' : 'intermedio';
+      else nivel = probable(0.5) ? 'avanzado' : 'intermedio';
 
       var nivelActividad;
       if (esAna) nivelActividad = 'moderado';
@@ -2068,13 +2068,17 @@ window.AG = window.AG || {};
         var estadoCierre = avanzarMes(estado, socio);
 
         if (!esMesActual) {
-          var fechaFin = sumaDias(ultimoDiaMes(mesKey), -ent(0, 2));
-          if (fechaFin > hoy) fechaFin = hoy;
-          if (fechaFin <= fechaIni) fechaFin = sumaDias(fechaIni, 5);
+          /* El cierre vive siempre dentro del mismo mes; si el socio se dio de
+             alta a fin de mes, ese mes simplemente no tiene cierre. */
+          var ultimo = ultimoDiaMes(mesKey);
+          var fechaFin = sumaDias(ultimo, -ent(0, 2));
+          if (fechaFin < fechaIni) fechaFin = ultimo;
           if (fechaFin > hoy) fechaFin = hoy;
 
-          mediciones.push(medicionDesdeEstado(socio, estadoCierre, fechaFin, mesKey, 'final',
-            conPliegues, elegir(NOTAS_MEDICION_FINAL), true));
+          if (diasEntre(fechaIni, fechaFin) >= 3) {
+            mediciones.push(medicionDesdeEstado(socio, estadoCierre, fechaFin, mesKey, 'final',
+              conPliegues, elegir(NOTAS_MEDICION_FINAL), true));
+          }
 
           derivaEntreMeses(estado, socio);
         } else {
@@ -2117,7 +2121,7 @@ window.AG = window.AG || {};
   function rutinaParaSocio(socio, rutinasPorNombre) {
     var edad = socio.edadCalculada;
 
-    if (edad >= 58 || /hernia|lumbal|condromalacia|rehabilit/i.test(socio.padecimientos || '')) {
+    if (edad >= 58 || (edad >= 46 && /hernia|lumbal|condromalacia|rehabilit/i.test(socio.padecimientos || ''))) {
       return rutinasPorNombre['Adulto Mayor Movilidad'];
     }
     if (socio.nivelActividad === 'sedentario' && socio.nivel === 'principiante' && probable(0.5)) {
@@ -2130,8 +2134,13 @@ window.AG = window.AG || {};
     }
     if (socio.objetivo === 'ganar_musculo') {
       if (socio.nivel === 'principiante') return rutinasPorNombre['Full Body Principiante'];
-      if (socio.sexo === 'M') return rutinasPorNombre['Glúteos y Piernas 4 días'];
+      if (socio.sexo === 'M') {
+        return probable(0.75) ? rutinasPorNombre['Glúteos y Piernas 4 días'] : rutinasPorNombre['Hipertrofia 5 días'];
+      }
       if (socio.nivel === 'avanzado') {
+        return probable(0.5) ? rutinasPorNombre['Push Pull Legs 6 días'] : rutinasPorNombre['Volumen Avanzado 6 días'];
+      }
+      if (socio.mesesAntiguedad >= 5 && probable(0.4)) {
         return probable(0.5) ? rutinasPorNombre['Push Pull Legs 6 días'] : rutinasPorNombre['Volumen Avanzado 6 días'];
       }
       return probable(0.5) ? rutinasPorNombre['Torso-Pierna 4 días'] : rutinasPorNombre['Hipertrofia 5 días'];
@@ -2166,7 +2175,9 @@ window.AG = window.AG || {};
       if (!esAna && socio.estado === 'activo' && socio.mesesAntiguedad <= 1 && probable(0.35)) continue;
       if (!esAna && socio.estado === 'vencido' && probable(0.3)) continue;
 
-      var rutina = rutinaParaSocio(socio, porNombre) || rutinas[0];
+      var rutina = esAna
+        ? porNombre['Definición + HIIT 5 días']
+        : (rutinaParaSocio(socio, porNombre) || rutinas[0]);
 
       /* Historial: una rutina anterior ya cerrada para los más antiguos. */
       if (socio.mesesAntiguedad >= 5 && probable(0.55)) {
@@ -2207,7 +2218,57 @@ window.AG = window.AG || {};
       });
     }
 
+    garantizarCobertura(asignaciones, rutinas, socios);
     return asignaciones;
+  }
+
+  /**
+   * Ninguna plantilla debe quedar sin usarse: si una rutina no tiene socios,
+   * se le pasa uno que encaje con su nivel y que hoy repite una plantilla
+   * ya muy socorrida. Así el catálogo se ve vivo en todas las pantallas.
+   */
+  function garantizarCobertura(asignaciones, rutinas, socios) {
+    var socioPorId = {}, i;
+    for (i = 0; i < socios.length; i++) socioPorId[socios[i].id] = socios[i];
+
+    var ORDEN_NIVEL = { principiante: 1, intermedio: 2, avanzado: 3 };
+
+    function conteo() {
+      var mapa = {};
+      for (var k = 0; k < rutinas.length; k++) mapa[rutinas[k].id] = 0;
+      for (var j = 0; j < asignaciones.length; j++) {
+        if (asignaciones[j].activa) mapa[asignaciones[j].rutinaId]++;
+      }
+      return mapa;
+    }
+
+    for (var r = 0; r < rutinas.length; r++) {
+      var rutina = rutinas[r];
+      var usos = conteo();
+      if (usos[rutina.id] > 0) continue;
+
+      var mejor = null;
+      for (var a = 0; a < asignaciones.length; a++) {
+        var asig = asignaciones[a];
+        if (!asig.activa || asig.rutinaId === rutina.id) continue;
+        if (usos[asig.rutinaId] < 2) continue;
+
+        var socio = socioPorId[asig.socioId];
+        if (!socio || socio.estado !== 'activo') continue;
+        if (socio.id === 'u_0007') continue;                 /* la cuenta demo no se toca */
+        if (ORDEN_NIVEL[socio.nivel] < ORDEN_NIVEL[rutina.nivel]) continue;
+        if (rutina.diasPorSemana >= 5 && socio.edadCalculada > 48) continue;
+        if (rutina.nombre === 'Adulto Mayor Movilidad' && socio.edadCalculada < 50) continue;
+
+        mejor = asig;
+        break;
+      }
+
+      if (mejor) {
+        mejor.rutinaId = rutina.id;
+        mejor.notas = 'Cambio de programa acordado con el socio para variar el estímulo del bloque.';
+      }
+    }
   }
 
   /* =============================================================
@@ -2460,8 +2521,8 @@ window.AG = window.AG || {};
       var dias = diasEntre(arranque, limite);
       for (var d = 0; d <= dias; d++) {
         var fecha = sumaDias(arranque, d);
-        if (diaSemana(fecha) === 0 && probable(0.65)) continue;   /* pocos van en domingo */
-        if (!probable(adherencia * 1.05)) continue;
+        if (diaSemana(fecha) === 0 && probable(0.6)) continue;    /* pocos van en domingo */
+        if (!probable(acotar(adherencia * 1.45, 0, 0.92))) continue;
         registrar(socio.id, fecha, franjaPorSocio[socio.id] || [18, 20], false);
       }
     }
@@ -2593,9 +2654,9 @@ window.AG = window.AG || {};
   /** Estrellas con sesgo positivo: mayoría de 4 y 5, algunas 3 y un par de 2. */
   function estrellasSesgadas() {
     var v = azar();
-    if (v < 0.50) return 5;
-    if (v < 0.81) return 4;
-    if (v < 0.94) return 3;
+    if (v < 0.53) return 5;
+    if (v < 0.855) return 4;
+    if (v < 0.965) return 3;
     return 2;
   }
 
@@ -2656,7 +2717,7 @@ window.AG = window.AG || {};
         detalle: detalleDe(estrellas, claves),
         respuesta: null
       };
-      if (estrellas <= 3 || probable(probRespuesta)) {
+      if (estrellas <= 2 || (estrellas === 3 && probable(0.7)) || probable(probRespuesta)) {
         registro.respuesta = {
           texto: elegir(RESPUESTAS_DIRECCION),
           por: directorId,
@@ -2669,7 +2730,7 @@ window.AG = window.AG || {};
     /* --- A los coaches: una reseña por socio y una segunda para los veteranos --- */
     var orden = barajar(evaluadores);
     for (var i = 0; i < orden.length; i++) {
-      nuevaCalificacion(orden[i], 'coach', orden[i].coachId, COMENTARIOS_COACH, CLAVES_COACH, 0.18, 170);
+      nuevaCalificacion(orden[i], 'coach', orden[i].coachId, COMENTARIOS_COACH, CLAVES_COACH, 0.12, 170);
       if (orden[i].mesesAntiguedad >= 5 && probable(0.62)) {
         nuevaCalificacion(orden[i], 'coach', orden[i].coachId, COMENTARIOS_COACH, CLAVES_COACH, 0.15, 60);
       }
@@ -2900,12 +2961,16 @@ window.AG = window.AG || {};
     var rutinas = construirRutinas(coaches, hoy);
     var asignaciones = construirAsignaciones(socios, rutinas, hoy);
 
-    /* ---------- Adherencia por socio ---------- */
+    /* ---------- Adherencia por socio ----------
+       Es la probabilidad de presentarse cada día programado. Como un 6 % de
+       las sesiones queda marcada como no completada, la adherencia que
+       reporta AG.Calc queda un poco por debajo de este valor: por eso la
+       cuenta demo lleva 0.90, para mostrarse alrededor del 85 %. */
     var adherencias = {};
     for (var a = 0; a < socios.length; a++) {
-      if (socios[a].id === ana.id) adherencias[socios[a].id] = 0.85;
-      else if (socios[a].estado === 'activo') adherencias[socios[a].id] = real(0.34, 0.95, 2);
-      else adherencias[socios[a].id] = real(0.30, 0.62, 2);
+      if (socios[a].id === ana.id) adherencias[socios[a].id] = 0.90;
+      else if (socios[a].estado === 'activo') adherencias[socios[a].id] = real(0.35, 0.98, 2);
+      else adherencias[socios[a].id] = real(0.32, 0.64, 2);
     }
 
     /* ---------- Bitácoras y asistencias ---------- */
