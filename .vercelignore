@@ -1,0 +1,7 @@
+# El sistema es 100% estático: nada de esto debe publicarse ni confundir
+# a Vercel haciéndole creer que hay un proyecto de Node que construir.
+server.js
+ABRIR-SISTEMA.bat
+.claude/
+docs/
+pruebas/
