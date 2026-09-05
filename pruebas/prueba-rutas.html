@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es" data-tema="oscuro">
+<head>
+<meta charset="utf-8">
+<title>Prueba de rutas — Alliance Gym</title>
+<link rel="stylesheet" href="../css/styles.css">
+<style>body{padding:20px}pre{white-space:pre-wrap;font-size:12px;line-height:1.55}</style>
+</head>
+<body>
+<h1>Prueba de rutas</h1>
+<div id="toasts" class="toast-wrap"></div>
+<div id="modales"></div>
+<pre id="salida">Ejecutando…</pre>
+<div id="vista" style="display:none"></div>
+<div id="topbar-titulo" style="display:none"></div>
+<div id="nav" style="display:none"></div>
+
+<script src="../js/core/utils.js"></script>
+<script src="../js/core/icons.js"></script>
+<script src="../js/core/calc.js"></script>
+<script src="../js/core/charts.js"></script>
+<script src="../js/core/db.js"></script>
+<script src="../js/data/exercises.js"></script>
+<script src="../js/data/foods.js"></script>
+<script src="../js/data/seed.js"></script>
+<script src="../js/core/auth.js"></script>
+<script src="../js/core/router.js"></script>
+<script src="../js/modules/socios.js"></script>
+<script src="../js/modules/pagos.js"></script>
+<script src="../js/modules/mediciones.js"></script>
+<script src="../js/modules/ejercicios.js"></script>
+<script src="../js/modules/rutinas.js"></script>
+<script src="../js/modules/nutricion.js"></script>
+<script src="../js/modules/coaches.js"></script>
+<script src="../js/modules/calificaciones.js"></script>
+<script src="../js/modules/asistencia.js"></script>
+<script src="../js/modules/clases.js"></script>
+<script src="../js/modules/avisos.js"></script>
+<script src="../js/modules/reportes.js"></script>
+<script src="../js/modules/config.js"></script>
+<script src="../js/views/login.js"></script>
+<script src="../js/views/socio_inicio.js"></script>
+<script src="../js/views/socio_progreso.js"></script>
+<script src="../js/views/socio_rutina.js"></script>
+<script src="../js/views/socio_nutricion.js"></script>
+<script src="../js/views/socio_pagos.js"></script>
+<script src="../js/views/socio_calificar.js"></script>
+<script src="../js/views/socio_perfil.js"></script>
+<script src="../js/views/coach.js"></script>
+<script src="../js/views/director.js"></script>
+<script>
+(function () {
+  var out = [], fallos = 0, avisos = 0, n = 0;
+  function log(s) { out.push(s); }
+  function seccion(s) { out.push(''); out.push('== ' + s + ' =='); }
+
+  AG.App = AG.App || {};
+  AG.App.aplicarTema = AG.App.aplicarTema || function () {};
+  AG.App.montarShell = AG.App.montarShell || function () {};
+  AG.App.entrar = AG.App.entrar || function () {};
+
+  AG.DB.cargar();
+  AG.DB.sembrarSiVacio();
+  AG.DB.recalcularEstadoSocios();
+
+  /* ---------- Inventario de archivos cargados ---------- */
+  seccion('Archivos cargados');
+  var MODS = ['Socios','Pagos','Mediciones','Ejercicios','Rutinas','Nutricion','Coaches',
+              'Calificaciones','Asistencia','Clases','Avisos','Reportes','Config'];
+  MODS.forEach(function (m) {
+    n++;
+    if (AG.Mod && AG.Mod[m]) log('  OK   AG.Mod.' + m);
+    else { fallos++; log('  FALLA AG.Mod.' + m + ' no existe'); }
+  });
+  var VIEWS = ['Login','SocioInicio','SocioProgreso','SocioRutina','SocioNutricion','SocioPagos',
+               'SocioCalificar','SocioPerfil','Coach','Director'];
+  VIEWS.forEach(function (v) {
+    n++;
+    if (AG.Views && AG.Views[v]) log('  OK   AG.Views.' + v);
+    else { fallos++; log('  FALLA AG.Views.' + v + ' no existe'); }
+  });
+
+  /* ---------- Funciones compartidas del contrato ---------- */
+  seccion('Funciones compartidas entre módulos');
+  var COMPARTIDAS = [
+    ['Socios','formulario'], ['Socios','tarjeta'],
+    ['Pagos','registrar'], ['Pagos','recibo'],
+    ['Mediciones','capturar'], ['Mediciones','comparativo'], ['Mediciones','historial'],
+    ['Ejercicios','detalle'], ['Ejercicios','selector'],
+    ['Rutinas','editor'], ['Rutinas','asignar'], ['Rutinas','vistaDia'],
+    ['Nutricion','editorPlan'], ['Nutricion','planHTML'], ['Nutricion','generarMenu'],
+    ['Calificaciones','resumen'],
+    ['Asistencia','checkIn'],
+    ['Avisos','paraUsuario'], ['Avisos','tarjetas'],
+    ['Clases','proximaDe'], ['Clases','deCoach']
+  ];
+  COMPARTIDAS.forEach(function (p) {
+    n++;
+    var m = AG.Mod && AG.Mod[p[0]];
+    if (m && typeof m[p[1]] === 'function') log('  OK   AG.Mod.' + p[0] + '.' + p[1] + '()');
+    else { fallos++; log('  FALLA AG.Mod.' + p[0] + '.' + p[1] + '() no existe'); }
+  });
+
+  /* ---------- Rutas ---------- */
+  seccion('Rutas registradas por rol');
+  var ESPERADAS = {
+    director: ['director/inicio','director/socios','director/socio','director/pagos','director/mediciones',
+      'director/ejercicios','director/rutinas','director/rutina','director/nutricion','director/coaches',
+      'director/coach','director/calificaciones','director/asistencia','director/clases','director/avisos',
+      'director/reportes','director/config'],
+    coach: ['coach/inicio','coach/agenda','coach/socios','coach/socio','coach/mediciones','coach/ejercicios',
+      'coach/rutinas','coach/rutina','coach/nutricion','coach/calificaciones','coach/clases'],
+    socio: ['socio/inicio','socio/progreso','socio/rutina','socio/nutricion','socio/calculadora',
+      'socio/membresia','socio/calificar','socio/perfil','socio/ejercicios','socio/clases']
+  };
+
+  var CUENTAS = {
+    director: ['director@alliancegym.mx','admin123'],
+    coach: ['coach@alliancegym.mx','coach123'],
+    socio: ['socio@alliancegym.mx','socio123']
+  };
+
+  Object.keys(ESPERADAS).forEach(function (rol) {
+    seccion('ROL ' + rol.toUpperCase());
+    var r = AG.Auth.entrar(CUENTAS[rol][0], CUENTAS[rol][1]);
+    n++;
+    if (!r.ok) { fallos++; log('  FALLA no pudo entrar: ' + r.error); return; }
+    log('  OK   sesión iniciada como ' + AG.Utils.nombreCompleto(AG.Auth.actual()));
+
+    var usuario = AG.Auth.actual();
+
+    // menú
+    n++;
+    try {
+      var nav = AG.Router.construirNav(rol);
+      if (nav && nav.indexOf('nav-item') >= 0) log('  OK   menú construido (' + (nav.match(/nav-item/g)||[]).length + ' entradas)');
+      else { fallos++; log('  FALLA menú vacío'); }
+    } catch (e) { fallos++; log('  FALLA construirNav -> ' + e.message); }
+
+    // parámetros de ejemplo para rutas de detalle
+    var socioEj = rol === 'coach' ? (AG.DB.sociosDe(usuario.id)[0] || AG.DB.socios()[0]) : AG.DB.socios()[0];
+    var coachEj = AG.DB.coaches()[0];
+    var rutinaEj = AG.DB.get('rutinas')[0];
+    function paramsDe(path) {
+      if (/\/socio$/.test(path)) return { id: socioEj.id };
+      if (/\/coach$/.test(path)) return { id: coachEj.id };
+      if (/\/rutina$/.test(path)) return { id: rutinaEj.id };
+      return {};
+    }
+
+    ESPERADAS[rol].forEach(function (path) {
+      n++;
+      var def = AG.Router.rutas().filter(function (x) { return x.path === path; })[0];
+      if (!def) { fallos++; log('  FALLA ruta no registrada: ' + path); return; }
+      if (def.roles && def.roles.length && def.roles.indexOf(rol) < 0) {
+        fallos++; log('  FALLA ' + path + ' no permite el rol ' + rol); return;
+      }
+
+      try {
+        var salida = def.render({ usuario: usuario, params: paramsDe(path), path: path });
+        var html = typeof salida === 'string' ? salida : (salida && salida.html);
+        if (html === undefined || html === null || (typeof html === 'string' && html.length < 30)) {
+          if (salida && salida.nodeType) { log('  OK   ' + path + ' (elemento DOM)'); return; }
+          avisos++; log('  AVISO ' + path + ' devolvió muy poco contenido');
+          return;
+        }
+        var cont = document.createElement('div');
+        if (typeof html === 'string') cont.innerHTML = html; else cont.appendChild(html);
+        document.getElementById('vista').appendChild(cont);
+        if (salida && typeof salida.listo === 'function') salida.listo(cont);
+        log('  OK   ' + path + '  (' + (typeof html === 'string' ? Math.round(html.length/1024) + ' KB' : 'DOM') + ')');
+      } catch (e) {
+        fallos++;
+        log('  FALLA ' + path + ' -> ' + e.message + (e.stack ? ' @ ' + (e.stack.split('\n')[1]||'').trim().slice(0,90) : ''));
+      }
+      document.getElementById('vista').innerHTML = '';
+    });
+    AG.Auth.salir();
+  });
+
+  /* ---------- Login ---------- */
+  seccion('Pantalla de acceso');
+  n++;
+  try {
+    var s = AG.Views.Login.render();
+    var h = typeof s === 'string' ? s : s.html;
+    if (h && h.length > 200) log('  OK   login (' + Math.round(h.length/1024) + ' KB)');
+    else { fallos++; log('  FALLA login devolvió poco contenido'); }
+  } catch (e) { fallos++; log('  FALLA login -> ' + e.message); }
+
+  out.unshift('');
+  out.unshift('RESULTADO: ' + (n - fallos - avisos) + ' OK, ' + avisos + ' avisos, ' + fallos + ' FALLAS  (de ' + n + ')');
+  document.getElementById('salida').textContent = out.join('\n');
+  console.log((fallos ? 'RUTAS-FALLAS ' : 'RUTAS-OK ') + (n-fallos-avisos) + '/' + n + ' fallas=' + fallos);
+  out.forEach(function (l) { if (/FALLA|AVISO/.test(l)) console.log(l); });
+})();
+</script>
+</body>
+</html>

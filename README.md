@@ -107,7 +107,20 @@ js/data/              Catálogo de ejercicios, catálogo de alimentos y datos de
 js/modules/           Módulos de gestión (socios, pagos, mediciones, rutinas, nutrición, reportes…)
 js/views/             Paneles de cada rol
 docs/ARQUITECTURA.md  Documentación técnica
+docs/MANUAL.md        Manual de operación del gimnasio
+pruebas/              Pruebas automáticas (ábrelas en el navegador)
 server.js             Servidor local opcional
 ```
+
+### Pruebas
+
+Con el servidor corriendo, abre:
+
+- `http://localhost:5173/pruebas/prueba-nucleo.html` — 200 verificaciones del motor de cálculo,
+  las gráficas, los catálogos y la integridad de los datos.
+- `http://localhost:5173/pruebas/prueba-rutas.html` — recorre las 38 pantallas de los tres perfiles
+  y reporta cualquier error.
+
+Ambas deben salir en verde.
 
 Todo es HTML, CSS y JavaScript sin librerías externas: no necesita internet ni instalación.
