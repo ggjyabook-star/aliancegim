@@ -22,6 +22,7 @@
 <script src="../js/core/db.js"></script>
 <script src="../js/data/exercises.js"></script>
 <script src="../js/data/foods.js"></script>
+<script src="../js/data/ilustraciones.js"></script>
 <script src="../js/data/seed.js"></script>
 <script src="../js/core/auth.js"></script>
 <script src="../js/core/router.js"></script>
@@ -34,7 +35,8 @@
 <script src="../js/modules/coaches.js"></script>
 <script src="../js/modules/calificaciones.js"></script>
 <script src="../js/modules/asistencia.js"></script>
-<script src="../js/modules/clases.js"></script>
+<script src="../js/modules/sesiones.js"></script>
+<script src="../js/modules/eventos.js"></script>
 <script src="../js/modules/avisos.js"></script>
 <script src="../js/modules/reportes.js"></script>
 <script src="../js/modules/config.js"></script>
@@ -66,7 +68,7 @@
   /* ---------- Inventario de archivos cargados ---------- */
   seccion('Archivos cargados');
   var MODS = ['Socios','Pagos','Mediciones','Ejercicios','Rutinas','Nutricion','Coaches',
-              'Calificaciones','Asistencia','Clases','Avisos','Reportes','Config'];
+              'Calificaciones','Asistencia','Sesiones','Eventos','Avisos','Reportes','Config'];
   MODS.forEach(function (m) {
     n++;
     if (AG.Mod && AG.Mod[m]) log('  OK   AG.Mod.' + m);
@@ -92,7 +94,10 @@
     ['Calificaciones','resumen'],
     ['Asistencia','checkIn'],
     ['Avisos','paraUsuario'], ['Avisos','tarjetas'],
-    ['Clases','proximaDe'], ['Clases','deCoach']
+    ['Sesiones','agendar'], ['Sesiones','proximaDe'], ['Sesiones','deCoach'], ['Sesiones','tarjeta'],
+    ['Eventos','proximos'], ['Eventos','tarjetas'], ['Eventos','inscribir'], ['Eventos','detalle'],
+    ['Nutricion','recomendacionDelDia'], ['Nutricion','productosQueSustituyen'], ['Nutricion','diaHTML'],
+    ['Ejercicios','mini']
   ];
   COMPARTIDAS.forEach(function (p) {
     n++;
@@ -101,17 +106,28 @@
     else { fallos++; log('  FALLA AG.Mod.' + p[0] + '.' + p[1] + '() no existe'); }
   });
 
+  /* ---------- Ilustraciones ---------- */
+  seccion('Ilustraciones de ejercicios (AG.Ilustra)');
+  n++; if (AG.Ilustra && typeof AG.Ilustra.get === 'function') log('  OK   AG.Ilustra existe'); else { fallos++; log('  FALLA AG.Ilustra no existe'); }
+  if (AG.Ilustra) {
+    n++; try { var au = AG.Ilustra.auditar(); if (au.sinPatron.length === 0) log('  OK   los ' + (au.total||AG.Data.exercises.length) + ' ejercicios resuelven a un patrón (' + Object.keys(au.porPatron).length + ' patrones en uso)'); else { fallos++; log('  FALLA ' + au.sinPatron.length + ' ejercicios sin patrón: ' + au.sinPatron.slice(0,6).join(', ')); } } catch (e) { fallos++; log('  FALLA auditar() -> ' + e.message); }
+    n++; try { var lp = AG.Ilustra.lista || Object.keys(AG.Ilustra.PATRONES); if (lp.length >= 34) log('  OK   ' + lp.length + ' patrones dibujados'); else { fallos++; log('  FALLA solo ' + lp.length + ' patrones (mínimo 34)'); } } catch (e) { fallos++; log('  FALLA lista de patrones -> ' + e.message); }
+    n++; try { var malos = 0, distintos = {}; (AG.Ilustra.lista || Object.keys(AG.Ilustra.PATRONES)).forEach(function (p) { var s = AG.Ilustra.porPatron(p, {alto:120, animado:false, fase:'inicio'}); var f = AG.Ilustra.porPatron(p, {alto:120, animado:false, fase:'fin'}); if (!s || s.indexOf('<svg') < 0 || !f || f.indexOf('<svg') < 0) malos++; else if (s === f) malos++; }); if (!malos) log('  OK   cada patrón tiene dos fases distintas y SVG válido'); else { fallos++; log('  FALLA ' + malos + ' patrones con SVG inválido o fases iguales'); } } catch (e) { fallos++; log('  FALLA fases -> ' + e.message); }
+    n++; try { var g = AG.Ilustra.get(AG.Data.exercises[0].id, {alto:150, animado:true}); if (g && g.indexOf('<svg') >= 0) log('  OK   get() animado devuelve SVG'); else { fallos++; log('  FALLA get() no devolvió SVG'); } } catch (e) { fallos++; log('  FALLA get() -> ' + e.message); }
+    n++; try { var gx = AG.Ilustra.get('ej_no_existe_xyz', {alto:100}); if (gx && gx.indexOf('<svg') >= 0) log('  OK   ejercicio inexistente no truena'); else { fallos++; log('  FALLA ejercicio inexistente devolvió vacío'); } } catch (e) { fallos++; log('  FALLA inexistente -> ' + e.message); }
+  }
+
   /* ---------- Rutas ---------- */
   seccion('Rutas registradas por rol');
   var ESPERADAS = {
     director: ['director/inicio','director/socios','director/socio','director/pagos','director/mediciones',
       'director/ejercicios','director/rutinas','director/rutina','director/nutricion','director/coaches',
-      'director/coach','director/calificaciones','director/asistencia','director/clases','director/avisos',
+      'director/coach','director/calificaciones','director/asistencia','director/sesiones','director/eventos','director/avisos',
       'director/reportes','director/config'],
     coach: ['coach/inicio','coach/agenda','coach/socios','coach/socio','coach/mediciones','coach/ejercicios',
-      'coach/rutinas','coach/rutina','coach/nutricion','coach/calificaciones','coach/clases'],
+      'coach/rutinas','coach/rutina','coach/nutricion','coach/calificaciones','coach/sesiones'],
     socio: ['socio/inicio','socio/progreso','socio/rutina','socio/nutricion','socio/calculadora',
-      'socio/membresia','socio/calificar','socio/perfil','socio/ejercicios','socio/clases']
+      'socio/membresia','socio/calificar','socio/perfil','socio/ejercicios','socio/entrenador']
   };
 
   var CUENTAS = {

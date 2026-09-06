@@ -10,6 +10,11 @@
    El azar viene de un PRNG con semilla fija (mulberry32), de modo que
    los datos son variados pero idénticos entre recargas. Nunca se usa
    Math.random directo.
+
+   Rediseño v2 (docs/REDISENO.md): el gimnasio no imparte clases. En su
+   lugar se generan la disponibilidad de los coaches, las sesiones con
+   entrenador (una por socio por semana), los eventos especiales y los
+   productos que vende recepción. 'clases' se entrega vacía.
    ============================================================= */
 window.AG = window.AG || {};
 (function (AG) {
@@ -191,7 +196,7 @@ window.AG = window.AG || {};
         descripcion: 'Siete días seguidos de acceso libre. Ideal para visitantes y pruebas.',
         beneficios: [
           'Acceso ilimitado durante 7 días',
-          'Dos clases grupales incluidas',
+          'Una sesión con entrenador incluida',
           'Rutina básica de arranque',
           'Sin inscripción'
         ],
@@ -204,7 +209,7 @@ window.AG = window.AG || {};
           'Acceso ilimitado en todo el horario',
           'Coach asignado y rutina personalizada',
           'Medición corporal de inicio y cierre de mes',
-          'Clases grupales incluidas',
+          'Una sesión con tu entrenador cada semana',
           'Casillero y regaderas'
         ],
         color: '#e4322b', activo: true, inscripcion: 250
@@ -239,9 +244,9 @@ window.AG = window.AG || {};
         beneficios: [
           'Todo lo del plan Semestral',
           'Equivale a $467 por mes',
-          'Dos sesiones de entrenamiento personal al mes',
+          'Valoración física completa cada mes',
           'Congelamiento de 30 días sin costo',
-          'Kit de bienvenida y acceso preferente a clases'
+          'Kit de bienvenida y lugar preferente en eventos especiales'
         ],
         color: '#3fbf7f', activo: true, inscripcion: 0
       }
@@ -293,7 +298,7 @@ window.AG = window.AG || {};
       id: 'u_0004', nombre: 'Paulina', apellidos: 'Zavala',
       email: 'paulina.zavala@alliancegym.mx', password: 'coach123', telefono: '33 3372 6015',
       color: '#ec4899', especialidad: 'Acondicionamiento femenino',
-      bio: 'Especialista en entrenamiento de fuerza para mujeres: glúteo, piernas y recomposición corporal. Lleva los grupos de Zumba y GAP con la sala siempre llena.',
+      bio: 'Especialista en entrenamiento de fuerza para mujeres: glúteo, piernas y recomposición corporal. Organiza los retos y eventos del gimnasio, siempre con la sala llena.',
       certificaciones: ['Licenciatura en Cultura Física y Deportes', 'Especialidad en entrenamiento femenino', 'Instructora certificada de Zumba Fitness'],
       sueldo: 19800, cupoMaximo: 24,
       horario: 'Lun a Vie 9:00–14:00 y 17:00–21:00 · Sáb 9:00–13:00',
@@ -313,7 +318,7 @@ window.AG = window.AG || {};
       id: 'u_0006', nombre: 'Iván', apellidos: 'Castañeda',
       email: 'ivan.castaneda@alliancegym.mx', password: 'coach123', telefono: '33 2517 3364',
       color: '#eab308', especialidad: 'HIIT y entrenamiento funcional',
-      bio: 'Viene del atletismo de medio fondo. Diseña circuitos metabólicos, spinning y funcional; su clase de las 6:00 am es la más concurrida del gimnasio.',
+      bio: 'Viene del atletismo de medio fondo. Diseña circuitos metabólicos y funcionales; sus sesiones de las 6:00 am son las más solicitadas del gimnasio.',
       certificaciones: ['Entrenador Personal Certificado ACE', 'Instructor de Ciclismo Indoor', 'Certificación en Kettlebell Nivel 1'],
       sueldo: 19200, cupoMaximo: 26,
       horario: 'Lun a Vie 5:30–10:00 y 18:00–21:30 · Sáb 8:00–12:00',
@@ -1419,7 +1424,7 @@ window.AG = window.AG || {};
   ];
 
   /* =============================================================
-     9. Textos de calificaciones, avisos y clases
+     9. Textos de calificaciones, avisos, sesiones y eventos
      ============================================================= */
 
   var COMENTARIOS_COACH = {
@@ -1456,7 +1461,7 @@ window.AG = window.AG || {};
   var COMENTARIOS_GYM = {
     5: [
       'Excelente gimnasio: limpio, con equipo nuevo y personal que sí saluda y ayuda.',
-      'La mejor relación precio-calidad de la zona. Las clases grupales están muy bien dadas.',
+      'La mejor relación precio-calidad de la zona. La sesión semanal con el entrenador vale cada peso.',
       'Siempre hay lugar en las máquinas fuera del horario pico y todo está en buen estado.',
       'Me encanta el ambiente. No es un lugar donde te sientas juzgado por estar empezando.',
       'Las regaderas siempre con agua caliente y limpias. Se nota el mantenimiento diario.',
@@ -1499,9 +1504,14 @@ window.AG = window.AG || {};
       para: 'todos', prioridad: 'alta', diasAtras: 4
     },
     {
-      titulo: 'Nuevo horario de clases grupales',
-      cuerpo: 'A partir del lunes ajustamos el horario de clases: Spinning se recorre a las 6:30, Zumba entra a las 18:00 y agregamos una sesión extra de HIIT los miércoles a las 19:30. El cuadro completo lo puedes consultar en la sección de Clases o en la pizarra de recepción.',
-      para: 'todos', prioridad: 'normal', diasAtras: 11
+      titulo: 'Agenda tu sesión de la semana con tu entrenador',
+      cuerpo: 'Desde tu panel ya puedes apartar una sesión a la semana con tu coach: eliges el día y la hora entre sus horarios disponibles y listo. Si no vas a poder llegar, cancela con al menos cuatro horas de anticipación para que otro socio aproveche el lugar.',
+      para: 'socios', prioridad: 'normal', diasAtras: 11
+    },
+    {
+      titulo: 'Inscripciones abiertas: Carrera y caminata 5K Alliance',
+      cuerpo: 'Corre o camina cinco kilómetros con la familia Alliance. La inscripción incluye playera, número y agua al llegar. Apúntate en recepción o desde la sección de eventos de tu panel; el cupo es limitado.',
+      para: 'todos', prioridad: 'normal', diasAtras: 6
     },
     {
       titulo: 'Reto de verano Alliance: 8 semanas',
@@ -1515,7 +1525,7 @@ window.AG = window.AG || {};
     },
     {
       titulo: 'Cierre por día festivo',
-      cuerpo: 'El próximo lunes festivo el gimnasio abre en horario reducido de 8:00 a 14:00 y no habrá clases grupales. El personal de mantenimiento aprovechará la tarde para dar servicio al equipo de cardio. Planea tu semana para no perder tu sesión.',
+      cuerpo: 'El próximo lunes festivo el gimnasio abre en horario reducido de 8:00 a 14:00 y no habrá sesiones con entrenador ni eventos. El personal de mantenimiento aprovechará la tarde para dar servicio al equipo de cardio. Planea tu semana para no perder tu sesión.',
       para: 'todos', prioridad: 'normal', diasAtras: 33
     },
     {
@@ -1525,21 +1535,316 @@ window.AG = window.AG || {};
     }
   ];
 
-  var CLASES_DEF = [
-    { nombre: 'HIIT', coach: 0, dia: 'lunes', hora: '06:00', dur: 45, cupo: 20, salon: 'Salón 1', color: '#e4322b' },
-    { nombre: 'Spinning', coach: 4, dia: 'lunes', hora: '07:00', dur: 50, cupo: 22, salon: 'Salón 2', color: '#f0a03c' },
-    { nombre: 'Funcional', coach: 4, dia: 'lunes', hora: '19:00', dur: 55, cupo: 18, salon: 'Zona funcional', color: '#3fbf7f' },
-    { nombre: 'Zumba', coach: 2, dia: 'martes', hora: '18:00', dur: 55, cupo: 25, salon: 'Salón 2', color: '#ec4899' },
-    { nombre: 'Box', coach: 0, dia: 'martes', hora: '20:00', dur: 60, cupo: 16, salon: 'Área de costales', color: '#eab308' },
-    { nombre: 'Yoga', coach: 3, dia: 'miércoles', hora: '07:30', dur: 60, cupo: 15, salon: 'Salón 3', color: '#9b7bf0' },
-    { nombre: 'GAP', coach: 1, dia: 'miércoles', hora: '18:00', dur: 45, cupo: 22, salon: 'Salón 2', color: '#ef5da8' },
-    { nombre: 'HIIT', coach: 4, dia: 'miércoles', hora: '19:30', dur: 45, cupo: 20, salon: 'Salón 1', color: '#e4322b' },
-    { nombre: 'Spinning', coach: 4, dia: 'jueves', hora: '06:30', dur: 50, cupo: 22, salon: 'Salón 2', color: '#f0a03c' },
-    { nombre: 'GAP', coach: 2, dia: 'jueves', hora: '18:00', dur: 45, cupo: 22, salon: 'Salón 3', color: '#ef5da8' },
-    { nombre: 'Crossfit', coach: 0, dia: 'viernes', hora: '19:00', dur: 60, cupo: 14, salon: 'Zona funcional', color: '#5aa9f0' },
-    { nombre: 'Zumba', coach: 2, dia: 'viernes', hora: '18:00', dur: 55, cupo: 25, salon: 'Salón 2', color: '#ec4899' },
-    { nombre: 'Funcional', coach: 4, dia: 'sábado', hora: '09:00', dur: 55, cupo: 18, salon: 'Zona funcional', color: '#3fbf7f' },
-    { nombre: 'Yoga', coach: 3, dia: 'sábado', hora: '10:30', dur: 60, cupo: 15, salon: 'Salón 3', color: '#9b7bf0' }
+  /* =============================================================
+     9b. Rediseño v2: disponibilidad, sesiones, eventos y productos
+     ============================================================= */
+
+  /* Bloques en los que cada coach recibe sesiones uno a uno. Todos caben
+     dentro del campo 'horario' del coach; el resto de su turno es piso. */
+  var DISPONIBILIDAD_DEF = [
+    /* Marco Ibarra · Lun a Vie 6:00–11:00 y 17:00–21:00 · Sáb 8:00–13:00 */
+    { coach: 'u_0002', dias: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'], desde: '07:00', hasta: '10:00', dur: 60 },
+    { coach: 'u_0002', dias: ['lunes', 'martes', 'miércoles', 'jueves'], desde: '18:00', hasta: '20:00', dur: 60 },
+    { coach: 'u_0002', dias: ['viernes'], desde: '17:00', hasta: '19:00', dur: 60 },
+    { coach: 'u_0002', dias: ['sábado'], desde: '09:00', hasta: '12:00', dur: 60 },
+    /* Daniela Fuentes · Lun a Vie 8:00–14:00 y 16:00–20:00 (consultas de 45 min) */
+    { coach: 'u_0003', dias: ['lunes', 'miércoles', 'viernes'], desde: '09:00', hasta: '12:00', dur: 45 },
+    { coach: 'u_0003', dias: ['martes', 'jueves'], desde: '10:00', hasta: '13:00', dur: 45 },
+    { coach: 'u_0003', dias: ['lunes', 'martes', 'miércoles', 'jueves'], desde: '16:30', hasta: '19:30', dur: 45 },
+    /* Paulina Zavala · Lun a Vie 9:00–14:00 y 17:00–21:00 · Sáb 9:00–13:00 */
+    { coach: 'u_0004', dias: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'], desde: '10:00', hasta: '13:00', dur: 60 },
+    { coach: 'u_0004', dias: ['lunes', 'miércoles', 'viernes'], desde: '18:00', hasta: '20:00', dur: 60 },
+    { coach: 'u_0004', dias: ['martes', 'jueves'], desde: '17:00', hasta: '20:00', dur: 60 },
+    { coach: 'u_0004', dias: ['sábado'], desde: '09:00', hasta: '12:00', dur: 60 },
+    /* Ricardo Mendoza · Lun a Vie 7:00–13:00 y 16:00–19:00 */
+    { coach: 'u_0005', dias: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'], desde: '08:00', hasta: '12:00', dur: 60 },
+    { coach: 'u_0005', dias: ['lunes', 'martes', 'miércoles', 'jueves'], desde: '16:00', hasta: '18:00', dur: 60 },
+    { coach: 'u_0005', dias: ['viernes'], desde: '16:00', hasta: '18:00', dur: 60, activa: false },   /* pausado: capacitación */
+    /* Iván Castañeda · Lun a Vie 5:30–10:00 y 18:00–21:30 · Sáb 8:00–12:00 */
+    { coach: 'u_0006', dias: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'], desde: '06:00', hasta: '09:00', dur: 60 },
+    { coach: 'u_0006', dias: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'], desde: '19:00', hasta: '21:00', dur: 60 },
+    { coach: 'u_0006', dias: ['sábado'], desde: '08:00', hasta: '11:00', dur: 60 }
+  ];
+
+  /* Orden en que se buscan huecos según el horario habitual del socio. */
+  var PREFERENCIA_FRANJA = {
+    manana: ['manana', 'mediodia', 'tarde', 'noche'],
+    mediodia: ['mediodia', 'manana', 'tarde', 'noche'],
+    tarde: ['tarde', 'noche', 'mediodia', 'manana'],
+    noche: ['noche', 'tarde', 'mediodia', 'manana'],
+    variable: ['cualquiera']
+  };
+
+  /* Qué se trabaja en cada sesión, según su tipo y el objetivo del socio. */
+  var OBJETIVOS_SESION = {
+    valoracion: [
+      'Valoración inicial y explicación de la rutina',
+      'Valoración de ingreso: movilidad, postura y fuerza base',
+      'Primera sesión: recorrido por el equipo y bitácora'
+    ],
+    seguimiento: [
+      'Revisión de avances y ajuste de rutina',
+      'Revisión de bitácora y cargas del bloque',
+      'Seguimiento mensual y nuevas metas',
+      'Cierre de bloque y plan del siguiente'
+    ],
+    nutricion: [
+      'Seguimiento del plan de alimentación',
+      'Ajuste de calorías y colaciones',
+      'Revisión de la semana de comidas'
+    ],
+    entrenamiento: {
+      perder_grasa: [
+        'Circuito metabólico con supervisión',
+        'Técnica de sentadilla y zancadas',
+        'Fuerza de cuerpo completo y cardio en pendiente',
+        'Sesión de pierna y core'
+      ],
+      ganar_musculo: [
+        'Técnica de sentadilla y peso muerto',
+        'Empuje: press de banca y hombro',
+        'Jalón: remo y dominadas',
+        'Pierna pesada con supervisión',
+        'Brazos y detalle de puntos débiles'
+      ],
+      mantener: [
+        'Sesión de cuerpo completo',
+        'Técnica de básicos y ajuste de cargas',
+        'Tren superior con enfoque en postura',
+        'Pierna y glúteo'
+      ],
+      rendimiento: [
+        'Potencia: swing y salto al cajón',
+        'Serie pesada de peso muerto',
+        'Arranque del remo Pendlay y técnica de barra',
+        'Condición: intervalos y core'
+      ],
+      salud: [
+        'Movilidad y equilibrio',
+        'Fuerza en máquinas y marcha',
+        'Trabajo de hombro y espalda sin dolor',
+        'Caminata, escalón y core suave'
+      ]
+    }
+  };
+
+  /* Notas que deja el coach al completar la sesión (las ve el socio). */
+  var NOTAS_COACH_SESION = {
+    valoracion: [
+      'Valoración inicial: movilidad de tobillo limitada y core débil. Empezamos con cuerpo completo y mucha técnica.',
+      'Primera sesión. Explicamos el uso de las máquinas y la bitácora. Muy buena disposición.',
+      'Valoración de ingreso: sin lesiones activas. Arranca con cargas ligeras dos semanas y luego progresamos.',
+      'Revisamos postura y respiración. Le cuesta activar el glúteo; puente y caminata con banda en cada calentamiento.'
+    ],
+    seguimiento: [
+      'Revisamos la bitácora: registra todo, muy bien. Subimos 2.5 kg en los básicos para el siguiente bloque.',
+      'Buen avance en cuatro semanas. Cambiamos dos variantes para dar un estímulo nuevo y evitar la meseta.',
+      'Se le hace largo el día de pierna; lo dejamos en cinco ejercicios y sumamos una serie a cada uno.',
+      'Cerramos el bloque con mejor técnica y más fuerza. El siguiente mes trabajamos volumen.'
+    ],
+    nutricion: [
+      'Revisamos la semana de comidas: le falta proteína en el desayuno. Sumar dos huevos o un licuado antes de entrenar.',
+      'Baja de 0.6 kg respecto a la última consulta. Ajustamos la colación de la tarde para que no llegue con hambre a la cena.',
+      'Le cuesta cenar ligero entre semana. Dejamos tres opciones rápidas: tacos de atún, molletes con panela o quesadillas de nopal.',
+      'Agua: toma un litro al día y la meta es dos y medio. Le sugerí llevar el termo al trabajo.'
+    ],
+    general: [
+      'Corregimos la posición de la cadera en el peso muerto; subir a 60 kg la próxima semana.',
+      'Muy buena sesión. Se cansa en los últimos ejercicios; revisar que esté comiendo suficiente antes de venir.',
+      'Repasamos la respiración en los básicos: tomar aire abajo, soltar arriba. Le cuesta pero ya lo entiende.',
+      'Ajustamos el agarre del jalón para cuidar el hombro. Sin molestias al terminar.',
+      'Llegó con poco sueño y se notó en la segunda serie. Sesión corta y técnica; retomamos cargas la próxima.'
+    ],
+    perder_grasa: [
+      'Sesión metabólica completa. Los descansos se alargan cuando se cansa; cronómetro de 60 s entre series.',
+      'Buen ritmo en el circuito. Recordarle que la colación pre-entreno es obligatoria: llegó sin comer y se mareó al final.',
+      'Subimos la sentadilla goblet a 16 kg. Ya bajó dos agujeros del cinturón, se le nota.',
+      'Trabajamos zancadas; pierde equilibrio en la pierna izquierda. Tres series extra de unilateral la próxima semana.',
+      'Cardio en pendiente al final sin problema. Va muy bien con la constancia, felicitarle en la próxima.'
+    ],
+    ganar_musculo: [
+      'Press de banca: retracción escapular mejorada. Se le cae el codo en la última repetición; bajar a 8 y subir carga después.',
+      'Remo con barra con 50 kg limpio. Toca subir 2.5 kg y meter una serie más de dominadas asistidas.',
+      'Sentadilla: profundidad ya por debajo de paralela. Rodillas siguen la punta del pie; grabar una serie por semana.',
+      'Poca progresión en hombro; cambiamos el press militar por press con mancuernas cuatro semanas.',
+      'Le pedí registrar todos los pesos en la bitácora. Sin registro no hay progresión.'
+    ],
+    mantener: [
+      'Sesión sin novedades, técnica estable. Ajustamos el orden de los ejercicios para que no espere máquinas.',
+      'Se siente con más energía por la tarde. Mantener cargas y sumar 5 minutos de movilidad al inicio.',
+      'Buen control en todo el recorrido. Subimos una serie en pierna y dejamos igual el tren superior.'
+    ],
+    rendimiento: [
+      'Trabajo de potencia con swing y salto al cajón. Aterriza suave, muy buen control. Subir el cajón un escalón.',
+      'Serie pesada de peso muerto con técnica impecable. Cuidar el sueño: llegó cansado y se notó en la segunda serie.',
+      'Repasamos el arranque del remo Pendlay. La barra sale del piso cada repetición, ya no rebota.'
+    ],
+    salud: [
+      'Trabajo de equilibrio y fuerza en máquinas. Sin molestias de rodilla; rango parcial en prensa por precaución.',
+      'Movilidad de hombro mejorando: ya levanta el brazo por arriba de la cabeza sin dolor. Seguir con banda en casa.',
+      'Presión medida antes de iniciar, en rango. Caminadora sin sujetarse, muy buen avance en confianza.'
+    ]
+  };
+
+  var NOTAS_SOCIO_SESION = [
+    'Quiero repasar la técnica de sentadilla.',
+    'Me duele un poco la rodilla derecha, ¿lo revisamos?',
+    'Llego 10 minutos tarde por el trabajo.',
+    'Quiero enfocarme en brazos esta vez.',
+    'Necesito que ajustemos la rutina a tres días.',
+    'Traigo dudas del plan de comida.',
+    'Me gustaría probar más peso en peso muerto.'
+  ];
+
+  var MOTIVOS_CANCELACION = [
+    'Me salió un pendiente del trabajo.',
+    'Amanecí enfermo, la muevo para la próxima semana.',
+    'Se me atravesó una cita médica.',
+    'No alcanzo a llegar por el tráfico, una disculpa.',
+    ''
+  ];
+
+  /* Historia de Ana Sofía con Marco, semana por semana hacia atrás.
+     La semana -5 queda sin sesión a propósito (viaje de trabajo). */
+  var SESIONES_ANA = [
+    {
+      semana: -8, tipo: 'valoracion', estado: 'completada',
+      objetivo: 'Valoración de inicio del bloque de definición',
+      notasCoach: 'Revisamos postura y movilidad de cadera. Arrancamos el bloque de definición con cargas moderadas: primero técnica, luego peso.',
+      notasSocio: 'Quiero bajar grasa sin perder la fuerza que ya tengo.'
+    },
+    {
+      semana: -7, tipo: 'entrenamiento', estado: 'completada',
+      objetivo: 'Técnica de sentadilla',
+      notasCoach: 'Mejoró mucho la profundidad de la sentadilla; las rodillas ya siguen la punta del pie. Le pedí grabarse una serie por semana para comparar.',
+      notasSocio: ''
+    },
+    {
+      semana: -6, tipo: 'entrenamiento', estado: 'completada',
+      objetivo: 'Peso muerto: posición de la cadera',
+      notasCoach: 'Corregimos la posición de la cadera en el peso muerto; subir a 60 kg la próxima semana.',
+      notasSocio: 'Siento que redondeo la espalda al bajar, ¿lo revisamos?'
+    },
+    {
+      semana: -4, tipo: 'seguimiento', estado: 'completada',
+      objetivo: 'Revisión de cargas y bitácora',
+      notasCoach: 'Subió a 60 kg en peso muerto con técnica limpia. Los descansos se le alargan: cronómetro de 60 s en la sesión metabólica.',
+      notasSocio: ''
+    },
+    {
+      semana: -3, tipo: 'entrenamiento', estado: 'cancelada',
+      objetivo: 'Press de banca y remo',
+      notasCoach: '',
+      notasSocio: 'Me salió un pendiente del trabajo, la retomo la próxima semana.'
+    },
+    {
+      semana: -2, tipo: 'entrenamiento', estado: 'completada',
+      objetivo: 'Empuje: press de banca',
+      notasCoach: 'Press de banca con 32.5 kg por 8 limpias. Trabajamos la retracción escapular; se le cae el codo en la última repetición cuando se cansa.',
+      notasSocio: ''
+    },
+    {
+      semana: -1, tipo: 'entrenamiento', estado: 'completada',
+      objetivo: 'Sesión metabólica con kettlebell',
+      notasCoach: 'El swing con 16 kg ya sale de la cadera y no de los brazos. Muy buena actitud; la próxima medimos y cerramos el bloque.',
+      notasSocio: 'Traigo la bitácora al día.'
+    }
+  ];
+
+  /* Sesión de la semana en curso (solo si su próxima cae en la semana que entra). */
+  var ANA_SEMANA_ACTUAL = {
+    tipo: 'seguimiento', estado: 'completada',
+    objetivo: 'Cierre de bloque: medición y revisión de técnica',
+    notasCoach: 'Cerramos el bloque de definición con muy buen cambio en cintura y sin perder fuerza. La próxima semana arrancamos fuerza en básicos.',
+    notasSocio: ''
+  };
+
+  /* Su próxima sesión, siempre agendada después de hoy. */
+  var ANA_PROXIMA = {
+    tipo: 'entrenamiento',
+    objetivo: 'Arranque del bloque de fuerza: sentadilla, banca y peso muerto',
+    notasSocio: 'Quiero probar 65 kg en peso muerto si me ves lista.'
+  };
+
+  /* Seis eventos: tres ya pasaron y tres vienen. Las fechas se calculan
+     relativas a hoy y caen en el día de la semana indicado (0 = domingo). */
+  var EVENTOS_DEF = [
+    {
+      nombre: 'Reto Alliance de 8 semanas', tipo: 'reto', coach: 'u_0006',
+      pasado: true, dias: 12, dow: 1, hora: '19:00', dur: 90,
+      lugar: 'Zona funcional', cupo: 30, inscritos: 22, costo: 0, color: '#e4322b', conAna: true,
+      descripcion: 'Ocho semanas de constancia con medición al inicio y al cierre. Gana quien logre el mejor cambio de grasa y músculo, no quien baje más kilos. Premio: una membresía semestral.'
+    },
+    {
+      nombre: 'Clínica de técnica de peso muerto', tipo: 'clinica', coach: 'u_0002',
+      pasado: false, dias: 4, dow: 6, hora: '10:00', dur: 90,
+      lugar: 'Zona de peso libre', cupo: 12, inscritos: 9, costo: 0, color: '#5aa9f0', conAna: true,
+      descripcion: 'Hora y media para dominar el peso muerto desde cero: postura, agarre, respiración y cómo subir de peso sin lastimarte. Ropa cómoda y zapato plano.'
+    },
+    {
+      nombre: 'Competencia interna de press de banca', tipo: 'competencia', coach: 'u_0002',
+      pasado: false, dias: 18, dow: 6, hora: '11:00', dur: 120,
+      lugar: 'Zona de peso libre', cupo: 16, inscritos: 11, costo: 0, color: '#f0a03c', conAna: false,
+      descripcion: 'Tres intentos por participante, categorías por peso corporal y rama. Se premia la mejor marca relativa al peso. Solo socios con membresía activa.'
+    },
+    {
+      nombre: 'Taller de nutrición: comer bien sin gastar de más', tipo: 'taller', coach: 'u_0003',
+      pasado: true, dias: 7, dow: 6, hora: '12:00', dur: 90,
+      lugar: 'Salón de usos múltiples', cupo: 25, inscritos: 17, costo: 0, color: '#3fbf7f', conAna: true,
+      descripcion: 'Cómo armar desayunos, comidas y cenas con lo que hay en el mercado: huevo, frijol, tortilla, arroz, pollo y atún. Con recetario para llevar.'
+    },
+    {
+      nombre: 'Carrera y caminata 5K Alliance', tipo: 'competencia', coach: 'u_0005',
+      pasado: false, dias: 30, dow: 0, hora: '07:00', dur: 120,
+      lugar: 'Salida desde el gimnasio · circuito del parque', cupo: 40, inscritos: 24, costo: 150, color: '#9b7bf0', conAna: false,
+      descripcion: 'Cinco kilómetros corriendo o caminando, cada quien a su ritmo. Incluye playera, número y agua al llegar. Familiares bienvenidos.'
+    },
+    {
+      nombre: 'Convivencia de aniversario Alliance', tipo: 'social', coach: 'u_0004',
+      pasado: true, dias: 27, dow: 6, hora: '18:00', dur: 180,
+      lugar: 'Terraza del gimnasio', cupo: 60, inscritos: 38, costo: 0, color: '#ec4899', conAna: true,
+      descripcion: 'Celebramos un año más contigo: carne asada, rifa de membresías y reconocimiento a los socios más constantes del año.'
+    }
+  ];
+
+  /* Lo que vende recepción y puede cubrir una comida (sección 6 del rediseño). */
+  var PRODUCTOS_DEF = [
+    {
+      nombre: 'Licuado de proteína con plátano',
+      descripcion: 'Proteína de suero, plátano, avena y leche. Vaso de 500 ml.',
+      precio: 65, kcal: 380, proteina: 32, carbos: 42, grasa: 8,
+      sustituye: ['desayuno', 'post_entreno'], icono: 'gota'
+    },
+    {
+      nombre: 'Licuado verde',
+      descripcion: 'Espinaca, nopal, piña, apio y jugo de naranja. Vaso de 400 ml.',
+      precio: 50, kcal: 150, proteina: 4, carbos: 33, grasa: 1,
+      sustituye: ['colacion'], icono: 'manzana'
+    },
+    {
+      nombre: 'Avena con fruta y canela',
+      descripcion: 'Avena cocida con leche, plátano, manzana y canela. Vaso de 350 g.',
+      precio: 45, kcal: 330, proteina: 11, carbos: 58, grasa: 6,
+      sustituye: ['desayuno', 'pre_entreno'], icono: 'sol'
+    },
+    {
+      nombre: 'Barra de proteína Alliance',
+      descripcion: 'Barra de 60 g, sabor chocolate o cacahuate.',
+      precio: 45, kcal: 220, proteina: 20, carbos: 23, grasa: 7,
+      sustituye: ['colacion', 'post_entreno'], icono: 'rayo'
+    },
+    {
+      nombre: 'Sándwich de pavo con panela',
+      descripcion: 'Pan integral, pechuga de pavo, queso panela, jitomate y lechuga.',
+      precio: 70, kcal: 390, proteina: 28, carbos: 41, grasa: 11,
+      sustituye: ['desayuno', 'comida', 'cena'], icono: 'nutricion'
+    },
+    {
+      nombre: 'Agua de coco natural 500 ml',
+      descripcion: 'Hidratación natural con electrolitos, sin azúcar añadida.',
+      precio: 35, kcal: 95, proteina: 1, carbos: 22, grasa: 0,
+      sustituye: ['pre_entreno'], icono: 'agua'
+    }
   ];
 
   /* =============================================================
@@ -1647,6 +1952,19 @@ window.AG = window.AG || {};
       else nivelActividad = elegir(['sedentario', 'ligero', 'ligero', 'moderado', 'moderado', 'alto']);
       if (objetivo === 'rendimiento') nivelActividad = probable(0.5) ? 'alto' : 'atleta';
 
+      /* Horario habitual de entreno (rediseño v2). Rige las horas de sus
+         check-ins y de sus sesiones con el entrenador. Ana viene por la tarde. */
+      var horarioEntreno;
+      if (esAna) horarioEntreno = 'tarde';
+      else if (edad >= 58) horarioEntreno = elegir(['manana', 'manana', 'mediodia']);
+      else horarioEntreno = elegir(['manana', 'manana', 'manana', 'mediodia', 'tarde', 'tarde', 'noche', 'noche', 'variable']);
+
+      /* Quien entrena muy temprano casi nunca desayuna antes. */
+      var desayunaAntes;
+      if (esAna) desayunaAntes = true;
+      else if (horarioEntreno === 'manana') desayunaAntes = probable(0.35);
+      else desayunaAntes = probable(0.85);
+
       /* Plan: los que no siguen activos se manejan siempre en mensualidad. */
       var plan;
       if (esAna) plan = planPorNombre['Mensual'];
@@ -1712,8 +2030,14 @@ window.AG = window.AG || {};
           parentesco: elegir(PARENTESCOS)
         },
         notas: esAna
-          ? 'Cuenta de demostración del socio. Historial completo de ocho meses con mediciones, rutina, nutrición y bitácoras.'
+          ? 'Cuenta de demostración del socio. Historial completo de ocho meses con mediciones, rutina, nutrición, bitácoras y sesiones con su entrenador.'
           : elegir(NOTAS_SOCIO),
+        /* --- rediseño v2: horarios y bienvenida (diasMeta y bienvenidaHecha
+               se afinan después, cuando ya se conoce su rutina) --- */
+        horarioEntreno: horarioEntreno,
+        diasMeta: esAna ? 4 : 3,
+        desayunaAntes: desayunaAntes,
+        bienvenidaHecha: true,
         /* --- campos auxiliares del generador (se limpian al final) --- */
         edadCalculada: edad,
         mesesAntiguedad: meses,
@@ -1809,7 +2133,8 @@ window.AG = window.AG || {};
       vencimientos[socio.id] = ultimoFin || sumaMeses(socio.fechaAlta, meses);
     }
 
-    /* Ventas de mostrador y clases sueltas: dan vida a la caja del gimnasio. */
+    /* Ventas de mostrador y pases sueltos: dan vida a la caja del gimnasio.
+       Los precios de licuados, avena y barra coinciden con PRODUCTOS_DEF. */
     var activos = socios.filter(function (s) { return s.estado === 'activo' || s.estado === 'vencido'; });
     var productos = [
       ['Proteína de suero 2 lb', 890, 'producto'],
@@ -1818,13 +2143,17 @@ window.AG = window.AG || {};
       ['Cinturón de levantamiento', 640, 'producto'],
       ['Pre-entreno 30 servicios', 560, 'producto'],
       ['Guantes de entrenamiento', 280, 'producto'],
-      ['Barra de proteína', 45, 'producto'],
+      ['Barra de proteína Alliance', 45, 'producto'],
+      ['Licuado de proteína con plátano', 65, 'producto'],
+      ['Licuado de proteína con plátano', 65, 'producto'],
+      ['Avena con fruta y canela', 45, 'producto'],
+      ['Sándwich de pavo con panela', 70, 'producto'],
       ['Reposición de credencial', 80, 'personalizado'],
       ['Casillero mensual', 120, 'personalizado'],
-      ['Sesión de entrenamiento personal', 350, 'personalizado']
+      ['Inscripción a la carrera 5K', 150, 'personalizado']
     ];
 
-    for (var v = 0; v < 34; v++) {
+    for (var v = 0; v < 40; v++) {
       var comprador = elegir(activos);
       if (!comprador) break;
       var art = elegir(productos);
@@ -2456,29 +2785,52 @@ window.AG = window.AG || {};
      15. Asistencias (últimos 60 días)
      ============================================================= */
 
-  /** Franja horaria preferida por socio: mañana, mediodía o noche. */
-  function franjaDe(indice) {
-    var franjas = [[5, 8], [6, 9], [12, 14], [17, 19], [18, 21], [19, 21]];
-    return franjas[indice % franjas.length];
+  /* Horas de entrada según el horario habitual del socio (horarioEntreno). */
+  var FRANJAS_ENTRENO = {
+    manana: [[5, 8], [6, 9]],
+    mediodia: [[12, 14], [13, 15]],
+    tarde: [[16, 18], [17, 19]],
+    noche: [[18, 20], [19, 21]],
+    variable: [[6, 9], [12, 14], [17, 19], [19, 21]]
+  };
+
+  /** Franja de entrada de un socio para una visita concreta. */
+  function franjaDe(socio) {
+    var lista = FRANJAS_ENTRENO[socio && socio.horarioEntreno] || FRANJAS_ENTRENO.variable;
+    return elegir(lista);
   }
 
   /**
-   * Check-ins coherentes con las bitácoras: todo entrenamiento registrado
-   * tiene su entrada, más visitas de clases y cardio suelto.
+   * Check-ins coherentes con las bitácoras y con las sesiones: todo
+   * entrenamiento registrado y toda sesión completada con el entrenador
+   * tienen su entrada, más visitas de cardio suelto y días sin bitácora.
    */
-  function construirAsistencias(socios, bitacoras, hoy, adherencias, vencimientos) {
+  function construirAsistencias(socios, bitacoras, sesiones, hoy, adherencias, vencimientos) {
     var asistencias = [];
     var usadas = {};
     var desde60 = sumaDias(hoy, -59);
+    var socioPorId = {};
     var i, b, clave;
+    for (i = 0; i < socios.length; i++) socioPorId[socios[i].id] = socios[i];
 
-    function registrar(socioId, fecha, franja, conBitacora) {
+    /**
+     * Registra un check-in. Si viene 'horaSesion' ('HH:MM'), la entrada se
+     * acomoda unos minutos antes de esa sesión con el entrenador.
+     */
+    function registrar(socioId, fecha, franja, conBitacora, horaSesion) {
       clave = socioId + '|' + fecha;
       if (usadas[clave]) return;
       usadas[clave] = true;
 
-      var hora = ent(franja[0], franja[1]);
-      var minuto = ent(0, 59);
+      var hora, minuto;
+      if (horaSesion) {
+        var entradaMin = Math.max(5 * 60, minutosDeHora(horaSesion) - ent(5, 20));
+        hora = Math.floor(entradaMin / 60);
+        minuto = entradaMin % 60;
+      } else {
+        hora = ent(franja[0], franja[1]);
+        minuto = ent(0, 59);
+      }
       var duracion = conBitacora ? ent(55, 105) : ent(35, 80);
       var totalSalida = hora * 60 + minuto + duracion;
       var salida = null;
@@ -2495,17 +2847,21 @@ window.AG = window.AG || {};
       });
     }
 
-    var franjaPorSocio = {};
-    for (i = 0; i < socios.length; i++) franjaPorSocio[socios[i].id] = franjaDe(i);
+    /* 0) Toda sesión completada con el entrenador tuvo su entrada ese día. */
+    for (i = 0; i < sesiones.length; i++) {
+      var se = sesiones[i];
+      if (se.estado !== 'completada' || se.fecha < desde60 || se.fecha > hoy) continue;
+      registrar(se.socioId, se.fecha, null, true, se.hora);
+    }
 
     /* 1) Una asistencia por cada entrenamiento registrado en los últimos 60 días. */
     for (i = 0; i < bitacoras.length; i++) {
       b = bitacoras[i];
       if (b.fecha < desde60) continue;
-      registrar(b.socioId, b.fecha, franjaPorSocio[b.socioId] || [18, 20], true);
+      registrar(b.socioId, b.fecha, franjaDe(socioPorId[b.socioId]), true, null);
     }
 
-    /* 2) Visitas extra: clases grupales, cardio y días sin bitácora. */
+    /* 2) Visitas extra: cardio suelto, eventos y días sin bitácora. */
     for (i = 0; i < socios.length; i++) {
       var socio = socios[i];
       if (socio.estado === 'baja') continue;
@@ -2523,7 +2879,7 @@ window.AG = window.AG || {};
         var fecha = sumaDias(arranque, d);
         if (diaSemana(fecha) === 0 && probable(0.6)) continue;    /* pocos van en domingo */
         if (!probable(acotar(adherencia * 1.45, 0, 0.92))) continue;
-        registrar(socio.id, fecha, franjaPorSocio[socio.id] || [18, 20], false);
+        registrar(socio.id, fecha, franjaDe(socio), false, null);
       }
     }
 
@@ -2750,7 +3106,7 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     18. Avisos, clases y notificaciones
+     18. Avisos, disponibilidad, sesiones, eventos, productos y notificaciones
      ============================================================= */
 
   function construirAvisos(usuarios, hoy, directorId) {
@@ -2775,34 +3131,455 @@ window.AG = window.AG || {};
     });
   }
 
-  function construirClases(coaches, socios) {
-    var activos = socios.filter(function (s) { return s.estado === 'activo'; });
-    return CLASES_DEF.map(function (def) {
-      var coach = coaches[def.coach] || coaches[0];
-      var inscritos = barajar(activos)
-        .slice(0, ent(Math.round(def.cupo * 0.45), def.cupo))
-        .map(function (s) { return s.id; });
+  /* ---------- Rediseño v2: disponibilidad, sesiones, eventos y productos ---------- */
 
-      return {
-        id: nuevoId('cl_'),
-        nombre: def.nombre,
-        coachId: coach.id,
-        dia: def.dia,
-        hora: def.hora,
-        duracionMin: def.dur,
-        cupo: def.cupo,
-        inscritos: inscritos,
-        salon: def.salon,
-        color: def.color,
-        activa: true
-      };
-    });
+  /** 'HH:MM' -> minutos desde medianoche. */
+  function minutosDeHora(hora) {
+    var p = String(hora || '0:0').split(':');
+    return (Number(p[0]) || 0) * 60 + (Number(p[1]) || 0);
   }
 
-  /** ~15 notificaciones repartidas entre las tres cuentas de demostración. */
-  function construirNotificaciones(hoy, ana, marco, directorId) {
+  /** Minutos desde medianoche -> 'HH:MM'. */
+  function horaDeMinutos(min) {
+    return relleno(Math.floor(min / 60), 2) + ':' + relleno(min % 60, 2);
+  }
+
+  var INDICE_DIA = { domingo: 0, lunes: 1, martes: 2, 'miércoles': 3, jueves: 4, viernes: 5, 'sábado': 6 };
+  var NOMBRE_DIA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  var NOMBRE_MES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
+    'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  /** 'martes 8 de septiembre' */
+  function fechaHablada(iso) {
+    var p = partesDe(iso);
+    return NOMBRE_DIA[diaSemana(iso)] + ' ' + p.d + ' de ' + (NOMBRE_MES[p.m - 1] || '');
+  }
+
+  /** Lunes de la semana natural (lunes a domingo) que contiene la fecha. */
+  function lunesDeISO(iso) {
+    var dow = diaSemana(iso);
+    return sumaDias(iso, -(dow === 0 ? 6 : dow - 1));
+  }
+
+  /** Primera fecha >= desde que cae en ese día de la semana (0 = domingo). */
+  function proximoDiaSemana(desde, dow) {
+    var f = desde;
+    for (var i = 0; i < 7; i++) {
+      if (diaSemana(f) === dow) return f;
+      f = sumaDias(f, 1);
+    }
+    return desde;
+  }
+
+  /** Última fecha <= hasta que cae en ese día de la semana (0 = domingo). */
+  function anteriorDiaSemana(hasta, dow) {
+    var f = hasta;
+    for (var i = 0; i < 7; i++) {
+      if (diaSemana(f) === dow) return f;
+      f = sumaDias(f, -1);
+    }
+    return hasta;
+  }
+
+  /** Franja de un hueco según su hora de inicio. */
+  function franjaDeHora(hora) {
+    var m = minutosDeHora(hora);
+    if (m < 11 * 60) return 'manana';
+    if (m < 16 * 60) return 'mediodia';
+    if (m < 19 * 60) return 'tarde';
+    return 'noche';
+  }
+
+  /** Bloques de disponibilidad de los coaches, un registro por día. */
+  function construirDisponibilidad(coaches) {
+    var existe = {}, lista = [], i, d;
+    for (i = 0; i < coaches.length; i++) existe[coaches[i].id] = true;
+
+    for (i = 0; i < DISPONIBILIDAD_DEF.length; i++) {
+      var def = DISPONIBILIDAD_DEF[i];
+      if (!existe[def.coach]) continue;
+      for (d = 0; d < def.dias.length; d++) {
+        lista.push({
+          id: nuevoId('dp_'),
+          coachId: def.coach,
+          dia: def.dias[d],
+          desde: def.desde,
+          hasta: def.hasta,
+          duracionMin: def.dur,
+          activa: def.activa !== false
+        });
+      }
+    }
+    return lista;
+  }
+
+  /**
+   * Plantilla semanal de huecos por coach a partir de su disponibilidad
+   * activa: { coachId: { dow: [ {hora, dur, franja} ] } }. Reparte los
+   * huecos igual que AG.DB.huecosDe (uno cada duracionMin entre desde y hasta).
+   */
+  function plantillaSemanal(disponibilidad) {
+    var plantilla = {};
+    for (var i = 0; i < disponibilidad.length; i++) {
+      var b = disponibilidad[i];
+      if (b.activa === false) continue;
+      var dow = INDICE_DIA[b.dia];
+      if (dow === undefined) continue;
+
+      var ini = minutosDeHora(b.desde), fin = minutosDeHora(b.hasta);
+      var dur = Number(b.duracionMin) || 60;
+      if (!plantilla[b.coachId]) plantilla[b.coachId] = {};
+      if (!plantilla[b.coachId][dow]) plantilla[b.coachId][dow] = [];
+
+      for (var t = ini; t + dur <= fin; t += dur) {
+        var hora = horaDeMinutos(t);
+        plantilla[b.coachId][dow].push({ hora: hora, dur: dur, franja: franjaDeHora(hora) });
+      }
+    }
+    return plantilla;
+  }
+
+  /** Texto del objetivo de una sesión según su tipo y el perfil del socio. */
+  function objetivoSesion(tipo, socio, esNutricion) {
+    if (esNutricion) return elegir(OBJETIVOS_SESION.nutricion);
+    if (tipo === 'valoracion') return elegir(OBJETIVOS_SESION.valoracion);
+    if (tipo === 'seguimiento') return elegir(OBJETIVOS_SESION.seguimiento);
+    var pool = OBJETIVOS_SESION.entrenamiento[socio.objetivo] || OBJETIVOS_SESION.entrenamiento.mantener;
+    return elegir(pool);
+  }
+
+  /** Nota del coach para una sesión completada. */
+  function notaCoachSesion(tipo, socio, esNutricion) {
+    if (esNutricion) return elegir(NOTAS_COACH_SESION.nutricion);
+    if (tipo === 'valoracion') return elegir(NOTAS_COACH_SESION.valoracion);
+    if (tipo === 'seguimiento') return elegir(NOTAS_COACH_SESION.seguimiento);
+    var pool = NOTAS_COACH_SESION[socio.objetivo];
+    if (pool && probable(0.65)) return elegir(pool);
+    return elegir(NOTAS_COACH_SESION.general);
+  }
+
+  /**
+   * Sesiones con entrenador: ocho semanas de historia (mayoría completadas,
+   * algunas canceladas y faltas) más las agendadas de esta semana y la que
+   * entra. Regla dura: una sesión por socio por semana natural, y nunca dos
+   * socios en el mismo hueco del mismo coach.
+   */
+  function construirSesiones(socios, coaches, disponibilidad, hoy, vencimientos) {
+    var sesiones = [];
+    var ocupado = {};                          /* coach|fecha|hora */
+    var plantilla = plantillaSemanal(disponibilidad);
+    var lunesActual = lunesDeISO(hoy);
+    var finSiguiente = sumaDias(lunesActual, 13);
+    var primeraDe = {};                        /* socioId -> primera sesión (para 'valoracion') */
+    var i, d, f;
+
+    function clave(coachId, fecha, hora) { return coachId + '|' + fecha + '|' + hora; }
+
+    /** Huecos libres de un coach en una fecha; franja 'cualquiera' = todos. */
+    function huecosLibres(coachId, fecha, franja) {
+      var dias = plantilla[coachId] || {};
+      var lista = dias[diaSemana(fecha)] || [];
+      var libres = [];
+      for (var h = 0; h < lista.length; h++) {
+        if (franja !== 'cualquiera' && lista[h].franja !== franja) continue;
+        if (ocupado[clave(coachId, fecha, lista[h].hora)]) continue;
+        libres.push({ fecha: fecha, hora: lista[h].hora, dur: lista[h].dur });
+      }
+      return libres;
+    }
+
+    /**
+     * Un hueco dentro de la semana que empieza en 'lunes', respetando el
+     * horario habitual del socio y el filtro de fechas permitidas.
+     */
+    function buscarHueco(coachId, lunes, horario, permitida) {
+      var orden = PREFERENCIA_FRANJA[horario] || PREFERENCIA_FRANJA.variable;
+      for (var k = 0; k < orden.length; k++) {
+        var candidatos = [];
+        for (var dd = 0; dd < 7; dd++) {
+          var fecha = sumaDias(lunes, dd);
+          if (!permitida(fecha)) continue;
+          candidatos = candidatos.concat(huecosLibres(coachId, fecha, orden[k]));
+        }
+        if (candidatos.length) return elegir(candidatos);
+      }
+      return null;
+    }
+
+    /** Primer hueco libre después de hoy (hasta el fin de la semana que entra). */
+    function primerHuecoFuturo(coachId, horario) {
+      var orden = (PREFERENCIA_FRANJA[horario] || PREFERENCIA_FRANJA.variable).concat(['cualquiera']);
+      for (var k = 0; k < orden.length; k++) {
+        for (var dd = 1; dd <= 14; dd++) {
+          var fecha = sumaDias(hoy, dd);
+          if (fecha > finSiguiente) break;
+          var libres = huecosLibres(coachId, fecha, orden[k]);
+          if (libres.length) return libres[0];
+        }
+      }
+      return null;
+    }
+
+    function agregar(socio, coachId, hueco, tipo, estado, objetivo, notasCoach, notasSocio) {
+      ocupado[clave(coachId, hueco.fecha, hueco.hora)] = true;
+      var creada = sumaDias(hueco.fecha, -ent(1, 7));
+      if (creada < socio.fechaAlta) creada = socio.fechaAlta;
+      var registro = {
+        id: null,
+        socioId: socio.id,
+        coachId: coachId,
+        fecha: hueco.fecha,
+        hora: hueco.hora,
+        duracionMin: hueco.dur,
+        tipo: tipo,
+        estado: estado,
+        objetivo: objetivo,
+        notasCoach: notasCoach || '',
+        notasSocio: notasSocio || '',
+        creada: creada,
+        creadaPor: probable(0.7) ? socio.id : coachId
+      };
+      sesiones.push(registro);
+      if (!primeraDe[socio.id]) primeraDe[socio.id] = registro;
+      return registro;
+    }
+
+    /* ---------- 1) Ana Sofía con Marco: historia fija ---------- */
+    var ana = null;
+    for (i = 0; i < socios.length; i++) if (socios[i].id === 'u_0007') ana = socios[i];
+
+    if (ana) {
+      var coachAna = ana.coachId || 'u_0002';
+      var soloPasado = function (fecha) { return fecha >= ana.fechaAlta && fecha < hoy; };
+
+      for (i = 0; i < SESIONES_ANA.length; i++) {
+        var def = SESIONES_ANA[i];
+        var huecoDef = buscarHueco(coachAna, sumaDias(lunesActual, 7 * def.semana), ana.horarioEntreno, soloPasado);
+        if (huecoDef) agregar(ana, coachAna, huecoDef, def.tipo, def.estado, def.objetivo, def.notasCoach, def.notasSocio);
+      }
+
+      /* Su próxima sesión: el primer hueco después de hoy. */
+      var huecoProx = primerHuecoFuturo(coachAna, ana.horarioEntreno);
+      if (huecoProx) {
+        agregar(ana, coachAna, huecoProx, ANA_PROXIMA.tipo, 'agendada', ANA_PROXIMA.objetivo, '', ANA_PROXIMA.notasSocio);
+      }
+
+      /* Si la próxima cayó en la semana que entra, esta semana ya tuvo su sesión. */
+      var proxEnEstaSemana = !!huecoProx && lunesDeISO(huecoProx.fecha) === lunesActual;
+      if (!proxEnEstaSemana) {
+        var huecoActual = buscarHueco(coachAna, lunesActual, ana.horarioEntreno, soloPasado);
+        if (huecoActual) {
+          agregar(ana, coachAna, huecoActual, ANA_SEMANA_ACTUAL.tipo, ANA_SEMANA_ACTUAL.estado,
+            ANA_SEMANA_ACTUAL.objetivo, ANA_SEMANA_ACTUAL.notasCoach, ANA_SEMANA_ACTUAL.notasSocio);
+        }
+      }
+    }
+
+    /* ---------- 2) El resto del padrón: a lo más una sesión por semana ---------- */
+    function permitidaDe(socio, limite) {
+      return function (fecha) { return fecha >= socio.fechaAlta && fecha <= limite; };
+    }
+
+    for (var w = -8; w <= 1; w++) {
+      var lunes = sumaDias(lunesActual, 7 * w);
+      var orden = barajar(socios);
+
+      for (i = 0; i < orden.length; i++) {
+        var socio = orden[i];
+        if (socio.id === 'u_0007') continue;
+        if (socio.fechaAlta > sumaDias(lunes, 6)) continue;
+
+        /* Hasta cuándo pudo tener sesiones según su membresía. Solo los
+           socios activos pueden tener sesiones agendadas a futuro. */
+        var limite = finSiguiente;
+        if (socio.estado === 'vencido') {
+          limite = menorFecha(sumaDias(hoy, -1), sumaDias(vencimientos[socio.id] || hoy, ent(0, 7)));
+        } else if (socio.estado === 'congelado' || socio.estado === 'baja') {
+          limite = menorFecha(sumaDias(hoy, -1), vencimientos[socio.id] || hoy);
+        }
+        if (limite < lunes) continue;
+
+        var prob = socio.estado === 'activo' ? (w >= 1 ? 0.38 : 0.55) : 0.40;
+        if (!probable(prob)) continue;
+
+        var coachId = socio.coachId || coaches[0].id;
+        var tipo;
+        if (!primeraDe[socio.id]) {
+          tipo = socio.mesesAntiguedad <= 2 ? 'valoracion' : (probable(0.15) ? 'seguimiento' : 'entrenamiento');
+        } else if (coachId !== 'u_0003' && probable(0.10)) {
+          coachId = 'u_0003';                          /* consulta con la nutrióloga */
+          tipo = 'seguimiento';
+        } else {
+          tipo = probable(0.18) ? 'seguimiento' : 'entrenamiento';
+        }
+        var esNutricion = coachId === 'u_0003';
+
+        var hueco = buscarHueco(coachId, lunes, socio.horarioEntreno, permitidaDe(socio, limite));
+        if (!hueco) continue;
+
+        var estado = 'agendada';
+        if (hueco.fecha < hoy) {
+          var r = azar();
+          estado = r < 0.80 ? 'completada' : (r < 0.90 ? 'cancelada' : 'no_asistio');
+        }
+
+        var objetivo = objetivoSesion(tipo, socio, esNutricion);
+        var notasCoach = estado === 'completada' ? notaCoachSesion(tipo, socio, esNutricion) : '';
+        var notasSocio = '';
+        if (estado === 'cancelada') notasSocio = elegir(MOTIVOS_CANCELACION);
+        else if (probable(0.3)) notasSocio = elegir(NOTAS_SOCIO_SESION);
+
+        agregar(socio, coachId, hueco, tipo, estado, objetivo, notasCoach, notasSocio);
+      }
+    }
+
+    /* Orden cronológico e ids consecutivos. */
+    sesiones.sort(function (a, b) {
+      var ka = a.fecha + ' ' + a.hora + ' ' + a.socioId;
+      var kb = b.fecha + ' ' + b.hora + ' ' + b.socioId;
+      return ka < kb ? -1 : (ka > kb ? 1 : 0);
+    });
+    for (i = 0; i < sesiones.length; i++) sesiones[i].id = nuevoId('se_');
+
+    return sesiones;
+  }
+
+  /** Seis eventos especiales con inscritos reales del padrón. */
+  function construirEventos(socios, coaches, hoy) {
+    var existeCoach = {}, i;
+    for (i = 0; i < coaches.length; i++) existeCoach[coaches[i].id] = true;
+
+    var activos = socios.filter(function (s) { return s.estado === 'activo'; });
+    var conHistorial = socios.filter(function (s) { return s.estado === 'activo' || s.estado === 'vencido'; });
+    var eventos = [];
+
+    for (i = 0; i < EVENTOS_DEF.length; i++) {
+      var def = EVENTOS_DEF[i];
+      var fecha = def.pasado
+        ? anteriorDiaSemana(sumaDias(hoy, -def.dias), def.dow)
+        : proximoDiaSemana(sumaDias(hoy, def.dias), def.dow);
+
+      var pool = def.pasado ? conHistorial : activos;
+      var tope = Math.min(def.inscritos, def.cupo);
+      var inscritos = [];
+
+      if (def.conAna) {
+        for (var a = 0; a < pool.length; a++) {
+          if (pool[a].id === 'u_0007' && pool[a].fechaAlta <= fecha) { inscritos.push('u_0007'); break; }
+        }
+      }
+
+      var candidatos = barajar(pool);
+      for (var c = 0; c < candidatos.length && inscritos.length < tope; c++) {
+        var s = candidatos[c];
+        if (inscritos.indexOf(s.id) >= 0) continue;
+        if (s.fechaAlta > fecha) continue;          /* no estaba inscrito antes de darse de alta */
+        inscritos.push(s.id);
+      }
+
+      eventos.push({
+        id: nuevoId('ev_'),
+        nombre: def.nombre,
+        descripcion: def.descripcion,
+        tipo: def.tipo,
+        fecha: fecha,
+        hora: def.hora,
+        duracionMin: def.dur,
+        lugar: def.lugar,
+        cupo: def.cupo,
+        inscritos: inscritos,
+        coachId: existeCoach[def.coach] ? def.coach : coaches[0].id,
+        color: def.color,
+        costo: def.costo || 0,
+        activo: true
+      });
+    }
+
+    eventos.sort(function (a, b) { return a.fecha < b.fecha ? -1 : (a.fecha > b.fecha ? 1 : 0); });
+    return eventos;
+  }
+
+  /** Productos que vende recepción y que pueden cubrir una comida. */
+  function construirProductos() {
+    var lista = [];
+    for (var i = 0; i < PRODUCTOS_DEF.length; i++) {
+      var d = PRODUCTOS_DEF[i];
+      lista.push({
+        id: nuevoId('pr_'),
+        nombre: d.nombre,
+        descripcion: d.descripcion,
+        precio: d.precio,
+        kcal: d.kcal,
+        proteina: d.proteina,
+        carbos: d.carbos,
+        grasa: d.grasa,
+        sustituye: d.sustituye.slice(),
+        disponible: d.disponible !== false,
+        icono: d.icono
+      });
+    }
+    return lista;
+  }
+
+  /**
+   * Días a la semana que cada socio quiere venir, coherentes con la rutina
+   * que tiene asignada. Ana Sofía: 4.
+   */
+  function asignarMetasSemanales(socios, asignaciones, rutinas) {
+    var rutinaPorId = {}, activaDe = {}, i;
+    for (i = 0; i < rutinas.length; i++) rutinaPorId[rutinas[i].id] = rutinas[i];
+    for (i = 0; i < asignaciones.length; i++) {
+      if (asignaciones[i].activa) activaDe[asignaciones[i].socioId] = asignaciones[i];
+    }
+
+    for (i = 0; i < socios.length; i++) {
+      var socio = socios[i];
+      if (socio.id === 'u_0007') { socio.diasMeta = 4; continue; }
+
+      var asig = activaDe[socio.id];
+      var rutina = asig ? rutinaPorId[asig.rutinaId] : null;
+      var dias = rutina ? (Number(rutina.diasPorSemana) || 3) : ent(2, 4);
+      if (rutina && probable(0.25)) dias -= 1;
+      socio.diasMeta = acotar(dias, 2, 6);
+    }
+  }
+
+  /**
+   * Todos los socios ya respondieron la bienvenida, salvo exactamente tres
+   * de los más recientes (activos), para poder probar el flujo.
+   */
+  function marcarBienvenidas(socios) {
+    var candidatos = socios.filter(function (s) { return s.id !== 'u_0007' && s.estado === 'activo'; });
+    candidatos.sort(function (a, b) {
+      if (a.fechaAlta === b.fechaAlta) return a.id < b.id ? 1 : -1;
+      return a.fechaAlta < b.fechaAlta ? 1 : -1;
+    });
+
+    for (var i = 0; i < socios.length; i++) socios[i].bienvenidaHecha = true;
+    for (var j = 0; j < candidatos.length && j < 3; j++) candidatos[j].bienvenidaHecha = false;
+  }
+
+  /** ~18 notificaciones repartidas entre las tres cuentas de demostración. */
+  function construirNotificaciones(hoy, ana, marco, directorId, sesiones, eventos) {
     var lista = [];
     var anaId = ana ? ana.id : 'u_0007';
+    var i;
+
+    /* Datos reales del seed para que las notificaciones digan la verdad. */
+    var proximaAna = null, agendadasMarco = 0;
+    for (i = 0; i < (sesiones || []).length; i++) {
+      var se = sesiones[i];
+      if (se.estado !== 'agendada' || se.fecha < hoy) continue;
+      if (se.socioId === anaId && (!proximaAna || se.fecha < proximaAna.fecha)) proximaAna = se;
+      if (marco && se.coachId === marco.id) agendadasMarco++;
+    }
+    var clinica = null, proximoEvento = null;
+    for (i = 0; i < (eventos || []).length; i++) {
+      var ev = eventos[i];
+      if (ev.fecha < hoy) continue;
+      if (!proximoEvento) proximoEvento = ev;
+      if (ev.tipo === 'clinica' && ev.inscritos.indexOf(anaId) >= 0 && !clinica) clinica = ev;
+    }
 
     function agregar(usuarioId, titulo, cuerpo, tipo, diasAtras, hora, leida, link, clave) {
       lista.push({
@@ -2837,6 +3614,18 @@ window.AG = window.AG || {};
     agregar(anaId, 'Llevas cuatro semanas seguidas entrenando',
       'Excelente racha. Sigue registrando tus sesiones para que tu coach ajuste las cargas a tiempo.',
       'sistema', 9, 20, true, '#/socio/progreso', 'demo-racha');
+    if (proximaAna) {
+      agregar(anaId, 'Tu sesión con Marco quedó agendada',
+        'Nos vemos el ' + fechaHablada(proximaAna.fecha) + ' a las ' + proximaAna.hora +
+        '. Si no puedes llegar, cancela con cuatro horas de anticipación.',
+        'sistema', 2, 17, false, '#/socio/entrenador', 'demo-sesion');
+    }
+    if (clinica) {
+      agregar(anaId, 'Estás inscrita en la clínica de peso muerto',
+        'Es el ' + fechaHablada(clinica.fecha) + ' a las ' + clinica.hora + ' en ' + clinica.lugar +
+        '. Lleva ropa cómoda y zapato plano.',
+        'aviso', 5, 12, true, '#/socio/entrenador', 'demo-evento');
+    }
 
     /* --- Coach de demostración --- */
     if (marco) {
@@ -2849,9 +3638,15 @@ window.AG = window.AG || {};
       agregar(marco.id, 'Socio nuevo asignado',
         'Se te asignó un socio nuevo. Programa su valoración inicial durante la primera semana.',
         'sistema', 8, 10, true, '#/coach/socios', 'demo-coach-nuevo');
-      agregar(marco.id, 'Recordatorio de clase',
-        'Tu clase de Box de los martes a las 20:00 tiene lista de espera. Confirma asistencia con recepción.',
-        'aviso', 3, 12, true, '#/coach/clases', 'demo-coach-clase');
+      agregar(marco.id, 'Sesiones agendadas contigo',
+        agendadasMarco > 0
+          ? 'Tienes ' + agendadasMarco + (agendadasMarco === 1 ? ' sesión agendada' : ' sesiones agendadas') +
+            ' entre esta semana y la que entra. Revisa tu agenda y prepara las notas de cada socio.'
+          : 'Por ahora no tienes sesiones agendadas. Revisa tu disponibilidad para que los socios puedan apartar.',
+        'sistema', 1, 7, false, '#/coach/sesiones', 'demo-coach-sesiones');
+      agregar(marco.id, 'Clínica de peso muerto: cupo por cerrarse',
+        'La clínica que impartes ya tiene casi todos los lugares tomados. Confirma el material con recepción.',
+        'aviso', 3, 12, true, '#/coach/sesiones', 'demo-coach-evento');
       agregar(marco.id, 'Rutinas por revisar',
         'Hay socios con más de ocho semanas en el mismo bloque. Toca revisar y progresar cargas.',
         'rutina', 11, 9, true, '#/coach/rutinas', 'demo-coach-rutinas');
@@ -2870,6 +3665,12 @@ window.AG = window.AG || {};
     agregar(directorId, 'Aviso publicado',
       'El comunicado de mantenimiento de regaderas quedó publicado para todos los socios.',
       'aviso', 4, 9, true, '#/director/avisos', 'demo-dir-aviso');
+    if (proximoEvento) {
+      agregar(directorId, 'Próximo evento: ' + proximoEvento.nombre,
+        'Es el ' + fechaHablada(proximoEvento.fecha) + ' a las ' + proximoEvento.hora + '. Van ' +
+        proximoEvento.inscritos.length + ' de ' + proximoEvento.cupo + ' lugares.',
+        'sistema', 2, 10, false, '#/director/eventos', 'demo-dir-evento');
+    }
 
     lista.sort(function (a, b) { return a.fecha < b.fecha ? 1 : -1; });
     return lista;
@@ -2960,6 +3761,14 @@ window.AG = window.AG || {};
     /* ---------- Rutinas y asignaciones ---------- */
     var rutinas = construirRutinas(coaches, hoy);
     var asignaciones = construirAsignaciones(socios, rutinas, hoy);
+    asignarMetasSemanales(socios, asignaciones, rutinas);
+    marcarBienvenidas(socios);
+
+    /* ---------- Sesiones con entrenador, eventos y productos ---------- */
+    var disponibilidad = construirDisponibilidad(coaches);
+    var sesiones = construirSesiones(socios, coaches, disponibilidad, hoy, vencimientos);
+    var eventos = construirEventos(socios, coaches, hoy);
+    var productos = construirProductos();
 
     /* ---------- Adherencia por socio ----------
        Es la probabilidad de presentarse cada día programado. Como un 6 % de
@@ -2975,7 +3784,7 @@ window.AG = window.AG || {};
 
     /* ---------- Bitácoras y asistencias ---------- */
     var bitacoras = construirBitacoras(socios, asignaciones, rutinas, hoy, adherencias, estadoFinal, vencimientos);
-    var asistencias = construirAsistencias(socios, bitacoras, hoy, adherencias, vencimientos);
+    var asistencias = construirAsistencias(socios, bitacoras, sesiones, hoy, adherencias, vencimientos);
 
     /* ---------- Nutrición, calificaciones y comunicación ---------- */
     var planesNutricion = construirPlanesNutricion(socios, estadoFinal, hoy);
@@ -2983,8 +3792,7 @@ window.AG = window.AG || {};
 
     var usuarios = [director].concat(coaches, socios);
     var avisos = construirAvisos(usuarios, hoy, director.id);
-    var clases = construirClases(coaches, socios);
-    var notificaciones = construirNotificaciones(hoy, ana, coaches[0], director.id);
+    var notificaciones = construirNotificaciones(hoy, ana, coaches[0], director.id, sesiones, eventos);
 
     /* ---------- Limpieza de campos auxiliares ---------- */
     for (var c = 0; c < socios.length; c++) limpiarSocio(socios[c]);
@@ -3009,8 +3817,12 @@ window.AG = window.AG || {};
       calificaciones: calificaciones,
       asistencias: asistencias,
       avisos: avisos,
-      clases: clases,
-      notificaciones: notificaciones
+      clases: [],                 /* el gimnasio ya no imparte clases grupales */
+      notificaciones: notificaciones,
+      disponibilidad: disponibilidad,
+      sesiones: sesiones,
+      eventos: eventos,
+      productos: productos
     };
   };
 

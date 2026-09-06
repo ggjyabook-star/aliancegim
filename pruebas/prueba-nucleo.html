@@ -23,6 +23,7 @@
 <script src="../js/core/db.js"></script>
 <script src="../js/data/exercises.js"></script>
 <script src="../js/data/foods.js"></script>
+<script src="../js/data/ilustraciones.js"></script>
 <script src="../js/data/seed.js"></script>
 <script src="../js/core/auth.js"></script>
 <script src="../js/core/router.js"></script>
@@ -243,7 +244,32 @@
     t('bitácoras > 300', function () { return st.bitacoras.length > 300 || 'hay ' + st.bitacoras.length; });
     t('calificaciones > 60', function () { return st.calificaciones.length > 60 || 'hay ' + st.calificaciones.length; });
     t('asistencias > 800', function () { return st.asistencias.length > 800 || 'hay ' + st.asistencias.length; });
-    t('clases >= 14', function () { return st.clases.length >= 14 || 'hay ' + st.clases.length; });
+    t('clases ya no se generan', function () { return !st.clases || st.clases.length === 0 || 'hay ' + st.clases.length; });
+
+    seccion('Seed v2: sesiones, eventos, productos, horarios');
+    var idsUsuario = {}; st.usuarios.forEach(function(u){idsUsuario[u.id]=u;});
+    t('ya no genera clases', function () { return !st.clases || st.clases.length === 0 || 'sigue generando ' + st.clases.length + ' clases'; });
+    t('disponibilidad de los 5 coaches', function () { var c = {}; (st.disponibilidad||[]).forEach(function(d){c[d.coachId]=1;}); return Object.keys(c).length === 5 || 'coaches con disponibilidad: ' + Object.keys(c).length; });
+    t('sesiones > 100', function () { return (st.sesiones||[]).length > 100 || 'hay ' + (st.sesiones||[]).length; });
+    t('estados de sesión válidos', function () { var v=['agendada','completada','cancelada','no_asistio']; var mal=(st.sesiones||[]).filter(function(s){return v.indexOf(s.estado)<0;}); return mal.length===0 || mal.length + ' con estado inválido'; });
+    t('sesiones -> socio y coach válidos', function () { var mal=(st.sesiones||[]).filter(function(s){return !idsUsuario[s.socioId]||!idsUsuario[s.coachId];}); return mal.length===0 || mal.length + ' rotas'; });
+    t('REGLA: una sesión por socio por semana', function () {
+      function lunesDe(f){ var p=f.split('-').map(Number); var d=new Date(p[0],p[1]-1,p[2]); var dow=(d.getDay()+6)%7; d.setDate(d.getDate()-dow); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+      var vistas={}, dup=0; (st.sesiones||[]).filter(function(s){return s.estado==='agendada'||s.estado==='completada';}).forEach(function(s){ var k=s.socioId+'|'+lunesDe(s.fecha); if(vistas[k])dup++; vistas[k]=1; });
+      return dup===0 || dup + ' socios con 2+ sesiones en la misma semana'; });
+    t('sesiones completadas con notas del coach', function () { var c=(st.sesiones||[]).filter(function(s){return s.estado==='completada';}); var con=c.filter(function(s){return s.notasCoach&&s.notasCoach.length>15;}); return (c.length>0 && con.length/c.length>0.5) || 'solo ' + con.length + ' de ' + c.length + ' con notas'; });
+    t('eventos = 6', function () { return (st.eventos||[]).length === 6 || 'hay ' + (st.eventos||[]).length; });
+    t('eventos -> inscritos válidos', function () { var mal=0; (st.eventos||[]).forEach(function(e){(e.inscritos||[]).forEach(function(id){if(!idsUsuario[id])mal++;});}); return mal===0 || mal + ' inscritos inexistentes'; });
+    t('productos del gym = 6', function () { return (st.productos||[]).length === 6 || 'hay ' + (st.productos||[]).length; });
+    t('productos con sustituye y precio', function () { var mal=(st.productos||[]).filter(function(p){return !Array.isArray(p.sustituye)||!p.sustituye.length||!(p.precio>0);}); return mal.length===0 || mal.length + ' productos incompletos'; });
+    t('socios con horarioEntreno', function () { var v=['manana','mediodia','tarde','noche','variable']; var mal=socios.filter(function(s){return v.indexOf(s.horarioEntreno)<0;}); return mal.length===0 || mal.length + ' socios sin horario válido'; });
+    t('socios con diasMeta 2-6', function () { var mal=socios.filter(function(s){return !(s.diasMeta>=2&&s.diasMeta<=6);}); return mal.length===0 || mal.length + ' sin diasMeta'; });
+    t('3 socios con bienvenida pendiente', function () { var n=socios.filter(function(s){return s.bienvenidaHecha===false;}).length; return n===3 || 'hay ' + n; });
+    if (ana) {
+      t('Ana tiene sesión agendada próxima', function () { var hoy=AG.Utils.hoy(); return (st.sesiones||[]).some(function(s){return s.socioId===ana.id&&s.estado==='agendada'&&s.fecha>=hoy;}) || 'sin sesión próxima'; });
+      t('Ana tiene sesiones completadas con notas', function () { return (st.sesiones||[]).filter(function(s){return s.socioId===ana.id&&s.estado==='completada'&&s.notasCoach;}).length>=2 || 'pocas'; });
+      t('Ana bienvenidaHecha', function () { return ana.bienvenidaHecha===true || 'falso'; });
+    }
 
     seccion('Integridad referencial del seed');
     var idsUsuario = {}; st.usuarios.forEach(function(u){idsUsuario[u.id]=u;});
@@ -356,6 +382,10 @@
   t('medicionDelMes()', function () { var s = AG.DB.socios()[0]; AG.DB.medicionDelMes(s.id, AG.Utils.mesActual(), 'inicial'); return true; });
   t('rutinaActivaDe()', function () { var s = AG.DB.socios()[0]; AG.DB.rutinaActivaDe(s.id); return true; });
   t('estadisticas()', function () { return typeof AG.DB.estadisticas === 'function' ? !!AG.DB.estadisticas() : 'no existe'; });
+  ['disponibilidadDe','sesionesDe','sesionesDeCoach','sesionDeLaSemana','huecosDe','eventosProximos'].forEach(function (f) { t('DB.' + f + '()', function () { return typeof AG.DB[f] === 'function' || 'no existe'; }); });
+  t('huecosDe(coach, fecha) devuelve huecos', function () { var c=AG.DB.coaches()[0]; var d=AG.DB.disponibilidadDe(c.id)[0]; if(!d) return 'coach sin disponibilidad'; var DIAS=['domingo','lunes','martes','miercoles','jueves','viernes','sabado']; var hoy=new Date(); for(var i=0;i<7;i++){ var f=new Date(hoy); f.setDate(hoy.getDate()+i); var nom=DIAS[f.getDay()]; if(nom===d.dia.normalize('NFD').replace(/[̀-ͯ]/g,'')){ var iso=f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0'); var h=AG.DB.huecosDe(c.id, iso); return (Array.isArray(h)&&h.length>0&&typeof h[0].libre==='boolean') || 'devolvió ' + JSON.stringify(h).slice(0,60); } } return 'no encontré el día'; });
+  t('sesionDeLaSemana(Ana)', function () { var a=AG.DB.get('usuarios').filter(function(u){return u.email==='socio@alliancegym.mx';})[0]; var s=AG.DB.sesionDeLaSemana(a.id, AG.Utils.hoy()); return (s===null||typeof s==='object') || 'devolvió ' + typeof s; });
+  t('eventosProximos()', function () { var e=AG.DB.eventosProximos(3); return (Array.isArray(e)) || 'no es array'; });
 
   /* ---------- Auth ---------- */
   seccion('AG.Auth');

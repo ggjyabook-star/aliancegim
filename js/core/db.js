@@ -20,15 +20,23 @@ window.AG = window.AG || {};
      ============================================================= */
   var LLAVE = 'alliance_gym_db_v1';
   var LLAVE_CORRUPTO = 'alliance_gym_db_v1_corrupto';
-  var VERSION = 1;
+  /* Versión de la estructura. La 2 (rediseño) agrega disponibilidad,
+     sesiones con entrenador, eventos especiales y productos del gimnasio. */
+  var VERSION = 2;
   var MS_POR_DIA = 24 * 60 * 60 * 1000;
 
-  /* Todas las colecciones del contrato, en orden de documentación. */
+  /* Todas las colecciones del contrato, en orden de documentación.
+     'clases' ya no se usa (el gimnasio no imparte clases grupales), pero se
+     conserva para que los respaldos viejos se importen sin perder nada. */
   var COLECCIONES = [
     'planes', 'usuarios', 'pagos', 'mediciones', 'rutinas', 'asignaciones',
     'bitacoras', 'planesNutricion', 'calificaciones', 'asistencias',
-    'avisos', 'clases', 'notificaciones'
+    'avisos', 'clases', 'notificaciones',
+    'disponibilidad', 'sesiones', 'eventos', 'productos'
   ];
+
+  /* Colecciones que nacieron con el rediseño (versión 2). */
+  var COLECCIONES_V2 = ['disponibilidad', 'sesiones', 'eventos', 'productos'];
 
   /* Prefijo de id por colección. */
   var PREFIJOS = {
@@ -44,8 +52,15 @@ window.AG = window.AG || {};
     asistencias: 'at_',
     avisos: 'av_',
     clases: 'cl_',
-    notificaciones: 'nt_'
+    notificaciones: 'nt_',
+    disponibilidad: 'dp_',
+    sesiones: 'se_',
+    eventos: 'ev_',
+    productos: 'pr_'
   };
+
+  /* Días de la semana tal como se guardan en 'disponibilidad' (índice = getDay()). */
+  var DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
   /* =============================================================
      Estado interno del módulo
@@ -55,6 +70,8 @@ window.AG = window.AG || {};
   var avisoCorrupto = false;        // el aviso de base corrupta se da una sola vez
   var avisoEscritura = false;       // el aviso de "no se puede guardar" se da una sola vez
   var almacenOk = true;             // ¿la última escritura funcionó?
+  var versionCargada = VERSION;     // versión que traía la base al cargarla
+  var migracionPendiente = false;   // una base anterior a la v2 espera sus colecciones nuevas
 
   /* =============================================================
      Utilidades internas (con respaldo propio por si AG.Utils falta)
@@ -163,6 +180,54 @@ window.AG = window.AG || {};
 
   function texto(valor, porDefecto) {
     return typeof valor === 'string' && valor !== '' ? valor : porDefecto;
+  }
+
+  /** Minúsculas y sin acentos, para comparar nombres de día sin sorpresas. */
+  function sinAcentos(valor) {
+    return String(valor || '').toLowerCase()
+      .replace(/[áàäâ]/g, 'a').replace(/[éèëê]/g, 'e').replace(/[íìïî]/g, 'i')
+      .replace(/[óòöô]/g, 'o').replace(/[úùüû]/g, 'u').replace(/ñ/g, 'n').trim();
+  }
+
+  /** 'HH:MM' -> minutos desde medianoche; -1 si la hora no es válida. */
+  function minutosDe(hora) {
+    var m = /^(\d{1,2}):(\d{2})/.exec(String(hora || '').trim());
+    if (!m) return -1;
+    var h = Number(m[1]), mi = Number(m[2]);
+    if (h > 23 || mi > 59) return -1;
+    return h * 60 + mi;
+  }
+
+  /** Minutos desde medianoche -> 'HH:MM'. */
+  function horaDe(minutos) {
+    var t = Math.max(0, Math.min(23 * 60 + 59, Math.round(Number(minutos) || 0)));
+    return rellenar(Math.floor(t / 60), 2) + ':' + rellenar(t % 60, 2);
+  }
+
+  /** Nombre del día ('lunes' … 'domingo') de una fecha 'YYYY-MM-DD'; '' si no es válida. */
+  function nombreDiaDe(fecha) {
+    var d = aFecha(fecha);
+    return d ? DIAS_SEMANA[d.getDay()] : '';
+  }
+
+  /** Lunes de la semana natural (lunes a domingo) que contiene la fecha. */
+  function lunesDe(fecha) {
+    var d = aFecha(fecha);
+    if (!d) return '';
+    var dow = d.getDay();                       // 0 = domingo
+    d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+    return deFecha(d);
+  }
+
+  /** Ordena una copia por fecha y, dentro del mismo día, por hora. */
+  function ordenarPorFechaHora(lista, dir) {
+    var factor = dir === 'desc' ? -1 : 1;
+    return lista.slice().sort(function (a, b) {
+      var ka = ((a && typeof a.fecha === 'string') ? a.fecha : '') + ' ' + ((a && typeof a.hora === 'string') ? a.hora : '');
+      var kb = ((b && typeof b.fecha === 'string') ? b.fecha : '') + ' ' + ((b && typeof b.hora === 'string') ? b.hora : '');
+      if (ka === kb) return 0;
+      return ka > kb ? factor : -factor;
+    });
   }
 
   /** Aviso visual tolerante: si AG.Utils.toast aún no existe, no pasa nada. */
@@ -375,6 +440,7 @@ window.AG = window.AG || {};
   DB.LLAVE_CORRUPTO = LLAVE_CORRUPTO;
   DB.VERSION = VERSION;
   DB.COLECCIONES = COLECCIONES.slice();
+  DB.DIAS_SEMANA = DIAS_SEMANA.slice();
 
   /** Objeto vivo con todos los datos del sistema. */
   DB.state = estructuraVacia();
@@ -434,7 +500,13 @@ window.AG = window.AG || {};
       return DB.state;
     }
 
+    /* La versión guardada se toma antes de normalizar (normalizar la sube a la actual). */
+    versionCargada = esObjeto(datos.meta) ? Math.max(1, entero(datos.meta.version, 1)) : 1;
     reemplazarEstado(fusionarEstado(datos));
+
+    /* Base anterior al rediseño: sus colecciones nuevas se completan en
+       sembrarSiVacio() (cuando ya está cargado AG.Seed) o a mano con completarDatosV2(). */
+    migracionPendiente = versionCargada < 2 && DB.get('usuarios').length > 0;
     return DB.state;
   };
 
@@ -678,6 +750,168 @@ window.AG = window.AG || {};
     if (!objetivoId) return [];
     var lista = DB.donde('calificaciones', function (c) { return c.objetivoId === objetivoId; });
     return ordenarPorFecha(lista, 'fecha', 'desc');
+  };
+
+  /* ---------- Sesiones con entrenador, eventos y productos (rediseño v2) ---------- */
+
+  /** Nombre del día ('lunes' … 'domingo') de una fecha 'YYYY-MM-DD'. */
+  DB.nombreDiaDe = nombreDiaDe;
+
+  /** Lunes de la semana natural (lunes a domingo) que contiene la fecha. */
+  DB.lunesDe = lunesDe;
+
+  /**
+   * Bloques de disponibilidad de un coach (activos e inactivos), ordenados
+   * de lunes a domingo y por hora de inicio.
+   * @returns {Array}
+   */
+  DB.disponibilidadDe = function (coachId) {
+    if (!coachId) return [];
+    var ordenDia = { lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6, domingo: 7 };
+    var lista = DB.donde('disponibilidad', function (b) { return b.coachId === coachId; });
+    return lista.slice().sort(function (a, b) {
+      var da = ordenDia[sinAcentos(a.dia)] || 9, db = ordenDia[sinAcentos(b.dia)] || 9;
+      if (da !== db) return da - db;
+      var ha = minutosDe(a.desde), hb = minutosDe(b.desde);
+      return ha - hb;
+    });
+  };
+
+  /** Sesiones de un socio, de la más antigua a la más reciente (fecha y hora). */
+  DB.sesionesDe = function (socioId) {
+    if (!socioId) return [];
+    var lista = DB.donde('sesiones', function (s) { return s.socioId === socioId; });
+    return ordenarPorFechaHora(lista, 'asc');
+  };
+
+  /**
+   * Sesiones de un coach en un rango de fechas (ambos extremos incluidos y
+   * opcionales), ordenadas por fecha y hora.
+   * @param {String} coachId
+   * @param {String} [desde]  'YYYY-MM-DD'
+   * @param {String} [hasta]  'YYYY-MM-DD'
+   * @returns {Array}
+   */
+  DB.sesionesDeCoach = function (coachId, desde, hasta) {
+    if (!coachId) return [];
+    var d = fechaValida(desde), h = fechaValida(hasta);
+    var lista = DB.donde('sesiones', function (s) {
+      if (s.coachId !== coachId) return false;
+      var f = fechaValida(s.fecha);
+      if (!f) return false;
+      if (d && f < d) return false;
+      if (h && f > h) return false;
+      return true;
+    });
+    return ordenarPorFechaHora(lista, 'asc');
+  };
+
+  /**
+   * La sesión que el socio ya tiene en la semana natural (lunes a domingo)
+   * de la fecha de referencia. Solo cuentan las 'agendada' y 'completada':
+   * las canceladas y las faltas liberan la semana.
+   * @param {String} socioId
+   * @param {String} [fechaRef]  'YYYY-MM-DD' (si falta, hoy)
+   * @returns {Object|null}
+   */
+  DB.sesionDeLaSemana = function (socioId, fechaRef) {
+    if (!socioId) return null;
+    var lunes = lunesDe(fechaValida(fechaRef) || hoy());
+    if (!lunes) return null;
+    var domingo = sumaDias(lunes, 6);
+    var candidatas = DB.donde('sesiones', function (s) {
+      if (s.socioId !== socioId) return false;
+      if (s.estado !== 'agendada' && s.estado !== 'completada') return false;
+      var f = fechaValida(s.fecha);
+      return !!f && f >= lunes && f <= domingo;
+    });
+    if (!candidatas.length) return null;
+    var ordenadas = ordenarPorFechaHora(candidatas, 'asc');
+    // Si por una importación hubiera dos, manda la agendada; si no, la primera.
+    for (var i = 0; i < ordenadas.length; i++) {
+      if (ordenadas[i].estado === 'agendada') return ordenadas[i];
+    }
+    return ordenadas[0];
+  };
+
+  /**
+   * Huecos de un coach en una fecha, a partir de su disponibilidad para ese
+   * día de la semana: un hueco cada duracionMin entre 'desde' y 'hasta'.
+   * Un hueco está ocupado si ya hay una sesión agendada o completada del
+   * coach que se traslape con él ese día.
+   * @param {String} coachId
+   * @param {String} fecha  'YYYY-MM-DD' (si falta, hoy)
+   * @returns {Array<{hora:String, libre:Boolean, sesionId:String|null, socioId:String|null, duracionMin:Number}>}
+   */
+  DB.huecosDe = function (coachId, fecha) {
+    if (!coachId) return [];
+    var f = fechaValida(fecha) || hoy();
+    var dia = sinAcentos(nombreDiaDe(f));
+    if (!dia) return [];
+
+    var bloques = DB.donde('disponibilidad', function (b) {
+      return b.coachId === coachId && b.activa !== false && sinAcentos(b.dia) === dia;
+    });
+    if (!bloques.length) return [];
+
+    /* Sesiones que ocupan lugar ese día: [inicio, fin) en minutos. */
+    var ocupadas = [];
+    var sesiones = DB.donde('sesiones', function (s) {
+      return s.coachId === coachId && fechaValida(s.fecha) === f &&
+        (s.estado === 'agendada' || s.estado === 'completada');
+    });
+    for (var k = 0; k < sesiones.length; k++) {
+      var ini = minutosDe(sesiones[k].hora);
+      if (ini < 0) continue;
+      var dur = Math.max(15, Math.min(240, entero(sesiones[k].duracionMin, 60)));
+      ocupadas.push({ ini: ini, fin: ini + dur, sesion: sesiones[k] });
+    }
+
+    var huecos = [], vistos = {};
+    for (var i = 0; i < bloques.length; i++) {
+      var b = bloques[i];
+      var desde = minutosDe(b.desde), hasta = minutosDe(b.hasta);
+      var paso = Math.max(15, Math.min(240, entero(b.duracionMin, 60)));
+      if (desde < 0 || hasta < 0 || hasta <= desde) continue;
+
+      for (var t = desde; t + paso <= hasta; t += paso) {
+        var hora = horaDe(t);
+        if (vistos[hora]) continue;
+        vistos[hora] = true;
+
+        var choque = null;
+        for (var o = 0; o < ocupadas.length && !choque; o++) {
+          if (ocupadas[o].ini < t + paso && ocupadas[o].fin > t) choque = ocupadas[o].sesion;
+        }
+        huecos.push({
+          hora: hora,
+          libre: !choque,
+          sesionId: choque ? choque.id : null,
+          socioId: choque ? (choque.socioId || null) : null,
+          duracionMin: paso
+        });
+      }
+    }
+
+    huecos.sort(function (a, b) { return minutosDe(a.hora) - minutosDe(b.hora); });
+    return huecos;
+  };
+
+  /**
+   * Eventos activos de hoy en adelante, del más cercano al más lejano.
+   * @param {Number} [limite]  cuántos devolver (sin límite si falta o es 0)
+   * @returns {Array}
+   */
+  DB.eventosProximos = function (limite) {
+    var hoyStr = hoy();
+    var lista = DB.donde('eventos', function (e) {
+      if (e.activo === false) return false;
+      var f = fechaValida(e.fecha);
+      return !!f && f >= hoyStr;
+    });
+    var ordenados = ordenarPorFechaHora(lista, 'asc');
+    var n = entero(limite, 0);
+    return n > 0 ? ordenados.slice(0, n) : ordenados;
   };
 
   /**
@@ -948,8 +1182,11 @@ window.AG = window.AG || {};
 
       var respaldo = clonar(DB.state);
       try {
+        var versionRespaldo = Math.max(1, entero(datos.meta.version, 1));
         reemplazarEstado(fusionarEstado(datos));
         DB.guardar();
+        /* Un respaldo anterior al rediseño recibe sus colecciones nuevas. */
+        if (versionRespaldo < 2) DB.completarDatosV2();
         DB.recalcularEstadoSocios();
         avisar('Respaldo importado correctamente.', 'ok');
         return true;
@@ -981,11 +1218,101 @@ window.AG = window.AG || {};
   }
 
   /**
-   * Siembra los datos demo si la base no tiene usuarios.
+   * Completa una base anterior al rediseño (versión 1) con las colecciones
+   * nuevas a partir de la semilla de demostración, sin tocar lo que ya tenía:
+   * - productos: se copian tal cual (no dependen de personas);
+   * - disponibilidad: solo la de coaches que existen en la base;
+   * - eventos: solo con coach existente e inscritos que existen;
+   * - sesiones: solo si socio y coach existen;
+   * - campos nuevos del socio (horarioEntreno, diasMeta, desayunaAntes,
+   *   bienvenidaHecha): se toman de la semilla cuando el socio es el mismo
+   *   (mismo id y correo); si no, se dejan sin definir para que el socio
+   *   responda la bienvenida.
+   * Solo escribe en colecciones vacías. Nunca lanza.
+   * @returns {Boolean} true si agregó algo
+   */
+  DB.completarDatosV2 = function () {
+    migracionPendiente = false;
+    if (!DB.get('usuarios').length) return false;
+
+    var faltaAlgo = false;
+    for (var c = 0; c < COLECCIONES_V2.length; c++) {
+      if (!DB.get(COLECCIONES_V2[c]).length) faltaAlgo = true;
+    }
+    if (!faltaAlgo) return false;
+
+    var semilla = construirSemilla();
+    if (!semilla) return false;
+
+    var usuarios = DB.get('usuarios');
+    var porId = {}, i;
+    for (i = 0; i < usuarios.length; i++) {
+      if (usuarios[i] && usuarios[i].id) porId[usuarios[i].id] = usuarios[i];
+    }
+    var esCoach = function (id) { return !!porId[id] && porId[id].rol === 'coach'; };
+    var esSocio = function (id) { return !!porId[id] && porId[id].rol === 'socio'; };
+
+    var agregado = 0;
+
+    function volcar(coleccion, lista, filtro) {
+      var destino = DB.get(coleccion);
+      if (destino.length || !esArreglo(lista)) return;
+      for (var j = 0; j < lista.length; j++) {
+        var item = clonar(lista[j]);
+        if (!esObjeto(item)) continue;
+        try { if (filtro && !filtro(item)) continue; } catch (e) { continue; }
+        if (typeof item.id !== 'string' || !item.id || existeId(destino, item.id)) {
+          item.id = idUnico(destino, coleccion);
+        }
+        destino.push(item);
+        agregado++;
+      }
+    }
+
+    volcar('productos', semilla.productos, null);
+    volcar('disponibilidad', semilla.disponibilidad, function (b) { return esCoach(b.coachId); });
+    volcar('eventos', semilla.eventos, function (e) {
+      if (!esCoach(e.coachId)) return false;
+      var inscritos = esArreglo(e.inscritos) ? e.inscritos : [];
+      e.inscritos = inscritos.filter(esSocio);
+      return true;
+    });
+    volcar('sesiones', semilla.sesiones, function (s) { return esSocio(s.socioId) && esCoach(s.coachId); });
+
+    /* Campos nuevos del socio, solo si la semilla trae al mismo socio. */
+    var semillaPorId = {};
+    var listaSemilla = esArreglo(semilla.usuarios) ? semilla.usuarios : [];
+    for (i = 0; i < listaSemilla.length; i++) {
+      if (listaSemilla[i] && listaSemilla[i].id) semillaPorId[listaSemilla[i].id] = listaSemilla[i];
+    }
+    for (i = 0; i < usuarios.length; i++) {
+      var u = usuarios[i];
+      if (!u || u.rol !== 'socio' || typeof u.bienvenidaHecha === 'boolean') continue;
+      var s = semillaPorId[u.id];
+      if (!s || s.rol !== 'socio' || s.email !== u.email) continue;
+      u.horarioEntreno = texto(s.horarioEntreno, 'variable');
+      u.diasMeta = Math.max(2, Math.min(6, entero(s.diasMeta, 3)));
+      u.desayunaAntes = s.desayunaAntes !== false;
+      u.bienvenidaHecha = s.bienvenidaHecha === true;
+      agregado++;
+    }
+
+    DB.guardar();
+    return agregado > 0;
+  };
+
+  /**
+   * Siembra los datos demo si la base no tiene usuarios. Si la base ya tiene
+   * datos pero es anterior al rediseño, solo le completa las colecciones nuevas.
    * @returns {Boolean} true si se sembró
    */
   DB.sembrarSiVacio = function () {
-    if (DB.get('usuarios').length) return false;
+    if (DB.get('usuarios').length) {
+      if (migracionPendiente) {
+        try { DB.completarDatosV2(); } catch (e) { migracionPendiente = false; }
+      }
+      return false;
+    }
 
     var sembrado = construirSemilla();
     if (!sembrado) {
@@ -995,6 +1322,7 @@ window.AG = window.AG || {};
     }
 
     reemplazarEstado(fusionarEstado(sembrado));
+    migracionPendiente = false;
     DB.guardar();
     return true;
   };

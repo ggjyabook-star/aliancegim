@@ -38,27 +38,36 @@ En la pantalla de entrada hay tres botones que entran directo con cada perfil.
 ## 👤 Lo que ve cada quien
 
 ### Socio
-- **Inicio** — su membresía, el entrenamiento de hoy, su nutrición, su progreso del mes y su racha.
-- **Mi rutina** — el día que le toca, con registro de series, peso, repeticiones y temporizador de descanso.
+- **Inicio** — un saludo, **lo único que le toca hoy** en una tarjeta grande con la ilustración del
+  ejercicio, y cuatro números. Todo lo demás está a un toque. La primera vez le hace tres preguntas
+  (¿a qué hora vienes?, ¿cuántos días?, ¿desayunas antes?) para acomodarle el día.
+- **Mi rutina** — el día que le toca, cada ejercicio con su **ilustración animada** que muestra el
+  movimiento, series y repeticiones en píldoras, registro de peso y temporizador de descanso.
 - **Mi progreso** — la medición de inicio de mes, la de cierre y **el comparativo calculado automáticamente**
   con puntaje, veredicto y gráficas.
-- **Mi nutrición** — el plan que le armó su coach, con comidas, gramos y macros.
+- **Mi nutrición** — *qué comer hoy* con platillos mexicanos de todos los días (huevos con frijoles y
+  tortillas, pollo con arroz y nopales, avena con plátano…), ajustado a la hora en que entrena, y el
+  letrero del licuado del gimnasio por si no alcanzó a desayunar.
 - **Calculadora** — decide si quiere **bajar grasa, mantener o ganar músculo** y el sistema calcula sus calorías,
-  macros, agua y le genera un menú de ejemplo con alimentos reales.
-- **Ejercicios** — biblioteca con técnica, consejos y músculos trabajados.
-- **Clases** — horario semanal e inscripción.
+  macros, agua y le genera un menú de ejemplo con básicos mexicanos.
+- **Mi entrenador** — agenda **una sesión a la semana** con su coach eligiendo día y hora, ve las notas
+  que le dejó y los eventos especiales del gimnasio.
+- **Ejercicios** — biblioteca ilustrada: el dibujo muestra el movimiento, los pasos van numerados y las
+  series sugeridas dependen de su objetivo.
 - **Mi membresía** — credencial digital, meses acumulados, historial de pagos y recibos.
 - **Calificar** — califica a su coach y al gimnasio.
-- **Mi perfil** — sus datos, objetivo, salud y contraseña.
+- **Mi perfil** — sus datos, objetivo, horarios, salud y contraseña.
 
 ### Coach
-- **Inicio** — sus pendientes del día: a quién le falta medición inicial, a quién hay que cerrarle el mes,
-  quién no tiene rutina o plan de alimentación, quién dejó de asistir.
-- **Agenda** — sus clases, mediciones por hacer y cumpleaños de sus socios.
+- **Inicio** — lo más urgente de hoy en una tarjeta, y sus pendientes agrupados: a quién le falta medición
+  inicial, a quién hay que cerrarle el mes, quién no tiene rutina o plan, quién dejó de venir.
+- **Sesiones** — su agenda de la semana con las sesiones que le agendaron los socios, y su disponibilidad
+  (qué días y horas atiende).
+- **Agenda** — la semana completa: sesiones, mediciones por hacer y cumpleaños de sus socios.
 - **Mis socios** — expediente completo de cada uno.
 - **Mediciones** — tablero del mes: *pendiente de inicio · en curso · mes cerrado*.
 - **Rutinas** — constructor de rutinas y asignación.
-- **Nutrición** — armado de planes con cálculo automático de calorías y macros.
+- **Nutrición** — armado de planes con cálculo automático de calorías y macros, con básicos mexicanos.
 - **Mis calificaciones** — lo que opinan sus socios.
 
 ### Dirección (dueño)
@@ -66,9 +75,11 @@ Ve **todo** lo anterior más:
 - **Tablero general** con lo que requiere atención hoy.
 - **Pagos y cobranza** — cobros, recibos, vencidos y recordatorios.
 - **Coaches** — desempeño, calificación, retención y carga de trabajo.
+- **Sesiones** — ocupación de los entrenadores y quién no ha agendado.
+- **Eventos** — retos, clínicas de técnica, competencias internas y convivencias, con inscripción.
 - **Reportes** — finanzas, retención, churn, utilidad, progreso del gimnasio y satisfacción.
 - **Asistencia** — control de acceso en recepción, horas pico y socios en riesgo.
-- **Clases, avisos y configuración** — planes, precios, usuarios y respaldos.
+- **Avisos y configuración** — planes, precios, **productos que vende el gimnasio**, usuarios y respaldos.
 
 ---
 

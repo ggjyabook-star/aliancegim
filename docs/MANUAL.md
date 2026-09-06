@@ -20,9 +20,14 @@ puedas ver cómo se ve todo funcionando. Cuando ya lo hayas explorado, vacíalo 
    - Días de gracia para pagos vencidos
 5. Ve a **Configuración → Datos → Reiniciar** solo cuando quieras borrar la demostración
    *(te va a pedir escribir la palabra REINICIAR: es a propósito, para que nadie lo haga por accidente)*.
-6. Da de alta a tus **coaches** en *Coaches → Nuevo coach*.
-7. Da de alta a tus **socios** en *Socios → Nuevo socio*. Al terminar cada alta, el sistema te ofrece
-   registrar el primer pago: acéptalo y la vigencia se calcula sola.
+6. Da de alta a tus **coaches** en *Coaches → Nuevo coach*. Cada coach define después, en *Sesiones →
+   Mi disponibilidad*, qué días y horas atiende sesiones.
+7. Ve a **Configuración → Productos** y captura lo que vendes en recepción (licuados, barras, avena…)
+   con su precio: el sistema se los sugiere al socio junto a su desayuno cuando no alcanzó a comer.
+8. Da de alta a tus **socios** en *Socios → Nuevo socio*. Al terminar cada alta, el sistema te ofrece
+   registrar el primer pago: acéptalo y la vigencia se calcula sola. La primera vez que el socio entre,
+   el sistema le hará tres preguntas (a qué hora viene, cuántos días, si desayuna antes) para acomodarle
+   su día.
 
 > **Cambia las contraseñas** de las cuentas de demostración desde *Configuración → Usuarios* antes de operar.
 
@@ -85,7 +90,12 @@ la relación entre lo que hizo y lo que consiguió.
 3. **Asignar** la rutina al socio desde su ficha o desde *Rutinas → Asignaciones*.
 
 El socio la ve en **Mi rutina**, con el día que le toca, y va marcando cada serie con el peso que levantó.
-El sistema le lleva el temporizador de descanso, su volumen total y sus récords.
+Cada ejercicio trae una **ilustración animada** que muestra el movimiento de inicio a fin, las series y
+repeticiones en píldoras grandes y un botón *"Cómo se hace"* con los pasos numerados — para que no tenga
+que leer. El sistema le lleva el temporizador de descanso, su volumen total y sus récords.
+
+Los días que no le toca rutina, el panel no le dice "no vengas": le ofrece *descanso activo* (cardio
+ligero o movilidad) por si quiere venir de todos modos.
 
 Puedes duplicar cualquier rutina existente para no empezar de cero.
 
@@ -100,10 +110,41 @@ Puedes duplicar cualquier rutina existente para no empezar de cero.
 3. Reparte proteína, carbohidratos y grasa, y te arma las comidas.
    Puedes usar **"Generar automáticamente"** y después ajustar los gramos a mano.
 
-El socio lo ve en **Mi nutrición**, con gramos, medidas caseras y lista de compras.
+El socio lo ve en **Mi nutrición** como *qué comer hoy*: platillos mexicanos de todos los días
+(huevos a la mexicana con frijoles y tortillas, pollo asado con arroz y nopales, avena con plátano, tacos
+de atún…) en medidas caseras — 2 tortillas, 1 taza de arroz — con los gramos en pequeño para quien los
+quiera. La recomendación se acomoda a la hora en que entrena: si va en la mañana, algo ligero antes y
+desayuno fuerte después; si va en la tarde, colación antes de entrenar y cena con proteína.
+
+Junto al desayuno y al post-entreno aparece, sin insistir, el **producto del gimnasio** que puede
+sustituirlos (*"¿No alcanzaste a desayunar? En recepción tenemos el licuado de proteína con plátano"*).
+Los productos y sus precios los administras en *Configuración → Productos*.
 
 Si un socio no tiene plan, en **Calculadora** puede hacerlo él mismo: elige si quiere
-*bajar grasa, mantener o ganar músculo* y obtiene sus calorías, macros, agua y un menú de ejemplo.
+*bajar grasa, mantener o ganar músculo* y obtiene sus calorías, macros, agua y un menú de ejemplo con
+básicos mexicanos.
+
+---
+
+## 5b. Sesiones con entrenador y eventos
+
+El gimnasio no da clases grupales. Lo que ofrece es **una sesión a la semana con un entrenador**, y de
+vez en cuando **eventos especiales**.
+
+**Cómo agenda el socio:** en **Mi entrenador** elige el día (los próximos 7) y la hora entre los huecos
+libres de su coach. Solo puede tener una sesión agendada por semana; si intenta otra, el sistema le
+ofrece cambiar la que ya tiene. Necesita membresía activa.
+
+**Cómo la atiende el coach:** en **Sesiones → Agenda** ve su semana. Al terminar cada sesión la marca
+como completada y deja una nota corta (*"Corregimos la cadera en el peso muerto; subir a 60 kg"*): el
+socio la ve en su panel y eso es lo que más valora.
+
+**Disponibilidad:** cada coach define en **Sesiones → Mi disponibilidad** sus bloques por día
+(por ejemplo lunes 7:00–11:00 y 17:00–21:00, sesiones de 60 min). De ahí salen los huecos.
+
+**Dirección** ve en **Sesiones** la ocupación de cada coach y qué socios activos no han agendado en el
+mes, con recordatorio por WhatsApp. En **Eventos** crea retos, clínicas de técnica, competencias
+internas o convivencias con cupo; el socio se inscribe desde su panel.
 
 ---
 
@@ -153,7 +194,9 @@ Para usarlo en otra computadora: copia la carpeta completa, ábrelo ahí e impor
 | Diario | Dirección | Revisar *"Requiere tu atención"* en el tablero |
 | Días 1-5 del mes | Coaches | Mediciones iniciales de todos sus socios |
 | Días 26-31 del mes | Coaches | Cierres de mes y entrega de resultados |
-| Semanal | Coaches | Revisar adherencia y contactar a quien dejó de venir |
+| Diario | Coaches | Atender las sesiones agendadas y dejar nota al socio al terminar |
+| Semanal | Coaches | Revisar constancia y contactar a quien dejó de venir |
+| Semanal | Dirección | Revisar qué socios no han agendado su sesión y recordarles |
 | Semanal | Dirección | Cobranza de vencidos y respuesta a reseñas |
 | Mensual | Dirección | Reporte ejecutivo y ajuste de metas |
 | Viernes | Dirección | Respaldo |
