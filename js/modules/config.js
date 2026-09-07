@@ -5,9 +5,11 @@
 
    Ruta: 'director/config'
 
-   Cinco pestañas:
+   Seis pestañas:
      Gimnasio    -> identidad, contacto, moneda y metas del negocio
      Planes      -> catálogo de membresías (alta, edición, baja)
+     Productos   -> lo que vende recepción y puede cubrir una comida
+                    del socio (rediseño v2, sección 6)
      Usuarios    -> todas las cuentas: rol, acceso y contraseñas
      Datos       -> estadísticas de la base, respaldo, importación y reinicio
      Apariencia  -> tema claro/oscuro con vista previa inmediata
@@ -34,6 +36,7 @@ window.AG = window.AG || {};
   var TABS = [
     { clave: 'gimnasio', etiqueta: 'Gimnasio', icono: 'escudo' },
     { clave: 'planes', etiqueta: 'Planes', icono: 'tarjeta' },
+    { clave: 'productos', etiqueta: 'Productos', icono: 'manzana' },
     { clave: 'usuarios', etiqueta: 'Usuarios', icono: 'socios' },
     { clave: 'datos', etiqueta: 'Datos', icono: 'reporte' },
     { clave: 'apariencia', etiqueta: 'Apariencia', icono: 'sol' }
@@ -84,9 +87,37 @@ window.AG = window.AG || {};
     { clave: 'calificaciones', etiqueta: 'Calificaciones', icono: 'estrella' },
     { clave: 'asistencias', etiqueta: 'Asistencias', icono: 'calendario' },
     { clave: 'avisos', etiqueta: 'Avisos al gimnasio', icono: 'campana' },
-    { clave: 'clases', etiqueta: 'Clases grupales', icono: 'clase' },
+    { clave: 'disponibilidad', etiqueta: 'Horarios de los coaches', icono: 'reloj' },
+    { clave: 'sesiones', etiqueta: 'Sesiones con entrenador', icono: 'coach' },
+    { clave: 'eventos', etiqueta: 'Eventos especiales', icono: 'trofeo' },
+    { clave: 'productos', etiqueta: 'Productos de recepción', icono: 'manzana' },
+    { clave: 'clases', etiqueta: 'Clases (histórico, ya no se usa)', icono: 'clase' },
     { clave: 'notificaciones', etiqueta: 'Notificaciones', icono: 'chat' }
   ];
+
+  /* Momentos del día que un producto puede cubrir (sección 6 del rediseño). */
+  var MOMENTOS = [
+    { clave: 'desayuno', etiqueta: 'Desayuno' },
+    { clave: 'colacion', etiqueta: 'Colación' },
+    { clave: 'comida', etiqueta: 'Comida' },
+    { clave: 'pre_entreno', etiqueta: 'Pre-entreno' },
+    { clave: 'post_entreno', etiqueta: 'Post-entreno' },
+    { clave: 'cena', etiqueta: 'Cena' }
+  ];
+
+  /* Iconos que puede llevar un producto. Los cinco primeros son los del
+     contrato; 'sol' y 'rayo' se aceptan porque los usan los datos de demo. */
+  var ICONOS_PRODUCTO = [
+    { clave: 'gota', etiqueta: 'Gota' },
+    { clave: 'manzana', etiqueta: 'Manzana' },
+    { clave: 'fuego', etiqueta: 'Fuego' },
+    { clave: 'agua', etiqueta: 'Agua' },
+    { clave: 'nutricion', etiqueta: 'Nutrición' },
+    { clave: 'sol', etiqueta: 'Sol' },
+    { clave: 'rayo', etiqueta: 'Rayo' }
+  ];
+
+  var DESCRIPCION_PRODUCTO_MAX = 140;   /* cabe en dos líneas en móvil */
 
   /* Sin letras ni números que se confundan al dictarlos (O/0, I/1, l). */
   var ALFABETO_CLAVE = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -274,7 +305,32 @@ window.AG = window.AG || {};
       '.cfg-marca-txt b{font-size:15px;color:var(--texto)}' +
       '.cfg-swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--borde-2);' +
         'padding:0;cursor:pointer}' +
-      '@media (max-width:520px){.cfg-clave{font-size:19px;letter-spacing:.16em}}';
+      /* --- Productos --- */
+      '.cfg-prod{display:flex;align-items:center;gap:10px;min-width:0}' +
+      '.cfg-prod-icono{width:36px;height:36px;flex:0 0 auto;display:grid;place-items:center;' +
+        'border-radius:50%;background:var(--rojo-bg);color:var(--rojo)}' +
+      '.cfg-prod-txt{min-width:0;display:flex;flex-direction:column;line-height:1.28}' +
+      '.cfg-prod-txt b{color:var(--texto)}' +
+      '.cfg-prod-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;' +
+        'overflow:hidden;max-width:300px;white-space:normal}' +
+      '.cfg-prod-off .cfg-prod{opacity:.62}' +
+      '.cfg-pills{display:flex;flex-wrap:wrap;gap:5px;min-width:160px}' +
+      '.cfg-macro{white-space:nowrap;color:var(--texto-2)}' +
+      '.cfg-macro b{color:var(--texto)}' +
+      '.cfg-macros{display:grid;gap:10px;grid-template-columns:repeat(4,minmax(0,1fr))}' +
+      '.cfg-momentos{display:flex;flex-wrap:wrap;gap:8px 18px;padding:4px 0}' +
+      '.cfg-iconos{display:flex;flex-wrap:wrap;gap:8px}' +
+      '.cfg-icono-opt{position:relative;display:inline-flex;flex-direction:column;align-items:center;' +
+        'gap:4px;padding:8px 10px;min-width:66px;border:1px solid var(--borde);border-radius:var(--radio-sm);' +
+        'background:var(--panel-2);color:var(--texto-2);font-size:11.5px;font-weight:600;cursor:pointer;' +
+        'transition:border-color var(--trans),background var(--trans),color var(--trans)}' +
+      '.cfg-icono-opt input{position:absolute;opacity:0;width:0;height:0;margin:0}' +
+      '.cfg-icono-opt:hover{border-color:var(--borde-2);color:var(--texto)}' +
+      '.cfg-icono-opt.on{border-color:var(--rojo);background:var(--rojo-bg);color:var(--texto)}' +
+      '.cfg-icono-opt.on svg{color:var(--rojo)}' +
+      '.cfg-icono-opt:focus-within{outline:2px solid var(--rojo);outline-offset:2px}' +
+      '@media (max-width:520px){.cfg-clave{font-size:19px;letter-spacing:.16em}' +
+        '.cfg-macros{grid-template-columns:repeat(2,minmax(0,1fr))}}';
     document.head.appendChild(st);
   }
 
@@ -912,6 +968,419 @@ window.AG = window.AG || {};
         refrescarPantalla();
       } else {
         toast('No se pudo eliminar el plan. Intenta de nuevo.', 'error');
+      }
+    });
+  }
+
+  /* =============================================================
+     5b. Pestaña PRODUCTOS
+     Lo que vende recepción (licuados, barras, avena…) y que el socio
+     ve como sugerencia amable junto a su desayuno y su post-entreno.
+     ============================================================= */
+
+  function momentoInfo(clave) {
+    for (var i = 0; i < MOMENTOS.length; i++) {
+      if (MOMENTOS[i].clave === clave) return MOMENTOS[i];
+    }
+    return null;
+  }
+
+  /** Icono válido para un producto; si viene uno desconocido, el primero del catálogo. */
+  function iconoProductoSeguro(nombre) {
+    var n = txt(nombre);
+    for (var i = 0; i < ICONOS_PRODUCTO.length; i++) {
+      if (ICONOS_PRODUCTO[i].clave === n) return n;
+    }
+    return ICONOS_PRODUCTO[0].clave;
+  }
+
+  /** Momentos válidos y sin repetir, venga como venga el campo de la base. */
+  function momentosDe(producto) {
+    var crudo = (producto && Object.prototype.toString.call(producto.sustituye) === '[object Array]')
+      ? producto.sustituye : [];
+    var salida = [], vistos = {};
+    for (var i = 0; i < crudo.length; i++) {
+      var m = txt(crudo[i]);
+      if (!m || vistos[m] || !momentoInfo(m)) continue;
+      vistos[m] = true;
+      salida.push(m);
+    }
+    return salida;
+  }
+
+  /** ¿Este producto se le sugiere al socio? (disponible y cubre desayuno o post-entreno) */
+  function seSugiere(producto) {
+    if (!producto || producto.disponible === false) return false;
+    var momentos = momentosDe(producto);
+    return momentos.indexOf('desayuno') >= 0 || momentos.indexOf('post_entreno') >= 0;
+  }
+
+  function productosOrdenados() {
+    var lista = AG.DB.donde('productos', function (p) { return !!p; });
+    lista.sort(function (a, b) {
+      var na = U.normalizar(a.nombre), nb = U.normalizar(b.nombre);
+      return na < nb ? -1 : (na > nb ? 1 : 0);
+    });
+    return lista;
+  }
+
+  function nombreProductoOcupado(nombre, exceptoId) {
+    var buscado = U.normalizar(nombre);
+    if (!buscado) return false;
+    var repetidos = AG.DB.donde('productos', function (p) {
+      return p && p.id !== exceptoId && U.normalizar(p.nombre) === buscado;
+    });
+    return repetidos.length > 0;
+  }
+
+  function kpisProductos(lista) {
+    var disponibles = 0, suma = 0, cuenta = 0, sugeridos = 0, i;
+    for (i = 0; i < lista.length; i++) {
+      var p = lista[i];
+      if (p.disponible !== false) disponibles++;
+      var precio = nm(p.precio, 0);
+      if (precio > 0) { suma += precio; cuenta++; }
+      if (seSugiere(p)) sugeridos++;
+    }
+
+    return '<div class="grid g4">' +
+      kpiHTML('manzana', String(lista.length), 'Productos en el menú', '') +
+      kpiHTML('check', String(disponibles), 'Disponibles hoy', 'kpi-ok') +
+      kpiHTML('dinero', cuenta ? U.dinero(suma / cuenta, 0) : '—', 'Precio promedio', 'kpi-info') +
+      kpiHTML('nutricion', String(sugeridos), 'Se sugieren al socio', sugeridos ? 'kpi-warn' : '') +
+    '</div>';
+  }
+
+  /** 'P 32 · C 42 · G 8' con los gramos en negrita. */
+  function macrosHTML(p) {
+    return '<span class="cfg-macro" title="Proteína · Carbohidratos · Grasa, en gramos">' +
+      '<b>' + esc(U.num(nm(p.proteina, 0), 0)) + '</b> P · ' +
+      '<b>' + esc(U.num(nm(p.carbos, 0), 0)) + '</b> C · ' +
+      '<b>' + esc(U.num(nm(p.grasa, 0), 0)) + '</b> G' +
+    '</span>';
+  }
+
+  function filaProducto(p) {
+    var momentos = momentosDe(p);
+    var pills = '';
+    for (var i = 0; i < momentos.length; i++) {
+      pills += '<span class="pill">' + esc(momentoInfo(momentos[i]).etiqueta) + '</span>';
+    }
+    if (!pills) pills = '<span class="mini muted">Ninguno</span>';
+
+    var disponible = p.disponible !== false;
+    var nombre = txt(p.nombre) || 'Producto sin nombre';
+
+    return '<tr' + (disponible ? '' : ' class="cfg-prod-off"') + '>' +
+      '<td>' +
+        '<div class="cfg-prod">' +
+          '<span class="cfg-prod-icono">' + ico(iconoProductoSeguro(p.icono), 18) + '</span>' +
+          '<div class="cfg-prod-txt">' +
+            '<b>' + esc(nombre) + '</b>' +
+            '<span class="cfg-prod-desc mini muted">' + esc(txt(p.descripcion) || 'Sin descripción') + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+      '<td class="nums nowrap">' + esc(U.dinero(nm(p.precio, 0), 0)) + '</td>' +
+      '<td class="nums nowrap">' + esc(U.num(nm(p.kcal, 0), 0)) + ' <span class="mini muted">kcal</span></td>' +
+      '<td class="nums nowrap">' + macrosHTML(p) + '</td>' +
+      '<td><div class="cfg-pills">' + pills + '</div></td>' +
+      '<td class="nowrap">' +
+        '<label class="switch" title="' + (disponible ? 'Disponible: se sugiere al socio' : 'No disponible: oculto para el socio') + '">' +
+          '<input type="checkbox" data-producto-disponible="' + esc(p.id) + '"' + (disponible ? ' checked' : '') +
+            ' aria-label="Disponible: ' + esc(nombre) + '">' +
+          '<span class="mini">' + (disponible ? 'Sí' : 'No') + '</span>' +
+        '</label>' +
+      '</td>' +
+      '<td>' +
+        '<div class="row-sm nowrap">' +
+          '<button type="button" class="btn-icono" data-producto-editar="' + esc(p.id) + '" ' +
+            'title="Editar producto" aria-label="Editar producto">' + ico('editar', 16) + '</button>' +
+          '<button type="button" class="btn-icono" data-producto-eliminar="' + esc(p.id) + '" ' +
+            'title="Eliminar producto" aria-label="Eliminar producto">' + ico('basura', 16) + '</button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }
+
+  function tablaProductos(lista) {
+    if (!lista.length) {
+      return vacioHTML('manzana',
+        'Todavía no hay productos. Da de alta el primero y el socio lo verá como sugerencia junto a su desayuno.',
+        '<button type="button" class="btn btn-primary mt" data-producto-nuevo>' + ico('mas', 16) + ' Crear el primer producto</button>');
+    }
+
+    var html = '<div class="table-wrap scroll-x"><table class="table table-compacta">' +
+      '<thead><tr>' +
+        '<th>Producto</th><th>Precio</th><th>Energía</th><th title="Proteína · Carbohidratos · Grasa, en gramos">P · C · G (g)</th>' +
+        '<th>Sustituye</th><th>Disponible</th><th>Acciones</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < lista.length; i++) html += filaProducto(lista[i]);
+    return html + '</tbody></table></div>';
+  }
+
+  function panelProductos() {
+    var lista = productosOrdenados();
+
+    var boton = '<button type="button" class="btn btn-primary btn-sm" data-producto-nuevo>' +
+      ico('mas', 16) + ' Nuevo producto</button>';
+
+    return '<div class="stack">' +
+      kpisProductos(lista) +
+      tarjetaHTML('manzana', 'Productos de recepción', tablaProductos(lista), boton,
+        'Licuados, barras y platillos que vendes y que pueden cubrir una comida del socio.') +
+      '<div class="aviso aviso-info">' + ico('info', 18) +
+        '<span><b>Dónde lo ve el socio:</b> aparece como sugerencia junto a su desayuno y post-entreno cuando está disponible.</span></div>' +
+    '</div>';
+  }
+
+  /* ---------- Formulario de producto ---------- */
+
+  function campoMacro(id, nombre, etiqueta, valor, paso) {
+    return '<div class="field">' +
+      '<label class="label" for="' + esc(id) + '">' + esc(etiqueta) + '</label>' +
+      inputHTML(id, nombre, 'number', valor === undefined || valor === null ? '' : valor,
+        'min="0" max="9999" step="' + esc(paso || '1') + '" inputmode="decimal"') +
+    '</div>';
+  }
+
+  function formularioProductoHTML(producto) {
+    var p = producto || {};
+    var momentos = momentosDe(p);
+    var iconoActual = iconoProductoSeguro(producto ? p.icono : 'gota');
+    var i;
+
+    var casillas = '';
+    for (i = 0; i < MOMENTOS.length; i++) {
+      var m = MOMENTOS[i];
+      casillas += '<label class="check">' +
+        '<input type="checkbox" name="sustituye" value="' + esc(m.clave) + '"' +
+          (momentos.indexOf(m.clave) >= 0 ? ' checked' : '') + '>' +
+        '<span>' + esc(m.etiqueta) + '</span>' +
+      '</label>';
+    }
+
+    var iconos = '';
+    for (i = 0; i < ICONOS_PRODUCTO.length; i++) {
+      var ic = ICONOS_PRODUCTO[i];
+      var on = ic.clave === iconoActual;
+      iconos += '<label class="cfg-icono-opt' + (on ? ' on' : '') + '" data-icono-opt="' + esc(ic.clave) + '">' +
+        '<input type="radio" name="icono" value="' + esc(ic.clave) + '"' + (on ? ' checked' : '') + '>' +
+        ico(ic.clave, 20) +
+        '<span>' + esc(ic.etiqueta) + '</span>' +
+      '</label>';
+    }
+
+    return '<form class="stack" data-form-producto novalidate>' +
+      '<div class="form-grid dos">' +
+
+        campo('prf-nombre', 'Nombre',
+          inputHTML('prf-nombre', 'nombre', 'text', p.nombre, 'maxlength="60" autocomplete="off" placeholder="Licuado de proteína con plátano"'),
+          '', 'ancho-total', true) +
+
+        campo('prf-descripcion', 'Descripción',
+          '<textarea class="textarea" id="prf-descripcion" name="descripcion" rows="2" maxlength="' + DESCRIPCION_PRODUCTO_MAX + '" ' +
+            'placeholder="Qué lleva y en qué tamaño se sirve.">' + esc(p.descripcion || '') + '</textarea>',
+          'Una frase corta: máximo 2 líneas.', 'ancho-total') +
+
+        campo('prf-precio', 'Precio',
+          inputHTML('prf-precio', 'precio', 'number', p.precio === undefined ? '' : p.precio, 'min="0" step="5" inputmode="decimal"'),
+          'Lo que paga el socio en recepción.', '', true) +
+
+        '<div class="field">' +
+          '<label class="label">Disponible</label>' +
+          '<label class="switch"><input type="checkbox" name="disponible"' +
+            (!producto || p.disponible !== false ? ' checked' : '') + '>' +
+            '<span>Se vende y se sugiere al socio</span></label>' +
+          '<p class="help">Si lo apagas, deja de sugerirse hasta que lo vuelvas a encender.</p>' +
+        '</div>' +
+
+        '<div class="field ancho-total">' +
+          '<label class="label">Valor nutrimental por porción</label>' +
+          '<div class="cfg-macros">' +
+            campoMacro('prf-kcal', 'kcal', 'Energía (kcal)', p.kcal, '10') +
+            campoMacro('prf-proteina', 'proteina', 'Proteína (g)', p.proteina, '1') +
+            campoMacro('prf-carbos', 'carbos', 'Carbohidratos (g)', p.carbos, '1') +
+            campoMacro('prf-grasa', 'grasa', 'Grasa (g)', p.grasa, '1') +
+          '</div>' +
+          '<p class="help">Con estos números el sistema sabe qué comida puede cubrir.</p>' +
+        '</div>' +
+
+        '<div class="field ancho-total">' +
+          '<label class="label">Sustituye a <span class="req">*</span></label>' +
+          '<div class="cfg-momentos">' + casillas + '</div>' +
+          '<p class="help">Marca al menos un momento del día que este producto puede cubrir.</p>' +
+        '</div>' +
+
+        '<div class="field ancho-total">' +
+          '<label class="label">Icono</label>' +
+          '<div class="cfg-iconos">' + iconos + '</div>' +
+        '</div>' +
+
+      '</div>' +
+      errorFormHTML('producto') +
+    '</form>';
+  }
+
+  /** Lista de momentos a partir de lo que devuelve formToObject (array, texto o nada). */
+  function leerMomentos(valor) {
+    var crudo = [];
+    if (Object.prototype.toString.call(valor) === '[object Array]') crudo = valor;
+    else if (typeof valor === 'string' && valor) crudo = [valor];
+    var salida = [], vistos = {};
+    for (var i = 0; i < crudo.length; i++) {
+      var m = txt(crudo[i]);
+      if (!m || vistos[m] || !momentoInfo(m)) continue;
+      vistos[m] = true;
+      salida.push(m);
+    }
+    return salida;
+  }
+
+  /** Gramos válidos (0 a 9999, un decimal). */
+  function gramos(v) {
+    var n = Math.max(0, Math.min(9999, nm(v, 0)));
+    return Math.round(n * 10) / 10;
+  }
+
+  function guardarProducto(api, producto) {
+    var raiz = api.root;
+    var form = U.$('[data-form-producto]', raiz);
+    if (!form) return false;
+
+    var d = U.formToObject(form);
+
+    var nombre = txt(d.nombre);
+    if (!nombre) return fallar(raiz, 'producto', 'Escribe el nombre del producto.', '#prf-nombre');
+    if (nombreProductoOcupado(nombre, producto ? producto.id : '')) {
+      return fallar(raiz, 'producto', 'Ya hay otro producto con ese nombre.', '#prf-nombre');
+    }
+
+    /* La descripción vive en dos líneas: sin saltos y con tope de largo. */
+    var descripcion = txt(d.descripcion).replace(/\s*[\r\n]+\s*/g, ' ').replace(/\s{2,}/g, ' ');
+    if (descripcion.length > DESCRIPCION_PRODUCTO_MAX) {
+      descripcion = descripcion.slice(0, DESCRIPCION_PRODUCTO_MAX).replace(/\s+\S*$/, '');
+    }
+
+    var precio = numOnull(d.precio);
+    if (precio === null || precio < 0) {
+      return fallar(raiz, 'producto', 'Escribe el precio del producto (0 o más).', '#prf-precio');
+    }
+
+    var kcal = numOnull(d.kcal);
+    if (kcal === null || kcal < 0) {
+      return fallar(raiz, 'producto', 'Escribe las calorías del producto (0 o más).', '#prf-kcal');
+    }
+
+    var sustituye = leerMomentos(d.sustituye);
+    if (!sustituye.length) {
+      return fallar(raiz, 'producto', 'Marca al menos un momento del día que este producto puede sustituir.',
+        '[name="sustituye"]');
+    }
+
+    var cambios = {
+      nombre: nombre,
+      descripcion: descripcion,
+      precio: Math.round(precio * 100) / 100,
+      kcal: Math.round(Math.min(9999, kcal)),
+      proteina: gramos(d.proteina),
+      carbos: gramos(d.carbos),
+      grasa: gramos(d.grasa),
+      sustituye: sustituye,
+      disponible: d.disponible !== false,
+      icono: iconoProductoSeguro(d.icono)
+    };
+
+    if (producto) {
+      AG.DB.actualizar('productos', producto.id, cambios);
+      toast('Producto «' + cambios.nombre + '» actualizado.', 'ok');
+    } else {
+      var creado = AG.DB.insertar('productos', cambios);
+      if (!creado) return fallar(raiz, 'producto', 'No se pudo crear el producto. Intenta de nuevo.');
+      toast(cambios.disponible
+        ? 'Producto «' + cambios.nombre + '» creado. Ya se sugiere a los socios.'
+        : 'Producto «' + cambios.nombre + '» creado (oculto hasta que lo enciendas).', 'ok');
+    }
+
+    api.cerrar();
+    refrescarPantalla();
+    return true;
+  }
+
+  function formularioProducto(productoId) {
+    var producto = productoId ? AG.DB.buscar('productos', productoId) : null;
+    if (productoId && !producto) {
+      toast('No encontramos ese producto en la base.', 'error');
+      return null;
+    }
+
+    return U.modal({
+      titulo: producto ? 'Editar producto · ' + txt(producto.nombre) : 'Nuevo producto',
+      ancho: 'lg',
+      cuerpo: formularioProductoHTML(producto),
+      acciones: [
+        { texto: 'Cancelar', clase: 'btn-ghost', onClick: function (api) { api.cerrar(); } },
+        {
+          texto: producto ? 'Guardar cambios' : 'Crear producto',
+          clase: 'btn-primary',
+          onClick: function (api) { return guardarProducto(api, producto); }
+        }
+      ],
+      onOpen: function (raiz, api) {
+        U.delegar(raiz, 'submit', '[data-form-producto]', function (e) {
+          e.preventDefault();
+          guardarProducto(api, producto);
+        });
+
+        U.delegar(raiz, 'change', '[name="icono"]', function (e, el) {
+          var opciones = U.$$('[data-icono-opt]', raiz);
+          for (var i = 0; i < opciones.length; i++) {
+            opciones[i].classList.toggle('on', opciones[i].getAttribute('data-icono-opt') === el.value);
+          }
+        });
+      }
+    });
+  }
+
+  /* ---------- Disponible / eliminar producto ---------- */
+
+  function alternarProducto(productoId, encender, raiz) {
+    var p = AG.DB.buscar('productos', productoId);
+    if (!p) {
+      toast('No encontramos ese producto en la base.', 'error');
+      if (raiz) repintarPanel(raiz);
+      return;
+    }
+
+    AG.DB.actualizar('productos', p.id, { disponible: !!encender });
+    toast(encender
+      ? '«' + txt(p.nombre) + '» ya se sugiere a los socios.'
+      : '«' + txt(p.nombre) + '» quedó oculto para los socios.', 'ok');
+
+    if (raiz) repintarPanel(raiz);
+    else refrescarPantalla();
+  }
+
+  function eliminarProducto(productoId) {
+    var p = AG.DB.buscar('productos', productoId);
+    if (!p) { toast('No encontramos ese producto en la base.', 'error'); return; }
+
+    U.confirmar(
+      '¿Eliminar «' + txt(p.nombre) + '» del menú de recepción?\nEsta acción no se puede deshacer.',
+      'Eliminar producto',
+      {
+        peligro: true,
+        textoOk: 'Sí, eliminar',
+        textoCancelar: 'Cancelar',
+        detalle: 'Si solo quieres dejar de sugerirlo por un tiempo, mejor apágalo con el interruptor de «Disponible».'
+      }
+    ).then(function (ok) {
+      if (!ok) return;
+      if (AG.DB.eliminar('productos', p.id)) {
+        toast('Producto «' + txt(p.nombre) + '» eliminado.', 'ok');
+        refrescarPantalla();
+      } else {
+        toast('No se pudo eliminar el producto. Intenta de nuevo.', 'error');
       }
     });
   }
@@ -1620,7 +2089,7 @@ window.AG = window.AG || {};
 
     var respaldo = '<div class="stack-sm">' +
       '<p class="mini muted">El respaldo es un archivo <b>.json</b> con absolutamente todo: usuarios, socios, ' +
-        'pagos, mediciones, rutinas, nutrición, clases y configuración.</p>' +
+        'pagos, mediciones, rutinas, nutrición, sesiones, eventos, productos y configuración.</p>' +
       '<div class="row-sm wrap">' +
         '<button type="button" class="btn btn-primary" data-exportar>' +
           ico('descargar', 16) + ' Exportar respaldo</button>' +
@@ -1888,6 +2357,7 @@ window.AG = window.AG || {};
 
   function panelHTML(tab) {
     if (tab === 'planes') return panelPlanes();
+    if (tab === 'productos') return panelProductos();
     if (tab === 'usuarios') return panelUsuarios();
     if (tab === 'datos') return panelDatos();
     if (tab === 'apariencia') return panelApariencia();
@@ -1950,7 +2420,7 @@ window.AG = window.AG || {};
         '<div>' +
           '<h1 class="page-title">' + ico('config', 24) + '<span>Configuración</span></h1>' +
           '<p class="page-sub">Los datos de ' + esc(s.nombreGym || 'tu gimnasio') +
-            ', el catálogo de planes, quién entra al sistema y el respaldo de la información.</p>' +
+            ', el catálogo de planes y productos, quién entra al sistema y el respaldo de la información.</p>' +
         '</div>' +
         '<div class="page-acciones">' +
           '<button type="button" class="btn btn-outline" data-exportar>' +
@@ -2050,6 +2520,27 @@ window.AG = window.AG || {};
     U.delegar(raiz, 'click', '[data-plan-eliminar]', function (e, el) {
       e.preventDefault();
       eliminarPlan(el.getAttribute('data-plan-eliminar'));
+    });
+
+    /* ---------- Productos ---------- */
+    U.delegar(raiz, 'click', '[data-producto-nuevo]', function (e) {
+      e.preventDefault();
+      formularioProducto(null);
+    });
+
+    U.delegar(raiz, 'click', '[data-producto-editar]', function (e, el) {
+      e.preventDefault();
+      formularioProducto(el.getAttribute('data-producto-editar'));
+    });
+
+    U.delegar(raiz, 'click', '[data-producto-eliminar]', function (e, el) {
+      e.preventDefault();
+      eliminarProducto(el.getAttribute('data-producto-eliminar'));
+    });
+
+    /* El interruptor de la tabla aplica al instante, sin abrir el formulario. */
+    U.delegar(raiz, 'change', '[data-producto-disponible]', function (e, el) {
+      alternarProducto(el.getAttribute('data-producto-disponible'), !!el.checked, raiz);
     });
 
     /* ---------- Usuarios ---------- */
@@ -2169,6 +2660,7 @@ window.AG = window.AG || {};
   AG.Mod.Config = {
     render: render,
     formularioPlan: formularioPlan,
+    formularioProducto: formularioProducto,
     formularioUsuario: formularioUsuario,
     restablecerPassword: restablecerPassword,
     aplicarTema: function (tema) { aplicarTema(tema, null); },
