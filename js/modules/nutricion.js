@@ -16,6 +16,20 @@
      AG.Mod.Nutricion.generarMenu(macros, n, opts) -> array de comidas (función pura)
      AG.Mod.Nutricion.engancharAcciones(raiz)      -> activa Imprimir / Lista de compras
 
+   Rediseño v2 (docs/REDISENO.md, secciones 5 y 6):
+     AG.Mod.Nutricion.recomendacionDelDia(socio, fecha) -> menú del día con
+         platillos mexicanos de todos los días, determinista por socio + fecha,
+         adaptado al horario de entreno y con sustitutos del gimnasio.
+     AG.Mod.Nutricion.productosQueSustituyen(momento)   -> productos disponibles
+     AG.Mod.Nutricion.sustitutoHTML(producto, momento)  -> tarjeta .sustituto
+     AG.Mod.Nutricion.diaHTML(recomendacion, opts)      -> tarjetas .platillo
+     AG.Mod.Nutricion.medidaCasera(alimentoId, gramos)  -> '2 tortillas', '½ taza de frijoles'
+
+   generarMenu(macros, n, opts) ahora arma PLATILLOS mexicanos (huevo, frijol,
+   tortilla, arroz, avena, plátano, papa, nopal, pollo, atún, lenteja…) con
+   medidas caseras; opts.modo:'catalogo' usa el generador clásico pieza por
+   pieza y opts.premium:true deja entrar alimentos caros o poco comunes.
+
    Reglas: JavaScript clásico, sin módulos, todo escapado con
    AG.Utils.esc(), nada de alert/confirm/prompt, nada de
    localStorage directo y ningún listado sin su estado vacío.

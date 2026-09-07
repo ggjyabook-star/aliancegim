@@ -3,11 +3,18 @@
    -------------------------------------------------------------
    "Mi perfil": la pantalla donde el socio manda sobre su propia
    información. Encabezado con avatar y color, sus datos, su
-   objetivo, su información de salud, su acceso, sus preferencias,
-   la descarga de su información y el resumen de todo lo que
-   lleva hecho en Alliance Gym.
+   objetivo, sus horarios de entreno (rediseño v2), su información
+   de salud, su acceso, sus preferencias, la descarga de su
+   información y el resumen de todo lo que lleva hecho.
 
    Ruta: 'socio/perfil'   (solo rol 'socio')
+
+   Rediseño v2 (docs/REDISENO.md):
+   - Sección "Mis horarios": horarioEntreno, diasMeta y
+     desayunaAntes. Con eso se acomoda la recomendación de comida
+     del día y la tarjeta HOY del panel de inicio.
+   - Botón "Volver a ver la bienvenida" (bienvenidaHecha = false).
+   - Textos de una línea: nada de párrafos, nada de tecnicismos.
 
    Control de acceso: el socio SOLO toca su propio expediente.
    Todo lo que se lee de la base pasa por AG.Utils.esc().
@@ -36,48 +43,73 @@ window.AG = window.AG || {};
   var TABS = [
     { clave: 'datos', etiqueta: 'Mis datos', icono: 'usuario' },
     { clave: 'objetivo', etiqueta: 'Mi objetivo', icono: 'meta' },
+    { clave: 'horarios', etiqueta: 'Mis horarios', icono: 'reloj' },
     { clave: 'salud', etiqueta: 'Salud', icono: 'corazon' },
     { clave: 'acceso', etiqueta: 'Acceso', icono: 'candado' },
     { clave: 'preferencias', etiqueta: 'Preferencias', icono: 'config' },
     { clave: 'resumen', etiqueta: 'Mi resumen', icono: 'trofeo' }
   ];
 
-  /* Objetivo del socio: la dirección que toma su comparativo mensual. */
+  /* Objetivo del socio: la dirección que toma su comparativo mensual.
+     Descripciones de una línea y sin tecnicismos. */
   var OBJETIVOS = [
-    { v: 'perder_grasa', t: 'Perder grasa', icono: 'fuego',
-      d: 'Bajar tu porcentaje de grasa cuidando el músculo que ya tienes.' },
-    { v: 'ganar_musculo', t: 'Ganar músculo', icono: 'pesa',
-      d: 'Sumar masa muscular con un superávit de calorías controlado.' },
-    { v: 'mantener', t: 'Mantener', icono: 'balanza',
-      d: 'Sostener tu composición actual y no perder lo ganado.' },
-    { v: 'rendimiento', t: 'Rendimiento', icono: 'rayo',
-      d: 'Más fuerza, potencia y resistencia en cada sesión.' },
-    { v: 'salud', t: 'Salud general', icono: 'corazon',
-      d: 'Bienestar, energía y hábitos sostenibles todo el año.' }
+    { v: 'perder_grasa', t: 'Perder grasa', icono: 'fuego', d: 'Bajar grasa sin perder músculo.' },
+    { v: 'ganar_musculo', t: 'Ganar músculo', icono: 'pesa', d: 'Sumar músculo comiendo un poco más.' },
+    { v: 'mantener', t: 'Mantener', icono: 'balanza', d: 'Quedarte como estás, sin perder lo ganado.' },
+    { v: 'rendimiento', t: 'Rendimiento', icono: 'rayo', d: 'Más fuerza y más aguante.' },
+    { v: 'salud', t: 'Salud general', icono: 'corazon', d: 'Energía y buenos hábitos todo el año.' }
   ];
 
   /* Nivel de entrenamiento: define qué rutinas te propone tu coach. */
   var NIVELES = [
-    { v: 'principiante', t: 'Principiante', icono: 'meta',
-      d: 'Menos de 6 meses entrenando con constancia.' },
-    { v: 'intermedio', t: 'Intermedio', icono: 'grafica',
-      d: 'De 6 meses a 2 años, con técnica ya sólida.' },
-    { v: 'avanzado', t: 'Avanzado', icono: 'trofeo',
-      d: 'Más de 2 años progresando con cargas altas.' }
+    { v: 'principiante', t: 'Principiante', icono: 'meta', d: 'Menos de 6 meses entrenando.' },
+    { v: 'intermedio', t: 'Intermedio', icono: 'grafica', d: 'De 6 meses a 2 años.' },
+    { v: 'avanzado', t: 'Avanzado', icono: 'trofeo', d: 'Más de 2 años con cargas altas.' }
   ];
 
   /* Nivel de actividad: multiplica tu gasto calórico en la calculadora. */
   var ACTIVIDADES = [
-    { v: 'sedentario', t: 'Sedentario', icono: 'sueno',
-      d: 'Trabajo de escritorio y poco o nada de ejercicio.' },
-    { v: 'ligero', t: 'Ligero', icono: 'gota',
-      d: 'Te mueves o entrenas de 1 a 3 días por semana.' },
-    { v: 'moderado', t: 'Moderado', icono: 'mancuerna',
-      d: 'Entrenas de 3 a 5 días por semana.' },
-    { v: 'alto', t: 'Alto', icono: 'fuego',
-      d: 'Entrenas de 6 a 7 días por semana.' },
-    { v: 'atleta', t: 'Atleta', icono: 'rayo',
-      d: 'Doble sesión al día o trabajo físico pesado.' }
+    { v: 'sedentario', t: 'Sedentario', icono: 'sueno', d: 'Escritorio y casi nada de ejercicio.' },
+    { v: 'ligero', t: 'Ligero', icono: 'gota', d: 'Te mueves 1 a 3 días por semana.' },
+    { v: 'moderado', t: 'Moderado', icono: 'mancuerna', d: 'Entrenas 3 a 5 días por semana.' },
+    { v: 'alto', t: 'Alto', icono: 'fuego', d: 'Entrenas 6 a 7 días por semana.' },
+    { v: 'atleta', t: 'Atleta', icono: 'rayo', d: 'Doble sesión o trabajo físico pesado.' }
+  ];
+
+  /* ---- Rediseño v2: horarios de entreno (sección 7 de REDISENO.md) ---- */
+
+  /* ¿A qué hora sueles venir? -> socio.horarioEntreno */
+  var HORARIOS = [
+    { v: 'manana', t: 'Mañana', icono: 'sol', d: 'Antes de las 11' },
+    { v: 'mediodia', t: 'Mediodía', icono: 'reloj', d: 'De 11 a 3' },
+    { v: 'tarde', t: 'Tarde', icono: 'fuego', d: 'De 3 a 7' },
+    { v: 'noche', t: 'Noche', icono: 'luna', d: 'Después de las 7' },
+    { v: 'variable', t: 'Depende del día', icono: 'calendario', d: 'Cada día es distinto' }
+  ];
+
+  /* Una línea por horario: así se acomodan las comidas del día. */
+  var COMIDAS_POR_HORARIO = {
+    manana: 'Algo ligero antes y el desayuno fuerte después de entrenar.',
+    mediodia: 'Desayuno completo y la comida después de entrenar.',
+    tarde: 'Colación a las 4:30 y cena con proteína.',
+    noche: 'Colación a media tarde y cena ligera al salir.',
+    variable: 'Cada día acomodamos tus comidas según vengas.'
+  };
+
+  /* ¿Cuántos días a la semana quieres venir? -> socio.diasMeta */
+  var DIAS_META = [
+    { v: 2, d: 'Dos días bien hechos valen mucho.' },
+    { v: 3, d: 'Tres días: el ritmo que más gente sostiene.' },
+    { v: 4, d: 'Cuatro días: buen equilibrio.' },
+    { v: 5, d: 'Cinco días: ya vas en serio.' },
+    { v: 6, d: 'Seis días: deja uno para descansar.' }
+  ];
+
+  /* ¿Desayunas antes de entrenar? -> socio.desayunaAntes (true/false/'aveces') */
+  var DESAYUNOS = [
+    { v: 'si', t: 'Sí', icono: 'manzana', d: 'Desayuno y luego entreno' },
+    { v: 'no', t: 'No', icono: 'gota', d: 'Solo agua y a entrenar' },
+    { v: 'aveces', t: 'A veces', icono: 'reloj', d: 'Según el día' }
   ];
 
   var SEXOS = [
@@ -86,19 +118,24 @@ window.AG = window.AG || {};
   ];
 
   var TEMAS = [
-    { v: 'oscuro', t: 'Oscuro', icono: 'luna', d: 'Descansa la vista de noche y en el gimnasio.' },
-    { v: 'claro', t: 'Claro', icono: 'sol', d: 'Más contraste con luz de día o al imprimir.' }
+    { v: 'oscuro', t: 'Oscuro', icono: 'luna', d: 'Descansa la vista de noche.' },
+    { v: 'claro', t: 'Claro', icono: 'sol', d: 'Más contraste con luz de día.' }
   ];
 
-  /* Recordatorios que el socio puede encender o apagar. */
+  /* Recordatorios que el socio puede encender o apagar.
+     Ya no hay clases: entran la sesión con entrenador y los eventos. */
   var RECORDATORIOS = [
-    { v: 'pago', t: 'Mi pago está por vencer', d: 'Te avisamos antes de que se corte tu acceso.' },
-    { v: 'medicion', t: 'Toca medición', d: 'Al abrir y al cerrar el mes con tu coach.' },
-    { v: 'rutina', t: 'Cambios en mi rutina', d: 'Cuando tu coach te asigna o ajusta el plan.' },
-    { v: 'nutricion', t: 'Cambios en mi nutrición', d: 'Cuando actualizan tu plan alimenticio.' },
-    { v: 'clase', t: 'Mis clases', d: 'Recordatorio de las clases en las que estás inscrito.' },
-    { v: 'aviso', t: 'Avisos del gimnasio', d: 'Horarios especiales, mantenimiento y noticias.' }
+    { v: 'pago', t: 'Mi pago está por vencer', d: 'Antes de que se corte tu acceso.' },
+    { v: 'medicion', t: 'Toca medición', d: 'Al abrir y al cerrar el mes.' },
+    { v: 'rutina', t: 'Cambios en mi rutina', d: 'Cuando tu coach ajusta el plan.' },
+    { v: 'nutricion', t: 'Cambios en mi nutrición', d: 'Cuando actualizan tus comidas.' },
+    { v: 'sesion', t: 'Mi sesión con entrenador', d: 'Un día antes de tu sesión.' },
+    { v: 'evento', t: 'Eventos especiales', d: 'Retos, clínicas y convivencias.' },
+    { v: 'aviso', t: 'Avisos del gimnasio', d: 'Horarios especiales y noticias.' }
   ];
+
+  /* Las preferencias guardadas con la clave vieja siguen valiendo. */
+  var RECORDATORIOS_VIEJOS = { clase: 'sesion' };
 
   /* Estado vivo de la pantalla: sobrevive a los repintados del router. */
   var estado = { tab: 'datos' };
@@ -160,6 +197,14 @@ window.AG = window.AG || {};
     return '';
   }
 
+  /* Descripción de una lista { v, d }. */
+  function descripcionDe(lista, valor) {
+    for (var i = 0; i < lista.length; i++) {
+      if (lista[i].v === valor) return lista[i].d || '';
+    }
+    return '';
+  }
+
   /* El socio vivo de la base (nunca una copia suelta). */
   function socioDe(usuario) {
     if (!usuario || !usuario.id) return null;
@@ -170,13 +215,44 @@ window.AG = window.AG || {};
   /* Preferencias del socio con valores por defecto sensatos. */
   function preferenciasDe(socio) {
     var p = (socio && socio.preferencias && typeof socio.preferencias === 'object') ? socio.preferencias : {};
-    var lista = esArreglo(p.recordatorios) ? p.recordatorios : null;
-    if (!lista) {
+    var guardada = esArreglo(p.recordatorios) ? p.recordatorios : null;
+    var lista = [], i;
+    if (!guardada) {
       /* Quien nunca eligió, los recibe todos: mejor de más que de menos. */
-      lista = [];
-      for (var i = 0; i < RECORDATORIOS.length; i++) lista.push(RECORDATORIOS[i].v);
+      for (i = 0; i < RECORDATORIOS.length; i++) lista.push(RECORDATORIOS[i].v);
+    } else {
+      for (i = 0; i < guardada.length; i++) {
+        var clave = RECORDATORIOS_VIEJOS[guardada[i]] || guardada[i];
+        if (lista.indexOf(clave) < 0) lista.push(clave);
+      }
     }
     return { recordatorios: lista };
+  }
+
+  /* ---- Horarios del socio con valores seguros ---- */
+
+  function horarioDe(socio) {
+    var v = socio ? socio.horarioEntreno : '';
+    return etiquetaDe(HORARIOS, v) ? v : 'variable';
+  }
+
+  function diasMetaDe(socio) {
+    var d = socio ? parseInt(socio.diasMeta, 10) : NaN;
+    if (!isFinite(d) || d < 2 || d > 6) return 3;
+    return d;
+  }
+
+  /* true/false/'aveces' -> 'si'/'no'/'aveces' (la forma del formulario). */
+  function desayunoAClave(v) {
+    if (v === 'aveces') return 'aveces';
+    if (v === false || v === 'no') return 'no';
+    return 'si';
+  }
+
+  /* 'si'/'no'/'aveces' -> true/false/'aveces' (la forma de la base). */
+  function claveADesayuno(c) {
+    if (c === 'aveces') return 'aveces';
+    return c === 'si';
   }
 
   /* =============================================================
@@ -200,7 +276,7 @@ window.AG = window.AG || {};
         'transition:transform var(--trans),box-shadow var(--trans)}' +
       '.pf-color:hover{transform:scale(1.14)}' +
       '.pf-color.on{border-color:var(--texto);box-shadow:0 0 0 3px rgba(var(--rojo-rgb),.32)}' +
-      '.pf-reglas{margin:0;padding-left:17px;font-size:11.5px;color:var(--texto-3);line-height:1.65}' +
+      '.pf-reglas{margin:0;padding-left:17px;font-size:12px;color:var(--texto-3);line-height:1.65}' +
       '.pf-reglas b{color:var(--texto-2)}' +
       '.pf-checks{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}' +
       '.pf-check{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;min-width:0;' +
@@ -212,6 +288,9 @@ window.AG = window.AG || {};
       '.pf-fijo{display:flex;align-items:center;min-height:40px;color:var(--texto-2)}' +
       '.pf-mejor{display:flex;align-items:center;gap:16px;flex-wrap:wrap}' +
       '.pf-mejor-txt{min-width:0;flex:1 1 220px}' +
+      /* Píldoras de días: caben las cinco sin scroll, hasta en 380 px. */
+      '.pf-dias{flex-wrap:wrap;overflow:visible;padding:2px 0}' +
+      '.pf-dias .chip-dia{min-width:58px;padding:7px 12px}' +
       '.pf-page .input.error,.pf-page .select.error,.pf-page .textarea.error{border-color:var(--error)}' +
       '@media (max-width:520px){' +
         '.pf-head{gap:12px}' +
@@ -283,14 +362,15 @@ window.AG = window.AG || {};
       opciones(lista, valor) + '</select>';
   }
 
-  /* Grupo de .radio-cards con una explicación de una línea por opción. */
-  function tarjetasRadio(nombre, lista, valor, porDefecto) {
+  /* Grupo de .radio-cards con una explicación de una línea por opción.
+     claseExtra: 'dos' | 'tres' para fijar columnas. */
+  function tarjetasRadio(nombre, lista, valor, porDefecto, claseExtra) {
     var elegido = valor;
     var existe = false, i;
     for (i = 0; i < lista.length; i++) if (lista[i].v === elegido) existe = true;
     if (!existe) elegido = porDefecto;
 
-    var html = '<div class="radio-cards" data-grupo="' + esc(nombre) + '">';
+    var html = '<div class="radio-cards' + (claseExtra ? ' ' + esc(claseExtra) : '') + '" data-grupo="' + esc(nombre) + '">';
     for (i = 0; i < lista.length; i++) {
       var o = lista[i];
       var marcado = (o.v === elegido);
@@ -304,14 +384,33 @@ window.AG = window.AG || {};
     return html + '</div><p class="help" data-error="' + esc(nombre) + '" data-ayuda=""></p>';
   }
 
-  function kpiHTML(iconoNombre, valor, etiqueta, extra) {
-    return '<div class="kpi">' +
-      '<div class="kpi-icono">' + icono(iconoNombre, 22) + '</div>' +
-      '<div class="kpi-datos">' +
-        '<div class="kpi-val">' + esc(valor) + '</div>' +
-        '<div class="kpi-label">' + esc(etiqueta) + '</div>' +
-        (extra ? '<div class="mini muted">' + esc(extra) + '</div>' : '') +
-      '</div>' +
+  /* Píldoras 2·3·4·5·6 (componente .chip-dia del rediseño) con un
+     campo oculto que viaja en el formulario como número. */
+  function pildorasDias(nombre, valor) {
+    var html = '<div class="chip-dias pf-dias" data-dias-grupo role="group" aria-label="Días a la semana">';
+    for (var i = 0; i < DIAS_META.length; i++) {
+      var n = DIAS_META[i].v;
+      var on = (n === valor);
+      html += '<button type="button" class="chip-dia' + (on ? ' on' : '') + '" data-dias="' + n + '"' +
+        ' aria-pressed="' + (on ? 'true' : 'false') + '" title="' + esc(DIAS_META[i].d) + '">' +
+        '<b>' + n + '</b><span>días</span></button>';
+    }
+    html += '</div>' +
+      '<input type="hidden" name="' + esc(nombre) + '" data-num value="' + valor + '">' +
+      '<p class="help" data-error="' + esc(nombre) + '" data-ayuda="' + esc(descripcionDe(DIAS_META, valor)) + '">' +
+        esc(descripcionDe(DIAS_META, valor)) + '</p>';
+    return html;
+  }
+
+  /* Tile del rediseño: número grande + etiqueta corta. */
+  function tileHTML(o) {
+    return '<div class="tile' + (o.clase ? ' ' + esc(o.clase) : '') + '">' +
+      '<span class="tile-icono">' + icono(o.icono || 'info', 18) + '</span>' +
+      '<span class="tile-val">' + esc(o.valor) +
+        (o.unidad ? '<small class="tile-unidad">' + esc(o.unidad) + '</small>' : '') +
+      '</span>' +
+      '<span class="tile-label">' + esc(o.etiqueta) + '</span>' +
+      (o.extra ? '<span class="tile-extra">' + esc(o.extra) + '</span>' : '') +
     '</div>';
   }
 
@@ -398,15 +497,15 @@ window.AG = window.AG || {};
             '<h1 class="page-title">' + esc(U.nombreCompleto(socio) || 'Sin nombre') + '</h1>' +
             '<p class="page-sub">' +
               (coach
-                ? 'Tu coach es ' + esc(U.nombreCompleto(coach))
-                : 'Todavía no tienes coach asignado; pídelo en recepción.') +
+                ? 'Tu coach es ' + esc(U.nombreCompleto(coach)) + '.'
+                : 'Aún no tienes coach: pídelo en recepción.') +
             '</p>' +
             '<div class="row wrap row-sm">' + etiquetas + '</div>' +
           '</div>' +
           '<div class="field">' +
             '<span class="label">Color de mi avatar</span>' +
             coloresHTML(socio) +
-            '<p class="help">Elige entre 12 colores; se aplica al instante en todo el sistema.</p>' +
+            '<p class="help">Se aplica al instante.</p>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -463,45 +562,42 @@ window.AG = window.AG || {};
             entrada('apellidos', 'text', socio.apellidos, 'maxlength="60" autocomplete="family-name"')) +
           campo('telefono', 'Teléfono',
             entrada('telefono', 'tel', socio.telefono, 'maxlength="20" inputmode="tel" autocomplete="tel"'),
-            'A 10 dígitos, por si necesitamos localizarte.') +
+            'A 10 dígitos.') +
           campo('email', 'Correo electrónico',
             entrada('email', 'email', socio.email, 'maxlength="80" inputmode="email" autocomplete="email"'),
-            'Con este correo entras al sistema: no puede repetirse.') +
+            'Con él entras al sistema.') +
           campo('fechaNacimiento', 'Fecha de nacimiento',
             entrada('fechaNacimiento', 'date', socio.fechaNacimiento, 'max="' + esc(U.hoy()) + '"'),
-            'La usamos para tu edad, tus zonas cardiacas y tu calculadora.') +
+            'Para tu edad y tu calculadora.') +
           '<div class="field">' +
             '<span class="label">Edad</span>' +
             '<div class="input pf-fijo" data-edad>' + esc(textoEdad(socio.fechaNacimiento)) + '</div>' +
-            '<p class="help">Se actualiza sola al cambiar tu fecha.</p>' +
+            '<p class="help">Se actualiza sola.</p>' +
           '</div>' +
           campo('sexo', 'Sexo',
             seleccion('sexo', SEXOS, socio.sexo === 'M' ? 'M' : 'H'),
-            'Cambia las fórmulas de grasa corporal y calorías.') +
+            'Cambia las fórmulas de grasa y calorías.') +
           campo('estaturaCm', 'Estatura (cm)',
             entrada('estaturaCm', 'number', socio.estaturaCm,
               'min="120" max="230" step="0.5" inputmode="decimal"'),
             'Entre 120 y 230 cm.') +
         '</div>' +
         '<div class="row between wrap mt">' +
-          '<span class="mini muted">Tu código de socio y tu plan los administra recepción.</span>' +
+          '<span class="mini muted">Tu código y tu plan los administra recepción.</span>' +
           botonGuardar('Guardar mis datos') +
         '</div>' +
       '</form>';
 
     var descarga =
-      '<p class="mini muted">' +
-        'Te llevas un archivo JSON con tu perfil, tus pagos, tus mediciones, tus bitácoras de ' +
-        'entrenamiento, tu plan de nutrición y las calificaciones que has dado. Tu contraseña nunca se incluye.' +
-      '</p>' +
+      '<p class="mini muted">Tu perfil, pagos, mediciones, entrenamientos y nutrición en un archivo. Sin tu contraseña.</p>' +
       '<div class="row wrap mt">' +
         '<button type="button" class="btn btn-outline" data-descargar>' +
           icono('descargar', 16) + ' Descargar mi información</button>' +
       '</div>';
 
     return '<section data-panel="datos" class="stack">' +
-      tarjeta('Mis datos', 'usuario', 'Manténlos al día: de aquí salen tus cálculos y tus recibos.', formulario) +
-      tarjeta('Descargar mi información', 'descargar', 'Toda tu información en un solo archivo.', descarga) +
+      tarjeta('Mis datos', 'usuario', 'De aquí salen tus cálculos y tus recibos.', formulario) +
+      tarjeta('Descargar mi información', 'descargar', 'Todo lo tuyo en un solo archivo.', descarga) +
     '</section>';
   }
 
@@ -535,7 +631,7 @@ window.AG = window.AG || {};
       if (nacimiento > U.hoy()) return fallar(form, 'fechaNacimiento', 'Tu fecha de nacimiento no puede ser futura.');
       var anios = U.edad(nacimiento);
       if (anios < 10 || anios > 100) {
-        return fallar(form, 'fechaNacimiento', 'Revisa la fecha: la edad resultante no es posible.');
+        return fallar(form, 'fechaNacimiento', 'Revisa la fecha: esa edad no es posible.');
       }
     }
 
@@ -573,7 +669,7 @@ window.AG = window.AG || {};
         '</div>' +
         '<div class="field mt">' +
           '<span class="label">Mi nivel de entrenamiento</span>' +
-          tarjetasRadio('nivel', NIVELES, socio.nivel, 'principiante') +
+          tarjetasRadio('nivel', NIVELES, socio.nivel, 'principiante', 'tres') +
         '</div>' +
         '<div class="field mt">' +
           '<span class="label">Mi nivel de actividad diaria</span>' +
@@ -581,18 +677,16 @@ window.AG = window.AG || {};
         '</div>' +
         '<div class="mt">' +
           avisoHTML('info', 'info',
-            '<b>Al cambiar tu objetivo</b>, tu comparativo mensual se vuelve a evaluar con la nueva ' +
-            'dirección (bajar grasa no se juzga igual que subir músculo) y tu calculadora recalcula ' +
-            'calorías y macros. Además le avisamos a tu coach para que ajuste tu plan.') +
+            'Al cambiar tu objetivo se ajustan tu comparativo y tu calculadora, y le avisamos a tu coach.') +
         '</div>' +
         '<div class="row between wrap mt">' +
-          '<span class="mini muted">Puedes cambiarlo las veces que necesites.</span>' +
+          '<span class="mini muted">Cámbialo las veces que necesites.</span>' +
           botonGuardar('Guardar mi objetivo') +
         '</div>' +
       '</form>';
 
     return '<section data-panel="objetivo" class="stack oculto">' +
-      tarjeta('Mi objetivo', 'meta', 'Es la brújula de tu rutina, tu nutrición y tu comparativo.', formulario) +
+      tarjeta('Mi objetivo', 'meta', 'La brújula de tu rutina, tu nutrición y tu comparativo.', formulario) +
     '</section>';
   }
 
@@ -631,7 +725,7 @@ window.AG = window.AG || {};
       AG.DB.notificar(coach.id, {
         titulo: 'Un socio cambió su objetivo',
         cuerpo: U.nombreCompleto(actualizado) + ' pasó de «' + (anterior || 'sin objetivo') +
-          '» a «' + etiquetaDe(OBJETIVOS, objetivo) + '». Conviene revisar su rutina y su plan de nutrición.',
+          '» a «' + etiquetaDe(OBJETIVOS, objetivo) + '». Conviene revisar su rutina y su nutrición.',
         tipo: 'medicion',
         link: '#/coach/socios'
       });
@@ -642,11 +736,11 @@ window.AG = window.AG || {};
       cuerpo:
         '<p>Ahora tu objetivo es <b>' + esc(etiquetaDe(OBJETIVOS, objetivo)) + '</b>.</p>' +
         '<ul class="pf-reglas mt-sm">' +
-          '<li>Tu <b>comparativo mensual</b> se recalcula con esta nueva dirección.</li>' +
-          '<li>Tu <b>calculadora</b> ajusta calorías, macros y agua del día.</li>' +
+          '<li>Tu <b>comparativo</b> se mide con esta dirección.</li>' +
+          '<li>Tu <b>calculadora</b> ajusta calorías y agua.</li>' +
           '<li>' + (coach && coach.rol === 'coach'
               ? 'Ya le avisamos a <b>' + esc(U.nombreCompleto(coach)) + '</b>.'
-              : 'Cuando te asignen coach, verá este objetivo desde el primer día.') + '</li>' +
+              : 'Tu coach lo verá desde el primer día.') + '</li>' +
         '</ul>',
       acciones: [
         { texto: 'Entendido', clase: 'btn-primary', onClick: function (api) { api.cerrar(); } }
@@ -658,7 +752,89 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     8. Pestaña "Salud"
+     8. Pestaña "Mis horarios" (rediseño v2, sección 7)
+     ============================================================= */
+
+  function panelHorariosHTML(socio) {
+    var horario = horarioDe(socio);
+    var dias = diasMetaDe(socio);
+    var desayuna = desayunoAClave(socio.desayunaAntes);
+
+    var formulario =
+      '<form data-form="horarios" novalidate>' +
+        '<div class="field">' +
+          '<span class="label">¿A qué hora sueles venir?</span>' +
+          tarjetasRadio('horarioEntreno', HORARIOS, horario, 'variable') +
+        '</div>' +
+        '<div class="field mt">' +
+          '<span class="label">¿Cuántos días a la semana quieres venir?</span>' +
+          pildorasDias('diasMeta', dias) +
+        '</div>' +
+        '<div class="field mt">' +
+          '<span class="label">¿Desayunas antes de entrenar?</span>' +
+          tarjetasRadio('desayuna', DESAYUNOS, desayuna, 'si', 'tres') +
+        '</div>' +
+        '<div class="mt">' +
+          avisoHTML('info', 'nutricion', '<b>Con esto acomodamos tus comidas y tu día.</b>') +
+        '</div>' +
+        '<div class="row between wrap mt">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-bienvenida>' +
+            icono('historial', 15) + ' Volver a ver la bienvenida</button>' +
+          botonGuardar('Guardar mis horarios') +
+        '</div>' +
+      '</form>';
+
+    return '<section data-panel="horarios" class="stack oculto">' +
+      tarjeta('Mis horarios', 'reloj', 'Tres preguntas rápidas para acomodar tu día.', formulario) +
+    '</section>';
+  }
+
+  function guardarHorarios(form, socio) {
+    limpiarErrores(form);
+    var d = U.formToObject(form);
+
+    var horario = txt(d.horarioEntreno);
+    var dias = parseInt(d.diasMeta, 10);
+    var desayuna = txt(d.desayuna);
+
+    if (!etiquetaDe(HORARIOS, horario)) return fallar(form, 'horarioEntreno', 'Dinos a qué hora sueles venir.');
+    if (!isFinite(dias) || dias < 2 || dias > 6) return fallar(form, 'diasMeta', 'Elige entre 2 y 6 días.');
+    if (!etiquetaDe(DESAYUNOS, desayuna)) return fallar(form, 'desayuna', 'Dinos si desayunas antes de entrenar.');
+
+    var cambioHorario = (horario !== horarioDe(socio)) || !etiquetaDe(HORARIOS, socio.horarioEntreno);
+    var cambioDesayuno = (claveADesayuno(desayuna) !== socio.desayunaAntes);
+
+    /* Ya respondió las tres preguntas: la bienvenida queda hecha. */
+    AG.DB.actualizar('usuarios', socio.id, {
+      horarioEntreno: horario,
+      diasMeta: dias,
+      desayunaAntes: claveADesayuno(desayuna),
+      bienvenidaHecha: true
+    });
+
+    if (cambioHorario || cambioDesayuno) {
+      /* Su recomendación de comida del día se acomoda al nuevo horario. */
+      toast('Listo. ' + (COMIDAS_POR_HORARIO[horario] || COMIDAS_POR_HORARIO.variable), 'ok');
+    } else {
+      toast('Tus horarios quedaron guardados: ' + dias + ' días a la semana.', 'ok');
+    }
+    return true;
+  }
+
+  /* Vuelve a mostrar las tres preguntas de bienvenida en el inicio. */
+  function volverABienvenida(socio) {
+    if (!socio || !socio.id) {
+      toast('No pudimos leer tu ficha.', 'error');
+      return false;
+    }
+    AG.DB.actualizar('usuarios', socio.id, { bienvenidaHecha: false });
+    toast('Vamos de nuevo: te esperan tres preguntas.', 'info');
+    try { AG.Router.ir('socio/inicio'); } catch (e) { /* el router avisa si no puede */ }
+    return true;
+  }
+
+  /* =============================================================
+     9. Pestaña "Salud"
      ============================================================= */
 
   function panelSaludHTML(socio) {
@@ -668,8 +844,7 @@ window.AG = window.AG || {};
     var formulario =
       '<form data-form="salud" autocomplete="off" novalidate>' +
         avisoHTML('warn', 'escudo',
-          'Esta información <b>solo la ven tu coach y recepción</b>, y únicamente por tu seguridad: ' +
-          'para adaptar tus ejercicios y para saber a quién llamar si algo pasa mientras entrenas.') +
+          'Solo lo ven <b>tu coach y recepción</b>, para cuidarte mientras entrenas.') +
         '<div class="form-grid dos mt">' +
           campo('padecimientos', 'Padecimientos o lesiones',
             areaTexto('padecimientos', socio.padecimientos, 3,
@@ -691,7 +866,7 @@ window.AG = window.AG || {};
             entrada('contactoEmergencia.parentesco', 'text', ce.parentesco, 'maxlength="40" placeholder="Esposa, hermano, madre…"')) +
         '</div>' +
         '<div class="row between wrap mt">' +
-          '<span class="mini muted">Si tienes una condición nueva, avísale también a tu coach.</span>' +
+          '<span class="mini muted">Si algo cambia, avísale también a tu coach.</span>' +
           botonGuardar('Guardar mi información de salud') +
         '</div>' +
       '</form>';
@@ -734,7 +909,7 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     9. Pestaña "Acceso"
+     10. Pestaña "Acceso"
      ============================================================= */
 
   function minimoPassword() {
@@ -761,11 +936,10 @@ window.AG = window.AG || {};
             '<li>Al menos <b>' + min + ' caracteres</b>.</li>' +
             '<li>Distinta a la que usas hoy.</li>' +
             '<li>Las dos casillas nuevas deben coincidir.</li>' +
-            '<li>Nadie del gimnasio te la va a pedir por teléfono ni por mensaje.</li>' +
           '</ul>' +
         '</div>' +
         '<div class="row between wrap mt">' +
-          '<span class="mini muted">Entras con ' + esc(socio.email || 'tu correo registrado') + '.</span>' +
+          '<span class="mini muted">Entras con ' + esc(socio.email || 'tu correo registrado') + '. Nadie te la va a pedir.</span>' +
           '<button type="submit" class="btn btn-primary">' + icono('candado', 16) + ' Cambiar mi contraseña</button>' +
         '</div>' +
       '</form>';
@@ -790,7 +964,11 @@ window.AG = window.AG || {};
     if (nueva === actual) return fallar(form, 'nueva', 'La nueva contraseña debe ser distinta a la actual.');
     if (nueva !== confirmar) return fallar(form, 'confirmar', 'Las dos contraseñas nuevas no coinciden.');
 
-    var r = AG.Auth.cambiarPassword(actual, nueva);
+    var r = null;
+    try {
+      if (AG.Auth && typeof AG.Auth.cambiarPassword === 'function') r = AG.Auth.cambiarPassword(actual, nueva);
+    } catch (e) { r = null; }
+
     if (!r || !r.ok) {
       var mensaje = (r && r.error) ? r.error : 'No pudimos cambiar tu contraseña.';
       var destino = /actual/i.test(mensaje) ? 'actual' : 'nueva';
@@ -803,7 +981,7 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     10. Pestaña "Preferencias"
+     11. Pestaña "Preferencias"
      ============================================================= */
 
   function aplicarTema(tema) {
@@ -848,22 +1026,22 @@ window.AG = window.AG || {};
       '<form data-form="preferencias" novalidate>' +
         '<div class="field">' +
           '<span class="label">Tema de la aplicación</span>' +
-          tarjetasRadio('tema', TEMAS, temaGuardado(), 'oscuro') +
-          '<p class="help">El cambio se aplica al momento en toda la aplicación.</p>' +
+          tarjetasRadio('tema', TEMAS, temaGuardado(), 'oscuro', 'dos') +
+          '<p class="help">Se aplica al momento.</p>' +
         '</div>' +
         '<div class="field mt">' +
           '<span class="label">Recordatorios que quiero recibir</span>' +
           checks +
-          '<p class="help">Se muestran en la campana de la barra superior.</p>' +
+          '<p class="help">Llegan a la campana de arriba.</p>' +
         '</div>' +
         '<div class="row between wrap mt">' +
-          '<span class="mini muted">Los avisos de vencimiento de pago siempre llegan por seguridad de tu acceso.</span>' +
+          '<span class="mini muted">Los avisos de pago siempre llegan.</span>' +
           botonGuardar('Guardar mis preferencias') +
         '</div>' +
       '</form>';
 
     return '<section data-panel="preferencias" class="stack oculto">' +
-      tarjeta('Preferencias', 'config', 'Cómo se ve la aplicación y qué te avisamos.', formulario) +
+      tarjeta('Preferencias', 'config', 'Cómo se ve la app y qué te avisamos.', formulario) +
     '</section>';
   }
 
@@ -902,7 +1080,7 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     11. Pestaña "Mi resumen en Alliance Gym"
+     12. Pestaña "Mi resumen en Alliance Gym"
      ============================================================= */
 
   /* Recorre los meses con medición inicial y final y se queda con
@@ -965,30 +1143,63 @@ window.AG = window.AG || {};
     };
   }
 
+  /* '1 año 3 meses' -> { valor:'1', unidad:'año', extra:'y 3 meses' } */
+  function partesAntiguedad(texto) {
+    var m = /^(\d+)\s+(\S+)\s*(.*)$/.exec(txt(texto));
+    if (!m) return { valor: texto || '—', unidad: '', extra: '' };
+    return { valor: m[1], unidad: m[2], extra: m[3] ? 'y ' + m[3] : '' };
+  }
+
+  /* 'Septiembre 2026' -> { valor:'Sep', unidad:'2026' } */
+  function partesMes(periodo) {
+    var p = U.partesDe(periodo);
+    if (!p) return { valor: '—', unidad: '' };
+    return { valor: U.capitalizar(U.MESES_CORTOS[p.m - 1] || ''), unidad: String(p.a) };
+  }
+
   function panelResumenHTML(socio) {
     var r = calcularResumen(socio);
+    var ant = partesAntiguedad(r.antiguedad);
 
-    var kpis = '<div class="grid g3">' +
-      kpiHTML('calendario', r.antiguedad,
-        'Antigüedad en el gimnasio',
-        r.fechaAlta ? 'Desde el ' + U.fecha(r.fechaAlta, 'corto') : 'Sin fecha de alta registrada') +
-      kpiHTML('tarjeta', String(r.mesesPagados) + (r.mesesPagados === 1 ? ' mes' : ' meses'),
-        'Meses de membresía pagados',
-        r.pagos + (r.pagos === 1 ? ' pago registrado' : ' pagos registrados')) +
-      kpiHTML('pesa', U.num(r.sesiones, 0),
-        'Sesiones entrenadas',
-        'Bitácoras que has cerrado') +
-      kpiHTML('check', U.num(r.asistencias, 0),
-        'Asistencias totales',
-        r.racha > 0
-          ? 'Racha actual: ' + r.racha + (r.racha === 1 ? ' día' : ' días')
-          : 'Marca tu entrada para iniciar una racha') +
-      kpiHTML('balanza', U.num(r.kilos, 0) + ' kg',
-        'Kilos totales levantados',
-        r.kilos >= 1000 ? 'Equivale a ' + U.num(r.kilos / 1000, 1) + ' toneladas' : 'Suma de todas tus series') +
-      kpiHTML('trofeo', r.mejor ? U.nombreMes(r.mejor.periodo) : 'Aún sin datos',
-        'Mi mejor mes',
-        r.mejor ? 'Puntaje ' + r.mejor.puntaje + ' de 100' : 'Se necesita un mes con medición de inicio y de cierre') +
+    var tiles = '<div class="tiles tiles-3">' +
+      tileHTML({
+        icono: 'calendario', clase: 'info',
+        valor: ant.valor, unidad: ant.unidad, etiqueta: 'con nosotros',
+        extra: r.fechaAlta ? (ant.extra ? ant.extra + ' · ' : '') + 'desde el ' + U.fecha(r.fechaAlta, 'corto') : ant.extra
+      }) +
+      tileHTML({
+        icono: 'tarjeta', clase: 'ok',
+        valor: String(r.mesesPagados), unidad: r.mesesPagados === 1 ? 'mes' : 'meses',
+        etiqueta: 'de membresía pagados',
+        extra: r.pagos + (r.pagos === 1 ? ' pago' : ' pagos')
+      }) +
+      tileHTML({
+        icono: 'pesa',
+        valor: U.num(r.sesiones, 0), etiqueta: 'entrenamientos registrados',
+        extra: r.sesiones ? 'Cada uno cuenta' : 'Registra el primero desde Mi rutina'
+      }) +
+      tileHTML({
+        icono: 'check', clase: 'calma',
+        valor: U.num(r.asistencias, 0), etiqueta: 'visitas en total',
+        extra: r.racha > 0
+          ? 'Racha: ' + r.racha + (r.racha === 1 ? ' día' : ' días')
+          : 'Nueva racha desde tu próxima visita'
+      }) +
+      tileHTML({
+        icono: 'balanza', clase: 'warn',
+        valor: U.num(r.kilos, 0), unidad: 'kg', etiqueta: 'levantados en total',
+        extra: r.kilos >= 1000 ? 'Son ' + U.num(r.kilos / 1000, 1) + ' toneladas' : 'Suma de todas tus series'
+      }) +
+      (r.mejor
+        ? tileHTML({
+            icono: 'trofeo', clase: 'destacada',
+            valor: partesMes(r.mejor.periodo).valor, unidad: partesMes(r.mejor.periodo).unidad,
+            etiqueta: 'tu mejor mes', extra: r.mejor.puntaje + ' de 100'
+          })
+        : tileHTML({
+            icono: 'trofeo', clase: 'neutro',
+            valor: 'Pronto', etiqueta: 'tu mejor mes', extra: 'Con una medición de inicio y otra de cierre'
+          })) +
     '</div>';
 
     var mejorHTML;
@@ -997,7 +1208,7 @@ window.AG = window.AG || {};
         Charts.progreso(r.mejor.puntaje, {
           alto: 148,
           texto: String(r.mejor.puntaje),
-          etiqueta: 'Puntaje de 100',
+          etiqueta: 'de 100',
           aria: 'Puntaje de tu mejor mes'
         }) +
         '<div class="pf-mejor-txt stack-sm">' +
@@ -1011,21 +1222,17 @@ window.AG = window.AG || {};
         '</div>' +
       '</div>';
     } else {
-      mejorHTML = vacioHTML('regla',
-        'Todavía no hay un mes cerrado. En cuanto tu coach registre tu medición de inicio y la de cierre, ' +
-        'aquí aparece tu mejor mes con su puntaje.');
+      mejorHTML = vacioHTML('regla', 'Tu mejor mes aparece cuando tengas una medición de inicio y otra de cierre.');
     }
 
     return '<section data-panel="resumen" class="stack oculto">' +
-      tarjeta('Mi resumen en Alliance Gym', 'trofeo',
-        'Todo lo que llevas construido desde que entraste.', kpis) +
-      tarjeta('Mi mejor mes', 'estrella',
-        'El periodo con el comparativo más alto de tu historial.', mejorHTML) +
+      tarjeta('Mi resumen', 'trofeo', 'Todo lo que llevas construido aquí.', tiles) +
+      tarjeta('Mi mejor mes', 'estrella', 'El mes con tu comparativo más alto.', mejorHTML) +
     '</section>';
   }
 
   /* =============================================================
-     12. Descarga de la información del socio
+     13. Descarga de la información del socio
      ============================================================= */
 
   function copiaSinPassword(socio) {
@@ -1036,6 +1243,15 @@ window.AG = window.AG || {};
       salida[k] = socio[k];
     }
     return salida;
+  }
+
+  /* Consulta tolerante: si el helper no existe (base vieja), lista vacía. */
+  function listaSegura(fn, arg) {
+    try {
+      if (typeof fn !== 'function') return [];
+      var r = fn(arg);
+      return esArreglo(r) ? r : [];
+    } catch (e) { return []; }
   }
 
   function exportarMisDatos(socio) {
@@ -1062,6 +1278,10 @@ window.AG = window.AG || {};
       bitacoras: AG.DB.bitacorasDe(socio.id),
       asistencias: AG.DB.asistenciasDe(socio.id),
       planNutricion: AG.DB.planNutricionDe(socio.id),
+      sesionesConEntrenador: listaSegura(AG.DB.sesionesDe, socio.id),
+      eventos: AG.DB.donde('eventos', function (e) {
+        return e && esArreglo(e.inscritos) && e.inscritos.indexOf(socio.id) >= 0;
+      }),
       calificaciones: AG.DB.donde('calificaciones', function (c) { return c && c.socioId === socio.id; })
     };
 
@@ -1079,7 +1299,7 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     13. Armado de la pantalla
+     14. Armado de la pantalla
      ============================================================= */
 
   function tabsHTML() {
@@ -1133,6 +1353,11 @@ window.AG = window.AG || {};
     '</div>';
   }
 
+  function tabExiste(clave) {
+    for (var i = 0; i < TABS.length; i++) if (TABS[i].clave === clave) return true;
+    return false;
+  }
+
   function render(ctx) {
     asegurarEstilos();
 
@@ -1141,29 +1366,31 @@ window.AG = window.AG || {};
 
     if (!usuario) {
       return pantallaAviso('usuario', 'Sesión no disponible',
-        'Vuelve a iniciar sesión para ver y editar tu perfil.');
+        'Vuelve a iniciar sesión para ver tu perfil.');
     }
     if (usuario.rol !== 'socio') {
       return pantallaAviso('candado', 'Esta pantalla es del socio',
-        'Solo un socio puede editar su propio perfil. Si buscas el expediente de alguien más, entra por «Socios».');
+        'Solo un socio edita su perfil. Para ver a alguien más, entra por «Socios».');
     }
 
     var socio = socioDe(usuario);
     if (!socio) {
       return pantallaAviso('alerta', 'No encontramos tu expediente',
-        'Tu cuenta existe pero no pudimos leer tu ficha. Avisa en recepción para revisarla.');
+        'Tu cuenta existe pero no pudimos leer tu ficha. Avisa en recepción.');
     }
 
+    /* Se puede llegar directo a una pestaña: #/socio/perfil?tab=horarios */
+    var pedida = (ctx && ctx.params && ctx.params.tab) ? String(ctx.params.tab) : '';
+    if (pedida && tabExiste(pedida)) estado.tab = pedida;
+
     /* Si la pestaña guardada ya no existe (versión vieja del estado), al inicio. */
-    if (!etiquetaDe(TABS.map(function (t) { return { v: t.clave, t: t.etiqueta }; }), estado.tab)) {
-      estado.tab = 'datos';
-    }
+    if (!tabExiste(estado.tab)) estado.tab = 'datos';
 
     var html = '<div class="page pf-page" data-perfil>' +
       '<div class="page-head">' +
         '<div>' +
           '<h1 class="page-title">' + icono('usuario', 24) + '<span>Mi perfil</span></h1>' +
-          '<p class="page-sub">Tus datos, tu objetivo y tus preferencias. Aquí mandas tú.</p>' +
+          '<p class="page-sub">Tus datos, tu objetivo y tus horarios. Aquí mandas tú.</p>' +
         '</div>' +
       '</div>' +
       encabezadoHTML(socio) +
@@ -1171,6 +1398,7 @@ window.AG = window.AG || {};
       '<div class="mt">' +
         panelDatosHTML(socio) +
         panelObjetivoHTML(socio) +
+        panelHorariosHTML(socio) +
         panelSaludHTML(socio) +
         panelAccesoHTML(socio) +
         panelPreferenciasHTML(socio) +
@@ -1185,7 +1413,7 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     14. Delegación de eventos
+     15. Delegación de eventos
      ============================================================= */
 
   function enganchar(root, socioId) {
@@ -1255,14 +1483,47 @@ window.AG = window.AG || {};
       if (el.name === 'tema') aplicarTema(el.value);
     });
 
+    /* ---------- Píldoras de días a la semana ---------- */
+    U.delegar(raiz, 'click', '[data-dias]', function (e, el) {
+      e.preventDefault();
+      var n = parseInt(el.getAttribute('data-dias'), 10);
+      if (!isFinite(n) || n < 2 || n > 6) return;
+
+      var grupo = el.closest('[data-dias-grupo]');
+      var form = el.closest('form[data-form="horarios"]');
+      if (!grupo || !form) return;
+
+      var botones = U.$$('[data-dias]', grupo);
+      for (var i = 0; i < botones.length; i++) {
+        var on = (botones[i] === el);
+        botones[i].classList.toggle('on', on);
+        botones[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+
+      var oculto = form.querySelector('input[name="diasMeta"]');
+      if (oculto) oculto.value = String(n);
+
+      var ayuda = form.querySelector('[data-error="diasMeta"]');
+      if (ayuda) {
+        ayuda.classList.remove('error');
+        ayuda.setAttribute('data-ayuda', descripcionDe(DIAS_META, n));
+        ayuda.textContent = descripcionDe(DIAS_META, n);
+      }
+    });
+
+    /* ---------- Volver a ver la bienvenida ---------- */
+    U.delegar(raiz, 'click', '[data-bienvenida]', function (e) {
+      e.preventDefault();
+      volverABienvenida(actual());
+    });
+
     /* ---------- Descargar mi información ---------- */
     U.delegar(raiz, 'click', '[data-descargar]', function (e) {
       e.preventDefault();
       var socio = actual();
       if (!socio) { toast('No pudimos leer tu ficha.', 'error'); return; }
       U.confirmar(
-        'Vamos a generar un archivo JSON con toda tu información de Alliance Gym. ' +
-        'Guárdalo en un lugar seguro: contiene tus datos personales.',
+        'Vamos a descargar un archivo con tu información. Guárdalo en un lugar seguro.',
         'Descargar mi información'
       ).then(function (ok) {
         if (ok) exportarMisDatos(actual() || socio);
@@ -1280,6 +1541,7 @@ window.AG = window.AG || {};
       try {
         if (cual === 'datos') guardarDatos(form, socio, raiz);
         else if (cual === 'objetivo') guardarObjetivo(form, socio, raiz);
+        else if (cual === 'horarios') guardarHorarios(form, socio);
         else if (cual === 'salud') guardarSalud(form, socio);
         else if (cual === 'acceso') cambiarPassword(form);
         else if (cual === 'preferencias') guardarPreferencias(form, socio);
@@ -1302,14 +1564,24 @@ window.AG = window.AG || {};
   }
 
   /* =============================================================
-     15. Exposición y registro de la ruta
+     16. Exposición y registro de la ruta
      ============================================================= */
 
   AG.Views.SocioPerfil = {
     render: render,
     exportarDatos: exportarMisDatos,
     resumen: calcularResumen,
-    mejorMes: mejorMes
+    mejorMes: mejorMes,
+    /* Rediseño v2: catálogos y ayudantes de horarios, por si otra
+       pantalla (la bienvenida del inicio) quiere las mismas opciones. */
+    HORARIOS: HORARIOS,
+    DIAS_META: DIAS_META,
+    DESAYUNOS: DESAYUNOS,
+    textoHorario: function (v) { return etiquetaDe(HORARIOS, v) || 'Depende del día'; },
+    comidasSegunHorario: function (v) { return COMIDAS_POR_HORARIO[v] || COMIDAS_POR_HORARIO.variable; },
+    horarioDe: horarioDe,
+    diasMetaDe: diasMetaDe,
+    volverABienvenida: volverABienvenida
   };
 
   AG.Router.registrar({
