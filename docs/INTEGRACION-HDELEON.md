@@ -79,6 +79,35 @@ mysqldump --no-data -u root -p NOMBRE_DE_LA_BASE > C:\esquema_gym.sql
 Si `mysql` no se reconoce, suele estar en `C:\xampp\mysql\bin\` o en
 `C:\Program Files\MySQL\MySQL Server 8.0\bin\`.
 
+### Si no se tiene la contraseña de root de MySQL
+
+No hay que pedírsela al proveedor. En orden:
+
+1. **Buscarla en la config del propio HDeLeon.** El sistema necesita la cadena
+   de conexión para arrancar, así que está guardada en su carpeta de
+   instalación: revisar `App.config`, `*.exe.config`, `appsettings.json`,
+   `*.ini` o `web.config`. La contraseña suele venir en texto plano dentro de
+   un `connectionString` (`Server=...;Database=...;Uid=root;Pwd=...`).
+   Buscar también en `C:\xampp\`, `C:\Program Files\`, `C:\Program Files (x86)\`
+   y la carpeta donde esté instalado el sistema.
+2. **XAMPP con root sin contraseña.** Si usa XAMPP, probar root con contraseña
+   vacía: `mysql -u root` (sin `-p`). Es el default de XAMPP.
+3. **Plan B — sin MySQL (ver abajo).** Si nada funciona, usar la exportación de
+   reportes de HDeLeon. No requiere la contraseña ni tocar la base.
+
+### Plan B — importación por archivo (si no se puede leer MySQL)
+
+HDeLeon exporta reportes a Excel/CSV. En vez del agente automático:
+
+- Recepción exporta la lista de socios (diario o semanal).
+- Alliance Gym tiene una pantalla **"Importar socios"** (solo director) que lee
+  ese CSV y aplica la misma lógica de mezcla que el sync automático.
+
+No es en tiempo real (alguien sube el archivo), pero no necesita contraseña de
+MySQL, no toca el sistema de HDeLeon y para un gimnasio suele ser suficiente.
+El contrato de datos y las reglas de mezcla son los mismos; solo cambia de
+dónde llegan los datos (CSV subido a mano en vez de POST del agente).
+
 ### Qué hay que identificar en ese esquema
 
 - Tabla de **socios / clientes / miembros**: nombre, apellidos, teléfono,
