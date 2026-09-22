@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Parrilla de contenido mensual de Alliance Gym: 20 publicaciones, dinámicas y menú de la semana.">
+<meta property="og:title" content="Parrilla de Contenido Alliance · Alliance Gym">
+<meta property="og:description" content="Parrilla de contenido mensual de Alliance Gym: 20 publicaciones, dinámicas y menú de la semana.">
+<meta property="og:type" content="article">
+<title>Parrilla de Contenido Alliance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --tinta: #0E0F11;
+    --carbon: #15171B;
+    --carbon-2: #1D2026;
+    --carbon-3: #24282F;
+    --linea: #2B303A;
+    --linea-2: #3A414D;
+    --rojo: #E4322B;
+    --rojo-2: #FF6154;
+    --hueso: #F2EFE9;
+    --gris: #949AA4;
+    --gris-2: #666D79;
+    --verde: #3FBF7F;
+    --ambar: #F0A03C;
+    --azul: #5AA9F0;
+    --morado: #9B7BF0;
+
+    --display: "Anton", "Arial Narrow", Impact, sans-serif;
+    --texto: "Archivo", "Segoe UI", system-ui, sans-serif;
+
+    --ancho: 1160px;
+    --gutter: clamp(18px, 4vw, 56px);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--tinta);
+    color: var(--hueso);
+    font-family: var(--texto);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--rojo); color: #fff; }
+  :focus-visible { outline: 2px solid var(--rojo-2); outline-offset: 3px; }
+
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  .pa-wrap { max-width: var(--ancho); margin: 0 auto; padding-inline: var(--gutter); }
+
+  .pa-sec { padding-block: clamp(50px, 7vw, 92px); border-top: 1px solid var(--linea); }
+
+  .pa-eyebrow {
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--rojo-2); margin: 0 0 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .pa-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--linea); max-width: 110px; }
+
+  h2.pa-h2 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(28px, 4.8vw, 46px); line-height: 1.03;
+    text-transform: uppercase; text-wrap: balance; margin: 0 0 16px;
+  }
+
+  h3.pa-h3 {
+    font-size: 16.5px; font-weight: 700; line-height: 1.3;
+    margin: 0 0 8px; color: var(--hueso); text-wrap: balance;
+  }
+
+  .pa-lead {
+    font-size: clamp(16px, 1.9vw, 18.5px); line-height: 1.6;
+    color: var(--gris); max-width: 64ch; margin: 0 0 8px;
+  }
+  .pa-lead strong { color: var(--hueso); font-weight: 600; }
+
+  /* Barra */
+  .pa-top {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(14, 15, 17, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--linea);
+  }
+  .pa-top-in {
+    max-width: var(--ancho); margin: 0 auto;
+    padding: 11px var(--gutter);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .pa-mark {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--display); text-transform: uppercase;
+    font-size: 15px; letter-spacing: 0.03em;
+  }
+  .pa-mark i { width: 5px; height: 17px; background: var(--rojo); display: block; }
+  .pa-top-meta {
+    font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gris-2); font-weight: 600;
+  }
+
+  /* Hero */
+  .pa-hero { padding-block: clamp(42px, 7vw, 78px) clamp(34px, 5vw, 58px); position: relative; overflow: hidden; }
+  .pa-hero::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(110% 80% at 92% -10%, rgba(228, 50, 43, 0.15), transparent 60%);
+  }
+  .pa-hero-in { position: relative; }
+
+  h1.pa-h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(40px, 9vw, 96px); line-height: 0.92;
+    text-transform: uppercase; margin: 0 0 22px; max-width: 16ch;
+    text-wrap: balance;
+  }
+  h1.pa-h1 em { font-style: normal; color: var(--rojo); }
+
+  .pa-kicker {
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gris-2); margin: 0 0 20px;
+  }
+
+  /* Volumetría */
+  .pa-vol {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px; background: var(--linea); border: 1px solid var(--linea);
+  }
+  .pa-vol-i { background: var(--carbon); padding: 20px 22px; }
+  .pa-vol-i.total { background: var(--carbon-2); }
+
+  .pa-vol-n {
+    font-family: var(--display); font-size: clamp(34px, 5vw, 50px);
+    line-height: 1; display: block; margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pa-vol-i.v1 .pa-vol-n { color: var(--rojo-2); }
+  .pa-vol-i.v2 .pa-vol-n { color: var(--azul); }
+  .pa-vol-i.v3 .pa-vol-n { color: var(--ambar); }
+  .pa-vol-i.total .pa-vol-n { color: var(--hueso); }
+
+  .pa-vol-l { font-size: 13px; font-weight: 600; color: var(--hueso); margin-bottom: 3px; }
+  .pa-vol-s { font-size: 12px; color: var(--gris-2); line-height: 1.45; }
+
+  /* Tablas */
+  .pa-scroll { overflow-x: auto; border: 1px solid var(--linea); }
+
+  table.pa-t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.pa-t.ancha { min-width: 760px; }
+  table.pa-t.media { min-width: 620px; }
+
+  table.pa-t th {
+    text-align: left; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase; color: var(--gris-2);
+    padding: 12px 15px; background: var(--carbon-2);
+    border-bottom: 1px solid var(--linea); white-space: nowrap;
+  }
+  table.pa-t td {
+    padding: 13px 15px; border-bottom: 1px solid var(--linea);
+    color: var(--gris); background: var(--carbon); vertical-align: top;
+  }
+  table.pa-t tr:last-child td { border-bottom: 0; }
+  table.pa-t td strong { color: var(--hueso); font-weight: 600; }
+  table.pa-t .dia { color: var(--hueso); font-weight: 700; white-space: nowrap; }
+  table.pa-t .sem { background: var(--carbon-2); }
+  table.pa-t .sem td {
+    background: var(--carbon-2); color: var(--rojo-2);
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 9px 15px;
+  }
+
+  .pa-pill {
+    display: inline-block; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border: 1px solid var(--linea-2);
+    color: var(--gris); white-space: nowrap;
+  }
+  .pa-pill.video { color: var(--rojo-2); border-color: rgba(228, 50, 43, 0.45); }
+  .pa-pill.carr { color: var(--azul); border-color: rgba(90, 169, 240, 0.4); }
+  .pa-pill.img { color: var(--ambar); border-color: rgba(240, 160, 60, 0.4); }
+
+  /* Tarjetas */
+  .pa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+  .pa-grid.dos { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
+
+  .pa-card { background: var(--carbon); border: 1px solid var(--linea); padding: 22px; }
+  .pa-card p { font-size: 14px; color: var(--gris); }
+
+  .pa-tag {
+    display: inline-block; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.11em; text-transform: uppercase;
+    padding: 4px 9px; border: 1px solid var(--linea-2);
+    color: var(--gris); margin-bottom: 12px;
+  }
+  .pa-tag.rojo { color: var(--rojo-2); border-color: rgba(228, 50, 43, 0.45); }
+  .pa-tag.verde { color: var(--verde); border-color: rgba(63, 191, 127, 0.4); }
+  .pa-tag.azul { color: var(--azul); border-color: rgba(90, 169, 240, 0.4); }
+  .pa-tag.ambar { color: var(--ambar); border-color: rgba(240, 160, 60, 0.4); }
+  .pa-tag.morado { color: var(--morado); border-color: rgba(155, 123, 240, 0.4); }
+
+  /* Receta: línea de tiempo del video */
+  .pa-receta { background: var(--carbon); border: 1px solid var(--linea); padding: 24px; }
+
+  .pa-pasos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .pa-pasos li {
+    display: grid; grid-template-columns: 72px minmax(0, 1fr);
+    gap: 16px; padding: 12px 0; border-top: 1px solid var(--linea);
+  }
+  .pa-pasos li:first-child { border-top: 0; padding-top: 0; }
+  .pa-paso-t {
+    font-family: var(--display); font-size: 15px; color: var(--rojo);
+    font-variant-numeric: tabular-nums; line-height: 1.4;
+  }
+  .pa-paso-d { font-size: 14px; color: var(--gris); line-height: 1.5; }
+  .pa-paso-d b { color: var(--hueso); font-weight: 600; }
+
+  @media (max-width: 520px) {
+    .pa-pasos li { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* Listas */
+  ul.pa-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  ul.pa-list li {
+    position: relative; padding-left: 19px;
+    font-size: 14px; line-height: 1.55; color: var(--gris);
+  }
+  ul.pa-list li::before {
+    content: ""; position: absolute; left: 0; top: 0.62em;
+    width: 8px; height: 2px; background: var(--rojo);
+  }
+  ul.pa-list li strong { color: var(--hueso); font-weight: 600; }
+
+  /* Dinámicas */
+  .pa-dina { background: var(--carbon); border: 1px solid var(--linea); border-left: 3px solid var(--rojo); padding: 22px; }
+  .pa-dina.d2 { border-left-color: var(--azul); }
+  .pa-dina.d3 { border-left-color: var(--verde); }
+  .pa-dina.d4 { border-left-color: var(--ambar); }
+  .pa-dina.d5 { border-left-color: var(--morado); }
+
+  .pa-dina-mec { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--linea); }
+  .pa-dina-fila { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 5px 0; }
+  .pa-dina-k {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--gris-2); padding-top: 2px;
+  }
+  .pa-dina-v { font-size: 13.5px; color: var(--gris); line-height: 1.5; }
+  .pa-dina-v b { color: var(--hueso); font-weight: 600; }
+
+  @media (max-width: 480px) {
+    .pa-dina-fila { grid-template-columns: 1fr; gap: 2px; }
+  }
+
+  /* Menú semanal */
+  .pa-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); }
+  .pa-dia { background: var(--carbon); padding: 18px 20px 20px; }
+  .pa-dia-n {
+    font-family: var(--display); font-size: 17px; text-transform: uppercase;
+    color: var(--rojo-2); margin-bottom: 14px; letter-spacing: 0.04em;
+  }
+  .pa-comida { padding: 9px 0; border-top: 1px solid var(--linea); }
+  .pa-comida:first-of-type { border-top: 0; padding-top: 0; }
+  .pa-comida-l {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gris-2); margin-bottom: 3px;
+  }
+  .pa-comida-p { font-size: 13.5px; line-height: 1.45; color: var(--hueso); }
+
+  /* Banco de temas */
+  .pa-banco { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .pa-banco-col { background: var(--carbon); border: 1px solid var(--linea); padding: 20px 22px; }
+  .pa-banco-h {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.13em;
+    text-transform: uppercase; margin: 0 0 13px; color: var(--rojo-2);
+  }
+  .pa-banco-col.b2 .pa-banco-h { color: var(--azul); }
+  .pa-banco-col.b3 .pa-banco-h { color: var(--verde); }
+  .pa-banco-col.b4 .pa-banco-h { color: var(--ambar); }
+  ul.pa-mini { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  ul.pa-mini li { font-size: 13.5px; line-height: 1.45; color: var(--gris); }
+
+  /* Cierre */
+  .pa-cierre { border-top: 1px solid var(--linea); background: var(--carbon); }
+  .pa-cierre-in { max-width: var(--ancho); margin: 0 auto; padding: clamp(42px, 6vw, 70px) var(--gutter); }
+  .pa-cierre-t {
+    font-family: var(--display); font-size: clamp(24px, 4vw, 40px);
+    line-height: 1.03; text-transform: uppercase; margin: 0 0 16px;
+    max-width: 22ch; text-wrap: balance;
+  }
+  .pa-cierre-t em { font-style: normal; color: var(--rojo); }
+
+  .pa-nota {
+    font-size: 12.5px; line-height: 1.6; color: var(--gris-2);
+    border-top: 1px solid var(--linea); padding-top: 18px; margin-top: 28px;
+    max-width: 72ch;
+  }
+
+  .pa-aviso {
+    font-size: 13.5px; line-height: 1.6; color: var(--gris);
+    border-left: 2px solid var(--rojo); padding-left: 15px; margin-top: 24px;
+  }
+  .pa-aviso strong { color: var(--hueso); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="pa-top">
+  <div class="pa-top-in">
+    <div class="pa-mark"><i></i>Alliance Gym</div>
+    <div class="pa-top-meta">Parrilla de contenido &middot; Mes tipo</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="pa-hero">
+    <div class="pa-wrap pa-hero-in">
+      <p class="pa-kicker">Qué se publica, qué lleva cada pieza y qué se graba</p>
+      <h1 class="pa-h1">Un mes de contenido, <em>ya resuelto</em></h1>
+      <p class="pa-lead" style="margin-bottom:34px">
+        Cinco publicaciones a la semana, veinte al mes. Todo se puede grabar con un celular en
+        <strong>dos sesiones de una hora</strong>. Abajo está qué va cada día, qué información
+        lleva adentro y cómo se graba.
+      </p>
+      <div class="pa-vol">
+        <div class="pa-vol-i v1">
+          <span class="pa-vol-n">10</span>
+          <div class="pa-vol-l">Videos</div>
+          <div class="pa-vol-s">Reels y TikTok. De 20 a 45 segundos, vertical.</div>
+        </div>
+        <div class="pa-vol-i v2">
+          <span class="pa-vol-n">5</span>
+          <div class="pa-vol-l">Carruseles</div>
+          <div class="pa-vol-s">De 5 a 7 láminas. Es el formato que la gente guarda.</div>
+        </div>
+        <div class="pa-vol-i v3">
+          <span class="pa-vol-n">5</span>
+          <div class="pa-vol-l">Imágenes</div>
+          <div class="pa-vol-s">Una sola idea: frase, foto real o recordatorio.</div>
+        </div>
+        <div class="pa-vol-i total">
+          <span class="pa-vol-n">20</span>
+          <div class="pa-vol-l">Al mes</div>
+          <div class="pa-vol-s">Cinco días por semana. Dos días de descanso.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RITMO -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">El ritmo</p>
+      <h2 class="pa-h2">Qué formato toca cada día</h2>
+      <p class="pa-lead" style="margin-bottom:28px">
+        La idea es que quien publica no tenga que decidir nada: ya sabe que el lunes toca técnica
+        y el martes carrusel. <strong>Decidir es lo que cansa</strong>, no grabar.
+      </p>
+      <div class="pa-scroll">
+        <table class="pa-t media">
+          <thead>
+            <tr>
+              <th scope="col">Día</th>
+              <th scope="col">Formato</th>
+              <th scope="col">Qué toca siempre</th>
+              <th scope="col">Al mes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dia">Lunes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Técnica.</strong> Un ejercicio, un error, la corrección. Rota el grupo muscular.</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td class="dia">Martes</td>
+              <td><span class="pa-pill carr">Carrusel</span></td>
+              <td><strong>Información útil.</strong> Nutrición, guías, mitos. Es el que se guarda.</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td class="dia">Miércoles</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Gente y comida.</strong> Un socio, un coach o un platillo.</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td class="dia">Jueves</td>
+              <td><span class="pa-pill img">Imagen</span></td>
+              <td><strong>Recordatorio o frase.</strong> Lo del fin de semana, un coach, el ambiente.</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td class="dia">Viernes</td>
+              <td><span class="pa-pill video">Video</span> <span class="pa-pill carr">o carrusel</span></td>
+              <td><strong>La dinámica del mes.</strong> Semanas 1 y 3 en video, semanas 2 y 4 en imagen o carrusel.</td>
+              <td>4</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pa-aviso">
+        <strong>Si el sábado hay quién grabe, muévelo.</strong> El sábado por la mañana es cuando
+        más gente busca gimnasio, y es el mejor día para mostrar ambiente. En ese caso el viernes
+        se recorre al sábado y todo lo demás se queda igual. Lo que no se toca es la regla de
+        <strong>cinco días, no siete</strong>: un calendario de todos los días se abandona en tres
+        semanas.
+      </p>
+    </div>
+  </section>
+
+  <!-- PARRILLA DEL MES -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">Mes tipo</p>
+      <h2 class="pa-h2">Las 20 publicaciones,<br>una por una</h2>
+      <p class="pa-lead" style="margin-bottom:28px">
+        Esta es la parrilla completa de un mes. El siguiente mes se repite la estructura y solo
+        cambian el grupo muscular y el tema del carrusel — abajo está la rotación para no repetir.
+      </p>
+      <div class="pa-scroll">
+        <table class="pa-t ancha">
+          <thead>
+            <tr>
+              <th scope="col">Día</th>
+              <th scope="col">Formato</th>
+              <th scope="col">Tema</th>
+              <th scope="col">Qué lleva adentro</th>
+              <th scope="col">Quién</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sem"><td colspan="5">Semana 1</td></tr>
+            <tr>
+              <td class="dia">Lunes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Espalda</strong></td>
+              <td>Jalón al pecho. El error: jalar con los brazos y encoger el cuello. La corrección: bajar los hombros primero y llevar los codos a las costillas.</td>
+              <td>Marco</td>
+            </tr>
+            <tr>
+              <td class="dia">Martes</td>
+              <td><span class="pa-pill carr">Carrusel</span></td>
+              <td><strong>Qué comer antes de entrenar</strong></td>
+              <td>Tres opciones con comida de casa según a qué hora entrenas: mañana, tarde y noche. Una lámina por opción.</td>
+              <td>Daniela</td>
+            </tr>
+            <tr>
+              <td class="dia">Miércoles</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Desayuno antes de entrenar</strong></td>
+              <td>Se prepara en cámara: dos huevos, frijoles y dos tortillas. Los gramos de proteína aparecen en pantalla al final.</td>
+              <td>Daniela</td>
+            </tr>
+            <tr>
+              <td class="dia">Jueves</td>
+              <td><span class="pa-pill img">Imagen</span></td>
+              <td><strong>Viernes de Invitado</strong></td>
+              <td>Anuncio de la dinámica: trae a un amigo mañana. Fecha, hora y qué se llevan los dos. Texto grande, poco.</td>
+              <td>Recepción</td>
+            </tr>
+            <tr>
+              <td class="dia">Viernes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Así estuvo el Viernes de Invitado</strong></td>
+              <td>Ambiente del día: gente entrenando en pareja, los licuados al final. Sin guion, puro recorte de lo que pasó.</td>
+              <td>Quien esté</td>
+            </tr>
+
+            <tr class="sem"><td colspan="5">Semana 2</td></tr>
+            <tr>
+              <td class="dia">Lunes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Glúteo</strong></td>
+              <td>Hip thrust. El error: empujar con la espalda baja y no terminar arriba. La corrección: barbilla al pecho y apretar arriba dos segundos.</td>
+              <td>Paulina</td>
+            </tr>
+            <tr>
+              <td class="dia">Martes</td>
+              <td><span class="pa-pill carr">Carrusel</span></td>
+              <td><strong>Tu primera semana aquí</strong></td>
+              <td>Guía para el que nunca ha pisado un gimnasio: qué traer, a qué hora hay menos gente, qué pasa el primer día, con quién hablar.</td>
+              <td>Recepción</td>
+            </tr>
+            <tr>
+              <td class="dia">Miércoles</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Así es tu primera sesión con coach</strong></td>
+              <td>Los primeros minutos de una sesión real: el coach pregunta, lo ve moverse y le arma la rutina ahí mismo. Es lo que nadie más en la zona ofrece.</td>
+              <td>Marco o Paulina</td>
+            </tr>
+            <tr>
+              <td class="dia">Jueves</td>
+              <td><span class="pa-pill img">Imagen</span></td>
+              <td><strong>Conoce a tu coach</strong></td>
+              <td>Foto de un coach, su nombre, su especialidad y una frase suya. Uno distinto cada mes.</td>
+              <td>Rotar coach</td>
+            </tr>
+            <tr>
+              <td class="dia">Viernes</td>
+              <td><span class="pa-pill carr">Carrusel</span></td>
+              <td><strong>El menú de la semana</strong></td>
+              <td>Cinco láminas, una por día, con desayuno, comida y cena. Comida de casa. Está completo más abajo.</td>
+              <td>Daniela</td>
+            </tr>
+
+            <tr class="sem"><td colspan="5">Semana 3</td></tr>
+            <tr>
+              <td class="dia">Lunes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Pierna</strong></td>
+              <td>Sentadilla. El error: rodillas hacia adentro y talones que se levantan. La corrección: pies afuera, empujar el piso, rodillas hacia los dedos.</td>
+              <td>Marco</td>
+            </tr>
+            <tr>
+              <td class="dia">Martes</td>
+              <td><span class="pa-pill carr">Carrusel</span></td>
+              <td><strong>Cuántas series y repeticiones</strong></td>
+              <td>Según lo que buscas: fuerza, músculo o resistencia. Una lámina por objetivo, con el número de series, repeticiones y descanso.</td>
+              <td>Marco</td>
+            </tr>
+            <tr>
+              <td class="dia">Miércoles</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Historia de un socio</strong></td>
+              <td>Tres preguntas: cómo llegaste, qué cambió, qué le dirías a alguien que no se anima. Con su hoja de medición del primer día junto a la de hoy, y su permiso por escrito.</td>
+              <td>Un socio</td>
+            </tr>
+            <tr>
+              <td class="dia">Jueves</td>
+              <td><span class="pa-pill img">Imagen</span></td>
+              <td><strong>Frase de la casa</strong></td>
+              <td>"Si hoy toca descansar, también está bien." Nuestro tono: nunca regaño. Fondo oscuro, letras grandes.</td>
+              <td>Diseño</td>
+            </tr>
+            <tr>
+              <td class="dia">Viernes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>El gym un viernes</strong></td>
+              <td>Veinte segundos de ambiente: música, gente, pesas. Sin voz. Es el que más comparten los propios socios.</td>
+              <td>Quien esté</td>
+            </tr>
+
+            <tr class="sem"><td colspan="5">Semana 4</td></tr>
+            <tr>
+              <td class="dia">Lunes</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Pecho</strong></td>
+              <td>Press de banca. El error: codos abiertos a noventa grados. La corrección: codos a cuarenta y cinco, hombros hacia atrás, pies firmes.</td>
+              <td>Marco</td>
+            </tr>
+            <tr>
+              <td class="dia">Martes</td>
+              <td><span class="pa-pill carr">Carrusel</span></td>
+              <td><strong>Cinco mitos del gimnasio</strong></td>
+              <td>Uno por lámina: que las pesas te ponen enorme, que hay que sudar para que sirva, que sin proteína en polvo no crece, que el cardio en ayunas quema más, que hay que entrenar diario.</td>
+              <td>Marco y Daniela</td>
+            </tr>
+            <tr>
+              <td class="dia">Miércoles</td>
+              <td><span class="pa-pill video">Video</span></td>
+              <td><strong>Cena con proteína, barata</strong></td>
+              <td>Tacos de atún con jitomate y cebolla, en cámara. El punto: se puede comer bien sin comprar nada raro.</td>
+              <td>Daniela</td>
+            </tr>
+            <tr>
+              <td class="dia">Jueves</td>
+              <td><span class="pa-pill img">Imagen</span></td>
+              <td><strong>Resultados del reto</strong></td>
+              <td>La tabla del reto del mes con los primeros lugares. Genera más conversación que cualquier otra imagen.</td>
+              <td>Coach a cargo</td>
+            </tr>
+            <tr>
+              <td class="dia">Viernes</td>
+              <td><span class="pa-pill img">Imagen</span></td>
+              <td><strong>La dinámica del mes que entra</strong></td>
+              <td>Adelanto de lo que viene: qué dinámica arranca, desde cuándo y cómo participar.</td>
+              <td>Recepción</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROTACIÓN -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">Para no repetirse</p>
+      <h2 class="pa-h2">La rotación de tres meses</h2>
+      <p class="pa-lead" style="margin-bottom:28px">
+        El lunes siempre es técnica, pero el grupo muscular cambia. Con esta rotación hay
+        <strong>tres meses de videos sin repetir un solo ejercicio</strong>.
+      </p>
+      <div class="pa-scroll">
+        <table class="pa-t media">
+          <thead>
+            <tr>
+              <th scope="col">Semana</th>
+              <th scope="col">Mes 1</th>
+              <th scope="col">Mes 2</th>
+              <th scope="col">Mes 3</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dia">1</td>
+              <td><strong>Espalda</strong><br>Jalón al pecho</td>
+              <td><strong>Hombro</strong><br>Press militar</td>
+              <td><strong>Espalda</strong><br>Remo con barra</td>
+            </tr>
+            <tr>
+              <td class="dia">2</td>
+              <td><strong>Glúteo</strong><br>Hip thrust</td>
+              <td><strong>Glúteo</strong><br>Peso muerto rumano</td>
+              <td><strong>Glúteo</strong><br>Zancadas</td>
+            </tr>
+            <tr>
+              <td class="dia">3</td>
+              <td><strong>Pierna</strong><br>Sentadilla</td>
+              <td><strong>Brazo</strong><br>Curl y fondos</td>
+              <td><strong>Pierna</strong><br>Prensa</td>
+            </tr>
+            <tr>
+              <td class="dia">4</td>
+              <td><strong>Pecho</strong><br>Press de banca</td>
+              <td><strong>Abdomen</strong><br>Plancha y elevaciones</td>
+              <td><strong>Cuerpo completo</strong><br>Kettlebell swing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pa-aviso">
+        <strong>El glúteo va los tres meses a propósito.</strong> Es el que más se busca, el que
+        más se comparte y el que más mujeres trae al gimnasio — que es justo el público que
+        atiende Paulina. No es casualidad, es dónde está la demanda.
+      </p>
+    </div>
+  </section>
+
+  <!-- RECETAS -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">Qué lleva adentro</p>
+      <h2 class="pa-h2">La receta de cada formato</h2>
+      <p class="pa-lead" style="margin-bottom:30px">
+        Si cada pieza se arma igual, el contenido se ve consistente aunque lo grabe gente
+        distinta. Esto es lo que no puede faltar en cada una.
+      </p>
+
+      <div class="pa-grid dos">
+        <div class="pa-receta">
+          <span class="pa-tag rojo">Video de técnica &middot; 20 a 40 s</span>
+          <h3 class="pa-h3">Un ejercicio. Un error. Una corrección.</h3>
+          <ul class="pa-pasos">
+            <li>
+              <div class="pa-paso-t">0–2 s</div>
+              <div class="pa-paso-d"><b>El error, en imagen.</b> Sin saludo, sin "hola qué tal". Se abre con el movimiento mal hecho.</div>
+            </li>
+            <li>
+              <div class="pa-paso-t">2–8 s</div>
+              <div class="pa-paso-d"><b>Por qué está mal,</b> en una frase. "Así te truena el hombro", no un párrafo de anatomía.</div>
+            </li>
+            <li>
+              <div class="pa-paso-t">8–25 s</div>
+              <div class="pa-paso-d"><b>La corrección,</b> con dos o tres puntos en texto grande sobre el video.</div>
+            </li>
+            <li>
+              <div class="pa-paso-t">25–35 s</div>
+              <div class="pa-paso-d"><b>Una repetición completa</b> bien hecha, de cuerpo entero, para que se vea el movimiento real.</div>
+            </li>
+            <li>
+              <div class="pa-paso-t">Cierre</div>
+              <div class="pa-paso-d"><b>Nombre del coach</b> y "te lo corregimos aquí". La marca va al final, nunca al principio.</div>
+            </li>
+          </ul>
+          <ul class="pa-list" style="margin-top:18px">
+            <li>Vertical, <strong>9:16</strong>. Nada horizontal.</li>
+            <li><strong>Texto grande siempre:</strong> la mayoría lo ve sin audio.</li>
+            <li>Un solo ejercicio por video. Nunca tres.</li>
+            <li>Música sin derechos, de la biblioteca de Instagram o TikTok.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="pa-receta">
+            <span class="pa-tag azul">Carrusel &middot; 5 a 7 láminas</span>
+            <h3 class="pa-h3">Para que lo guarden, no para que lo aplaudan</h3>
+            <ul class="pa-list">
+              <li><strong>Lámina 1:</strong> la pregunta o el número. Máximo seis palabras. Es lo único que decide si abren.</li>
+              <li><strong>Láminas 2 a 6:</strong> una idea por lámina, máximo veinte palabras. Si no cabe, sobra.</li>
+              <li><strong>Última lámina:</strong> qué hacer ahora. Venir, preguntar por WhatsApp o guardar el post.</li>
+              <li><strong>En la descripción</strong> siempre "guárdalo para cuando lo necesites". Guardar pesa más que el like.</li>
+              <li>Fondo oscuro, letras claras, logo chico abajo. Que se lea en un celular a la primera.</li>
+            </ul>
+          </div>
+
+          <div class="pa-receta" style="margin-top:16px">
+            <span class="pa-tag ambar">Imagen &middot; una sola idea</span>
+            <h3 class="pa-h3">Si necesita explicación, no es imagen</h3>
+            <ul class="pa-list">
+              <li><strong>Si es frase:</strong> nuestro tono. Cercana y sin regaño. Nunca "sin excusas".</li>
+              <li><strong>Si es foto:</strong> gente real del gimnasio, con permiso. Nada de bancos de imágenes.</li>
+              <li><strong>Si es recordatorio:</strong> el día, la hora y el lugar en grande. Lo demás sobra.</li>
+              <li>Cuadrada o vertical. Nunca texto que haya que acercar para leer.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DINÁMICAS -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">Dinámicas</p>
+      <h2 class="pa-h2">Ocho promociones<br>con mecánica completa</h2>
+      <p class="pa-lead" style="margin-bottom:30px">
+        Una dinámica por mes, no ocho al mismo tiempo. Están ordenadas de la más fácil de
+        arrancar a la más elaborada. <strong>Ninguna regala meses</strong>: regalan lo que al
+        gimnasio le cuesta poco y a la gente le sabe a mucho.
+      </p>
+
+      <div class="pa-grid dos">
+
+        <div class="pa-dina">
+          <span class="pa-tag rojo">La principal</span>
+          <h3 class="pa-h3">Viernes de Invitado</h3>
+          <p>Todos los viernes, cualquier socio puede traer a un amigo a entrenar. Al terminar,
+            los dos pasan por un licuado a recepción.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">El socio avisa por WhatsApp a quién trae. Llegan juntos.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Licuado para los dos. Si el amigo se inscribe ese mismo día, <b>no paga inscripción</b>.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Un visitante que ya llegó acompañado y sin pena. Es el que más se inscribe.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Imagen el jueves, historias el viernes, cartel fijo en recepción.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina d2">
+          <span class="pa-tag azul">La más barata</span>
+          <h3 class="pa-h3">Reseña por licuado</h3>
+          <p>Quien deja su reseña en Google y la enseña en recepción, se lleva un licuado.
+            Una sola vez por persona.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Deja la reseña ahí mismo, desde su celular, y la muestra.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Un licuado en el momento.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Subir en "gimnasio cerca de mí", que es donde está la gente que ya quiere inscribirse. <b>Es la dinámica que más vale de todas.</b></div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">De boca en boca, coach por coach. No hace falta publicarla.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina d3">
+          <span class="pa-tag verde">Retención</span>
+          <h3 class="pa-h3">La tarjeta de las doce</h3>
+          <p>Tarjeta de cartón que se sella en cada visita. Doce sellos en el mes y se lleva el
+            premio del mes, además de entrar al sorteo.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Pide su sello al entrar. Doce visitas en el mes.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Licuado o playera, y un boleto para el sorteo de fin de mes.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Que la gente venga tres veces por semana sin que nadie se lo pida. <b>Ataca la deserción de frente.</b></div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Se entrega a todos el día uno del mes, en la mano.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina d4">
+          <span class="pa-tag ambar">Comunidad</span>
+          <h3 class="pa-h3">El reto del mes</h3>
+          <p>Un reto simple y medible que todos puedan seguir: quién suma más sesiones, o entre
+            todos cuántos kilómetros se juntan en caminadora.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Se anota al inicio del mes. Su avance se lleva en una cartulina grande en recepción.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Playera del gimnasio para los tres primeros. Y salir en la tabla.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Contenido cada semana sin inventar nada: la tabla actualizada ya es un post.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Imagen con la tabla cada jueves. Es de lo que más comentarios genera.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina d5">
+          <span class="pa-tag morado">Captación</span>
+          <h3 class="pa-h3">Lunes de medición abierta</h3>
+          <p>Un lunes al mes, cualquier persona —socio o no— puede pasar a que le hagan su
+            medición corporal completa, sin costo.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Aparta su hora por WhatsApp. Llega, lo miden, le explican.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Saber su porcentaje de grasa y su masa muscular, explicado por un coach.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Un desconocido adentro, sentado con un coach, viendo sus números. <b>Ya está medio inscrito.</b></div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Es la mejor pieza para pauta: la gente pide su cita sin pensarlo.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina">
+          <span class="pa-tag rojo">Fechas</span>
+          <h3 class="pa-h3">Semana de cumpleaños</h3>
+          <p>La semana de su cumpleaños, el socio puede traer a un invitado distinto cada día.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Nada. Recepción lo detecta solo y le avisa.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Entrenar acompañado toda la semana y sentirse visto.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Hasta cinco visitantes nuevos por cumpleañero, y un socio que lo va a contar.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Mensaje de WhatsApp personal. Nunca lista pública de cumpleaños.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina d2">
+          <span class="pa-tag azul">Contenido gratis</span>
+          <h3 class="pa-h3">Etiqueta y entras</h3>
+          <p>Quien suba una foto o video entrenando y etiquete al gimnasio, entra al sorteo del
+            mes. Cada publicación es un boleto.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Publica en sus historias y etiqueta la cuenta.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Un boleto por publicación para el sorteo de fin de mes.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Que el gimnasio aparezca en el celular de gente que nunca lo buscó. Y material para repostear todo el mes.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Cartel en el espejo del área de pesas, que es donde la gente se graba.</div></div>
+          </div>
+        </div>
+
+        <div class="pa-dina d3">
+          <span class="pa-tag verde">Temporada baja</span>
+          <h3 class="pa-h3">Tres días de puertas abiertas</h3>
+          <p>Una vez por trimestre, tres días seguidos en que cualquier vecino puede entrenar sin
+            pagar y sin compromiso.</p>
+          <div class="pa-dina-mec">
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué hace</div><div class="pa-dina-v">Llega con una identificación. Se registra en recepción.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana</div><div class="pa-dina-v">Tres días completos, con una sesión con coach incluida.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Qué gana el gym</div><div class="pa-dina-v">Todos los teléfonos de quienes entraron. Esa lista se trabaja por WhatsApp las semanas siguientes.</div></div>
+            <div class="pa-dina-fila"><div class="pa-dina-k">Cómo se anuncia</div><div class="pa-dina-v">Lona en la fachada, pauta a cinco kilómetros y volantes en los negocios de la cuadra.</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MENÚ -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">El contenido que más se guarda</p>
+      <h2 class="pa-h2">El menú de la semana</h2>
+      <p class="pa-lead" style="margin-bottom:28px">
+        Comida de casa, de la que se consigue en la tienda de la esquina. Sirve para dos cosas al
+        mismo tiempo: <strong>es un carrusel de cinco láminas</strong> —una por día— y es un
+        material real que se le puede dar impreso a los socios.
+      </p>
+      <div class="pa-menu">
+        <div class="pa-dia">
+          <div class="pa-dia-n">Lunes</div>
+          <div class="pa-comida"><div class="pa-comida-l">Desayuno</div><div class="pa-comida-p">Dos huevos a la mexicana con frijoles y dos tortillas</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Comida</div><div class="pa-comida-p">Pollo asado con arroz y nopales</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Cena</div><div class="pa-comida-p">Quesadillas de queso panela con ensalada</div></div>
+        </div>
+        <div class="pa-dia">
+          <div class="pa-dia-n">Martes</div>
+          <div class="pa-comida"><div class="pa-comida-l">Desayuno</div><div class="pa-comida-p">Avena con plátano y leche</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Comida</div><div class="pa-comida-p">Tinga de pollo con frijoles y tortillas</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Cena</div><div class="pa-comida-p">Tacos de atún con jitomate y cebolla</div></div>
+        </div>
+        <div class="pa-dia">
+          <div class="pa-dia-n">Miércoles</div>
+          <div class="pa-comida"><div class="pa-comida-l">Desayuno</div><div class="pa-comida-p">Molletes con frijol y queso panela</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Comida</div><div class="pa-comida-p">Bistec a la plancha con nopales y arroz</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Cena</div><div class="pa-comida-p">Huevos revueltos con espinaca y una tortilla</div></div>
+        </div>
+        <div class="pa-dia">
+          <div class="pa-dia-n">Jueves</div>
+          <div class="pa-comida"><div class="pa-comida-l">Desayuno</div><div class="pa-comida-p">Yogur natural con avena y fruta</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Comida</div><div class="pa-comida-p">Lentejas con pollo y arroz</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Cena</div><div class="pa-comida-p">Sándwich de pavo con aguacate</div></div>
+        </div>
+        <div class="pa-dia">
+          <div class="pa-dia-n">Viernes</div>
+          <div class="pa-comida"><div class="pa-comida-l">Desayuno</div><div class="pa-comida-p">Huevo con nopal y frijoles</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Comida</div><div class="pa-comida-p">Pescado empapelado con verduras y arroz</div></div>
+          <div class="pa-comida"><div class="pa-comida-l">Cena</div><div class="pa-comida-p">Caldo de pollo con verdura</div></div>
+        </div>
+      </div>
+      <p class="pa-aviso">
+        <strong>Con cuatro menús distintos se cubre el mes entero de los viernes de carrusel.</strong>
+        Y si a cada platillo se le toma foto una sola vez, esas fotos sirven todo el año: para el
+        carrusel, para las historias y para el material impreso de recepción.
+      </p>
+    </div>
+  </section>
+
+  <!-- BANCO -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">Por si se acaban las ideas</p>
+      <h2 class="pa-h2">Banco de temas</h2>
+      <p class="pa-lead" style="margin-bottom:28px">
+        Cuando toque llenar la parrilla del mes siguiente, se saca de aquí y se acabó la junta
+        de ideas.
+      </p>
+      <div class="pa-banco">
+        <div class="pa-banco-col">
+          <p class="pa-banco-h">Técnica</p>
+          <ul class="pa-mini">
+            <li>Cómo agarrar la barra sin lastimarte la muñeca</li>
+            <li>Tres ejercicios de espalda que sí sirven</li>
+            <li>Peso muerto: la posición de la cadera</li>
+            <li>Qué hacer si te duele la rodilla al sentadillar</li>
+            <li>Cuánto peso subirle y cuándo</li>
+            <li>Calentamiento de cinco minutos que sí importa</li>
+            <li>Máquina o peso libre: cuándo cada uno</li>
+            <li>Cómo respirar en una serie pesada</li>
+          </ul>
+        </div>
+        <div class="pa-banco-col b2">
+          <p class="pa-banco-h">Comida</p>
+          <ul class="pa-mini">
+            <li>Proteína en cada comida, con comida de casa</li>
+            <li>Qué cenar si entrenas de noche</li>
+            <li>El taco no es el enemigo</li>
+            <li>Cómo llenar el refri para la semana</li>
+            <li>Tres desayunos en menos de diez minutos</li>
+            <li>Cuánta agua de verdad hace falta</li>
+            <li>Qué hacer en una fiesta sin tirar la semana</li>
+            <li>Leer una etiqueta en veinte segundos</li>
+          </ul>
+        </div>
+        <div class="pa-banco-col b3">
+          <p class="pa-banco-h">Gente</p>
+          <ul class="pa-mini">
+            <li>Un día en la vida de un coach</li>
+            <li>El socio más constante del mes</li>
+            <li>Por qué entreno: tres respuestas en la banca</li>
+            <li>La señora que empezó a los sesenta</li>
+            <li>Cómo se ve el gym a las seis de la mañana</li>
+            <li>El coach responde lo que más le preguntan</li>
+            <li>Primera vez: alguien entrenando su día uno</li>
+            <li>Los que llevan más de un año aquí</li>
+          </ul>
+        </div>
+        <div class="pa-banco-col b4">
+          <p class="pa-banco-h">La casa</p>
+          <ul class="pa-mini">
+            <li>Cómo funciona tu sesión semanal con coach</li>
+            <li>Cómo se arma tu rutina y cada cuándo cambia</li>
+            <li>Así es una medición completa</li>
+            <li>Horarios con menos gente</li>
+            <li>El equipo nuevo, en treinta segundos</li>
+            <li>Qué incluye tu plan que no sabías</li>
+            <li>Recorrido por el gimnasio para quien no lo conoce</li>
+            <li>Cómo pedir ayuda sin pena</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUANDO LA APP ESTE LISTA -->
+  <section class="pa-sec">
+    <div class="pa-wrap">
+      <p class="pa-eyebrow">Para dentro de un mes</p>
+      <h2 class="pa-h2">Lo que se enciende<br>cuando la app esté lista</h2>
+      <p class="pa-lead" style="margin-bottom:28px">
+        <strong>Nada de esta parrilla depende de la app.</strong> Todo lo de arriba se puede
+        grabar y publicar hoy mismo. Cuando el dueño dé el visto bueno y la app entre en
+        operación, estas cuatro piezas se activan y toman el lugar de las que ya están.
+        No hay que rehacer el calendario.
+      </p>
+      <div class="pa-grid dos">
+        <div class="pa-card">
+          <span class="pa-tag rojo">Video &middot; entra en la semana 2</span>
+          <h3 class="pa-h3">Así se ve tu rutina en el celular</h3>
+          <p>Grabación de pantalla: abrir la rutina del día, marcar una serie, leer la nota que
+            dejó el coach. Cuarenta segundos. Va fijado en el perfil, porque es lo que convence
+            al que entró nada más a mirar.</p>
+        </div>
+        <div class="pa-card">
+          <span class="pa-tag azul">Video &middot; sustituye a la libreta</span>
+          <h3 class="pa-h3">Lo que tu coach anota de ti</h3>
+          <p>La pantalla con las notas de la sesión: cargas, qué corregir, qué sigue. Vende el
+            seguimiento sin tener que decir "tenemos app". Mientras tanto, esto mismo se graba
+            con la libreta del coach y funciona igual de bien.</p>
+        </div>
+        <div class="pa-card">
+          <span class="pa-tag verde">Imagen &middot; el reto del mes</span>
+          <h3 class="pa-h3">La tabla, ya sin llevarla a mano</h3>
+          <p>El avance del reto sale solo del sistema en vez de la cartulina de recepción.
+            Es la misma publicación del jueves, pero sin que nadie tenga que contar.</p>
+        </div>
+        <div class="pa-card">
+          <span class="pa-tag ambar">Carrusel &middot; una sola vez</span>
+          <h3 class="pa-h3">Tu app, en cinco láminas</h3>
+          <p>El anuncio del arranque para los socios que ya están: qué es, cómo entrar y qué van
+            a ver adentro. Se publica una vez y se deja fijado en recepción con el código para
+            descargarla.</p>
+        </div>
+      </div>
+      <p class="pa-aviso">
+        <strong>Hasta ese día, ni una sola publicación menciona la app.</strong> Prometer algo que
+        todavía no se puede abrir es la forma más rápida de quemar la novedad: cuando por fin
+        salga, ya nadie va a voltear.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pa-cierre">
+  <div class="pa-cierre-in">
+    <h2 class="pa-cierre-t">Todo esto se graba en <em>dos sesiones</em></h2>
+    <p class="pa-lead" style="margin-bottom:0">
+      Los cuatro videos de técnica del mes se graban seguidos un lunes, con los coaches ya
+      formados y el trípode en el mismo lugar: <strong>una hora</strong>. Los de comida, otra hora
+      un miércoles. Lo demás son fotos y láminas que salen de ahí mismo. La clave no es grabar
+      más, es <strong>grabar junto y publicar espaciado</strong>.
+    </p>
+    <p class="pa-nota">
+      Parrilla de contenido para Alliance Gym &middot; Septiembre 2026. Los nombres de los coaches
+      y sus especialidades salen del sistema. Las dinámicas están escritas sin montos a propósito:
+      el premio y las condiciones los pone el gimnasio según lo que cueste cada cosa. Ninguna publicación
+      de esta parrilla depende de la app: todo se puede grabar y publicar hoy. Va junto con el
+      plan de marketing de 90 días, que es donde está el porqué de todo esto.
+    </p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Documentos de marketing de Alliance Gym.">
+<title>Marketing Alliance Gym</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --tinta: #0E0F11; --carbon: #15171B; --carbon-2: #1D2026;
+    --linea: #2B303A; --linea-2: #3A414D;
+    --rojo: #E4322B; --rojo-2: #FF6154;
+    --hueso: #F2EFE9; --gris: #949AA4; --gris-2: #666D79;
+    --display: "Anton", "Arial Narrow", Impact, sans-serif;
+    --texto: "Archivo", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--tinta); color: var(--hueso);
+    font-family: var(--texto); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: clamp(24px, 6vw, 64px) clamp(18px, 5vw, 48px);
+  }
+  .env { width: 100%; max-width: 760px; }
+  .marca {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--display); text-transform: uppercase;
+    font-size: 15px; letter-spacing: 0.04em; margin-bottom: 26px;
+  }
+  .marca i { width: 5px; height: 18px; background: var(--rojo); display: block; }
+  h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(34px, 7vw, 60px); line-height: 0.96;
+    text-transform: uppercase; margin: 0 0 16px; text-wrap: balance;
+  }
+  h1 em { font-style: normal; color: var(--rojo); }
+  .intro { color: var(--gris); max-width: 56ch; margin: 0 0 36px; }
+  .docs { display: grid; gap: 14px; }
+  a.doc {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 18px; align-items: center;
+    background: var(--carbon); border: 1px solid var(--linea);
+    padding: 22px 24px; text-decoration: none; color: inherit;
+    transition: border-color .18s ease, transform .18s ease;
+  }
+  a.doc:hover { border-color: var(--rojo); transform: translateY(-2px); }
+  a.doc:focus-visible { outline: 2px solid var(--rojo-2); outline-offset: 3px; }
+  .num {
+    font-family: var(--display); font-size: 30px; line-height: 1;
+    color: var(--rojo); font-variant-numeric: tabular-nums;
+  }
+  .doc b { display: block; font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .doc span { display: block; font-size: 13.5px; color: var(--gris); line-height: 1.5; }
+  .flecha { color: var(--gris-2); font-size: 22px; }
+  a.doc:hover .flecha { color: var(--rojo-2); }
+  .pie {
+    font-size: 12.5px; color: var(--gris-2); line-height: 1.6;
+    border-top: 1px solid var(--linea); padding-top: 18px; margin-top: 34px;
+  }
+  @media (max-width: 520px) {
+    a.doc { grid-template-columns: auto minmax(0, 1fr); gap: 14px; }
+    .flecha { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <div class="env">
+    <div class="marca"><i></i>Alliance Gym</div>
+    <h1>Marketing <em>2026</em></h1>
+    <p class="intro">
+      Los dos documentos de trabajo. El plan dice por qué; la parrilla dice qué se publica
+      cada día.
+    </p>
+    <div class="docs">
+      <a class="doc" href="plan-90-dias.html">
+        <span class="num">01</span>
+        <span>
+          <b>Plan de marketing a 90 días</b>
+          <span>Posicionamiento, a quién le hablamos, canales, presupuesto y los cinco números
+            que se revisan cada lunes.</span>
+        </span>
+        <span class="flecha" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="doc" href="parrilla-contenido.html">
+        <span class="num">02</span>
+        <span>
+          <b>Parrilla de contenido</b>
+          <span>Las 20 publicaciones del mes una por una, qué lleva cada formato, ocho dinámicas
+            y el menú de la semana.</span>
+        </span>
+        <span class="flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+    <p class="pie">
+      Documentos internos de Alliance Gym. No aparecen en buscadores, pero cualquiera con el
+      enlace puede abrirlos: compártelos solo con quien tenga que verlos.
+    </p>
+  </div>
+</body>
+</html>
